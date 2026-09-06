@@ -189,7 +189,7 @@ impl Lexicon {
             },
         };
         Lexeme {
-            id: format!("{}.{}", form.letters, pos.tag()),
+            id: format!("{}.{}", crate::orthography::id_stem(&form.letters), pos.tag()),
             lemma: lemma.to_string(),
             pos,
             gender: Some(gender),

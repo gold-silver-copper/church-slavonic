@@ -163,24 +163,18 @@ fn realise_synodal(word: &str) -> String {
         let next = source.get(i + 1);
         match unit.base {
             'о' if next.is_some_and(|n| n.base == 'у') => {
-                // The uk digraph: kept word-initially, the monograph inside.
+                // The uk digraph: the print writes it as the one letter ѹ
+                // word-initially (ѹ҆чени́къ — the pinned Bible never writes
+                // «оу», 3.1) and as the monograph ꙋ inside the word.
                 let second = source[i + 1].clone();
-                if initial {
-                    out.push(Unit::bare('о'));
-                    out.push(second);
-                } else {
-                    let mut merged = second;
-                    merged.base = 'ꙋ';
-                    merged.marks.extend(unit.marks);
-                    out.push(merged);
-                }
+                let mut merged = second;
+                merged.base = if initial { 'ѹ' } else { 'ꙋ' };
+                merged.marks.extend(unit.marks);
+                out.push(merged);
                 i += 2;
                 continue;
             }
-            'у' | 'ꙋ' | 'ѹ' if initial => {
-                out.push(Unit::bare('о'));
-                unit.base = 'у';
-            }
+            'у' | 'ꙋ' | 'ѹ' if initial => unit.base = 'ѹ',
             'у' | 'ѹ' | 'ѫ' => unit.base = 'ꙋ',
             'ꙑ' => unit.base = 'ы',
             'ѭ' => unit.base = 'ю',
@@ -229,6 +223,7 @@ fn normalise_marks(units: &mut [Unit]) {
     }
     let breathing_at = match units {
         [o, u, ..] if o.base == 'о' && u.base == 'у' => Some(1),
+        [first, ..] if first.base == 'ѹ' => Some(0),
         // the ligature ѿ (from-) never carries the psili in the print
         [first, ..] if first.is_vowel() && first.base != 'ѿ' => Some(0),
         _ => None,
@@ -318,7 +313,7 @@ pub fn comparison_key(word: &str) -> String {
             'є' => 'е',
             'ї' | 'і' | 'й' | 'ꙇ' => 'и',
             'ꙗ' | 'ꙙ' => 'ѧ',
-            'ꙋ' => 'у',
+            'ꙋ' | 'ѹ' => 'у',
             'ѕ' => 'з',
             'ѷ' => 'ѵ',
             other => other,
@@ -327,6 +322,16 @@ pub fn comparison_key(word: &str) -> String {
         .replace("оу", "у")
         .replace("ъи", "ы")
         .replace('ѿ', "от")
+}
+
+/// The letters an id is built from: the canonical letters with a
+/// word-initial ѹ written «оу» (ids were built that way before the print
+/// wrote the one letter, 3.1; they never move).
+pub fn id_stem(letters: &str) -> String {
+    match letters.strip_prefix('ѹ') {
+        Some(rest) => format!("оу{rest}"),
+        None => letters.to_string(),
+    }
 }
 
 /// Remove every combining mark (accents, breathing, titlo, kamora) and the
@@ -476,7 +481,7 @@ mod tests {
     fn projection_folds_the_declared_letter_pairs() {
         assert_eq!(realise("рꙑба", &SYN), "рыба");
         assert_eq!(realise("рабоу", &SYN), "рабꙋ");
-        assert_eq!(realise("оученикъ", &SYN), "оу҆ченикъ"); // initial digraph kept
+        assert_eq!(realise("оученикъ", &SYN), "ѹ҆ченикъ"); // the initial uk is the one letter
         assert_eq!(realise("рѫка", &SYN), "рꙋка");
         assert_eq!(realise("землѭ", &SYN), "землю");
         assert_eq!(realise("ѩзꙑкъ", &SYN), "ꙗ҆зыкъ");
@@ -530,7 +535,7 @@ mod tests {
         assert_eq!(realise("рабу́", &SYN), "рабꙋ̀");
         assert_eq!(realise("творя́тъ", &SYN), "творѧ́тъ");
         assert_eq!(realise("я́", &SYN), "ꙗ҆̀");
-        assert_eq!(realise("учени́къ", &SYN), "оу҆чени́къ");
+        assert_eq!(realise("учени́къ", &SYN), "ѹ҆чени́къ");
         assert_eq!(realise("оте́цъ", &SYN), "ѻ҆те́цъ");
         assert_eq!(realise("егѡ́", &SYN), "є҆гѡ̀");
         assert_eq!(realise("а́зъ", &SYN), "а҆́зъ");
@@ -541,7 +546,9 @@ mod tests {
             let once = realise(printed, &SYN);
             assert_eq!(realise(&once, &SYN), once, "{printed}");
         }
-        assert_eq!(realise("ᲂу҆чени́къ", &SYN), "оу҆чени́къ");
+        assert_eq!(realise("ᲂу҆чени́къ", &SYN), "ѹ҆чени́къ");
+        assert_eq!(realise("ѹ҆чени́къ", &SYN), "ѹ҆чени́къ");
+        assert_eq!(id_stem("ѹченикъ"), "оученикъ");
         assert_eq!(realise("бг҃ъ", &SYN), "бг҃ъ");
         assert_eq!(realise("Ра́бъ", &SYN), "ра́бъ");
         // The oxia before a solid enclitic stays; the plural varia of the

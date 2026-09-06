@@ -1568,3 +1568,39 @@ members — stays deliberately its own future design.
   exclude no hand cell, the tagger 74.95% (820 of 1,094). Held-out recall
   unchanged; tests, clippy, the game green. Ids the game names: none of
   the absorbed.
+
+## 2026-09-05 — 3.1 Part 4 (V3.0-PROMPT.md): the gold by register — the lexicon finding that came first
+
+- **The word-initial uk is the one letter ѹ (finding, fixed in the
+  crate).** The drafts of the new chapters (`hand-draft`) showed every
+  ѹ҆-initial token verbatim (ѹ҆пова́етъ, ѹ҆́бѡ, ѹ҆разꙋмѣ́ти — 458 of the
+  Psalter chapter's tokens): the pinned Bible writes the initial uk as
+  the single letter ѹ (11,777 tokens, 229 capitalised; never «оу»),
+  while the crate realised it as the two letters «оу҆», so the analyzer
+  found the lexeme but never exactly, and the treebank kept 1.9% of the
+  Bible verbatim by typography alone (2.3's Proverbs overlay had left
+  «ѹ҆разꙋмѣ́ти» verbatim for the same reason). Now `realise` writes an
+  initial uk as ѹ (the monograph ꙋ inside the word as before, OCS «оу»
+  unchanged), `Form::from_print` folds a print's «оу» to ѹ before it
+  counts vowels (the stress index is the letters'), `comparison_key`
+  folds ѹ, and ids keep their «оу» spelling through
+  `orthography::id_stem` (оуповати.v is still оуповати.v; no id moved).
+  The Synodal files were re-imported (1,191 lines re-spelled;
+  `write_outcome` re-realises the variants it keeps from other sources),
+  the consistency test passes, `census forms --write` recorded the
+  newly lifted forms and a second re-import let the arbiter see them.
+- **What it moved.** Treebank verbatim 48,972 → 38,214 (7.7% → 6.0%),
+  one cell 205,403 → 211,123 (33.4%), sets 1,790, tagger 189,408
+  (30.0%), closed 178,214 (28.2%), several lexemes 12,180 (1.9%); zero
+  mismatches. The analyzer's "no reading" share 11.39% → 9.68%.
+  Held-out recall unchanged (OCS spells «оу»). The overlay: 2,097 leaves,
+  the rules exclude no hand cell, out of reach 54 → 42, the tagger
+  74.86%. The game's four pasted strings changed (ѹ҆ловѝ ры́бꙋ,
+  ѹ҆лови́лъ є҆сѝ ры́бꙋ) and were re-pasted as recorded findings; its 35
+  tests and headless run pass.
+- **The Psalter of the pinned source is not chapters of psalms
+  (finding).** Its "chapter 1" is 22 verses of psalm fragments (psalm
+  140 and 141 in one verse); the poetic register of the gold stays
+  Proverbs, and the chapters to lift are Romans 1, 1 Corinthians 13,
+  Luke 2, Leviticus 1 (114 verses), with the Psalter replaced by a
+  prophetic chapter if the gate needs the verses.

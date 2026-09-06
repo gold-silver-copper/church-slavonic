@@ -1921,7 +1921,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 долготерпѣливный.a	долготерпѣли́вный	a	-	-	A1t*	a	-	-	-	P:A1t*	adv P:8
 долготерпѣливый.a	долготерпѣли́вый	a	-	-	A1t	a	-	long.pos.m.sg.acc=долготерпѣли́ваго	-	P:A1t	adv P:2
 долготный.a	долго́тный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
-долгій.a	до́лгій	a	-	-	A1g	a.comp{short.comp.m.pl.nom=L;short.comp.n.sg.nom=L;short.comp.n.sg.acc=L;long.comp.m.sg.gen=L;long.comp.m.du.nom=L;long.comp.m.du.acc=L;long.comp.m.pl.acc=L;long.comp.f.sg.nom=L;long.comp.f.pl.nom=L;long.comp.f.pl.acc=L;long.comp.n.sg.nom=L;long.comp.n.sg.gen=L;long.comp.n.sg.acc=L;long.comp.n.pl.nom=L;long.comp.n.pl.acc=L}	3=должа	short.pos.m.sg.gen=дѡ́лга;short.pos.m.sg.acc=дѡ́лга;short.pos.f.sg.nom=дѡ́лга;short.pos.n.sg.gen=дѡ́лга;long.pos.m.sg.loc=до́лгомъ;long.pos.f.sg.nom=дѡ́лгаѧ;long.pos.f.sg.gen=дѡ́лгїѧ;long.pos.n.sg.loc=до́лгомъ	short.pos.m.sg.ins=дѡ́лгимъ×2;short.pos.f.sg.nom=дѡ́лги×3|долгѝ×2;short.pos.n.sg.ins=дѡ́лгимъ×2;long.pos.m.sg.ins=дѡ́лгимъ×2;long.pos.n.sg.ins=дѡ́лгимъ×2	P:A1g	adv P:16; twin: долгій.a.2
+долгій.a	до́лгій	a	-	-	A1g	a.comp{short.comp.m.pl.nom=L;short.comp.n.sg.nom=L;short.comp.n.sg.acc=L;long.comp.m.sg.gen=L;long.comp.m.du.nom=L;long.comp.m.du.acc=L;long.comp.m.pl.acc=L;long.comp.f.sg.nom=L;long.comp.f.pl.nom=L;long.comp.f.pl.acc=L;long.comp.n.sg.nom=L;long.comp.n.sg.gen=L;long.comp.n.sg.acc=L;long.comp.n.pl.nom=L;long.comp.n.pl.acc=L}	3=должа	short.pos.m.sg.gen=дѡ́лга;short.pos.m.sg.acc=дѡ́лга;short.pos.f.sg.nom=дѡ́лга;short.pos.n.sg.gen=дѡ́лга;long.pos.m.sg.loc=до́лгомъ;long.pos.f.sg.nom=дѡ́лгаѧ;long.pos.f.sg.gen=дѡ́лгїѧ;long.pos.n.sg.loc=до́лгомъ	short.pos.m.sg.ins=дѡ́лгимъ×2;short.pos.f.sg.nom=дѡ́лги×3|долгѝ×2;short.pos.n.sg.ins=дѡ́лгимъ×2;long.pos.m.sg.ins=дѡ́лгимъ×2;long.pos.n.sg.ins=дѡ́лгимъ×2	P:A1g	adv P:5; twin: долгій.a.2
 должный.a	до́лжный	a	-	-	A1t*	a.short{short.pos.m.sg.acc=S}	-	long.pos.m.sg.loc=до́лжномъ;long.pos.f.sg.nom=дѡ́лжнаѧ;long.pos.n.sg.loc=до́лжномъ	short.pos.m.sg.gen=до́лжна×4|дѡ́лжна×1;short.pos.m.sg.acc=должна̀×11|дѡ́лжна×1;short.pos.m.sg.ins=дѡ́лжнымъ×1;short.pos.m.pl.nom=должнѝ×4;short.pos.f.sg.nom=до́лжны×6|до́лжна×4|дѡ́лжна×1;short.pos.n.sg.nom=должно̀×1;short.pos.n.sg.gen=до́лжна×4|дѡ́лжна×1;short.pos.n.sg.acc=должно̀×1;short.pos.n.sg.ins=дѡ́лжнымъ×1;long.pos.m.sg.ins=дѡ́лжнымъ×1;long.pos.n.sg.ins=дѡ́лжнымъ×1	P:A1t*	adv P:23
 дольный.a	до́льный	a	-	-	A1t*	a	-	long.pos.f.sg.nom=дѡ́льнаѧ;long.pos.f.sg.gen=дѡ́льныѧ;long.comp.f.sg.dat=до́лнѣйшей;long.comp.f.sg.loc=до́лнѣйшей	short.pos.m.sg.ins=дѡ́льнымъ×5;short.pos.n.sg.ins=дѡ́льнымъ×5;long.pos.m.sg.gen=до́лнагѡ×1;long.pos.m.sg.ins=дѡ́льнымъ×5;long.pos.n.sg.gen=до́лнагѡ×1;long.pos.n.sg.ins=дѡ́льнымъ×5;long.comp.m.pl.acc=до́лнѣйшыѧ×1;long.comp.f.pl.nom=до́лнѣйшыѧ×1;long.comp.f.pl.acc=до́лнѣйшыѧ×1	P:A1t*	-
 дольній.a	до́льній	a	-	-	A1j*	a	-	short.pos.m.sg.ins=дѡ́льнимъ;short.pos.n.sg.ins=дѡ́льнимъ;long.pos.m.sg.acc=до́льнѧго;long.pos.m.sg.ins=дѡ́льнимъ;long.pos.f.sg.nom=дѡ́льнѧѧ;long.pos.n.sg.ins=дѡ́льнимъ	short.pos.m.pl.gen=до́лнихъ×6;short.pos.m.pl.loc=до́лнихъ×6;short.pos.f.pl.gen=до́лнихъ×6;short.pos.f.pl.loc=до́лнихъ×6;short.pos.n.pl.gen=до́лнихъ×6;short.pos.n.pl.loc=до́лнихъ×6;long.pos.m.pl.gen=до́лнихъ×6;long.pos.m.pl.loc=до́лнихъ×6;long.pos.f.sg.nom=дѡ́лнѧѧ×4;long.pos.f.pl.gen=до́лнихъ×6;long.pos.f.pl.loc=до́лнихъ×6;long.pos.n.pl.gen=до́лнихъ×6;long.pos.n.pl.loc=до́лнихъ×6	P:A1j*	-
@@ -4639,7 +4639,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 неѡбрѣтенный.a	неѡбрѣ́тенный	a	-	-	A1n*	a	-	-	-	P:A1n*	-
 неѡбыклый.a	неѡбы́клый	a	-	-	A1t	a	-	-	-	P:A1t	-
 неѡбыменный.a	неѡбыме́нный	a	-	-	A1n*	a	-	long.pos.m.sg.acc=неѡбыме́ннаго	-	P:A1n*	-
-неѡбычный.a	неѡбы́чный	a	-	-	A1t*	a	1=неѻбычн	short.pos.m.sg.voc=неѻбы́шне;short.pos.m.pl.gen=неѡбы́чныхъ;short.pos.m.pl.loc=неѡбы́чныхъ;short.pos.f.pl.gen=неѡбы́чныхъ;short.pos.f.pl.loc=неѡбы́чныхъ;short.pos.n.pl.gen=неѡбы́чныхъ;short.pos.n.pl.loc=неѡбы́чныхъ;long.pos.m.pl.gen=неѡбы́чныхъ;long.pos.m.pl.loc=неѡбы́чныхъ;long.pos.f.pl.gen=неѡбы́чныхъ;long.pos.f.pl.loc=неѡбы́чныхъ;long.pos.n.pl.gen=неѡбы́чныхъ;long.pos.n.pl.loc=неѡбы́чныхъ	short.pos.m.sg.dat=неѡбы́чнꙋ×4;short.pos.f.sg.acc=неѡбы́чнꙋ×4;short.pos.n.sg.dat=неѡбы́чнꙋ×4	P:A1t*	adv P:1; twin: неѡбычный.a.2
+неѡбычный.a	неѡбы́чный	a	-	-	A1t*	a	1=неѻбычн	short.pos.m.sg.voc=неѻбы́шне;short.pos.m.pl.gen=неѡбы́чныхъ;short.pos.m.pl.loc=неѡбы́чныхъ;short.pos.f.pl.gen=неѡбы́чныхъ;short.pos.f.pl.loc=неѡбы́чныхъ;short.pos.n.pl.gen=неѡбы́чныхъ;short.pos.n.pl.loc=неѡбы́чныхъ;long.pos.m.pl.gen=неѡбы́чныхъ;long.pos.m.pl.loc=неѡбы́чныхъ;long.pos.f.pl.gen=неѡбы́чныхъ;long.pos.f.pl.loc=неѡбы́чныхъ;long.pos.n.pl.gen=неѡбы́чныхъ;long.pos.n.pl.loc=неѡбы́чныхъ	short.pos.m.sg.dat=неѡбы́чнꙋ×4;short.pos.f.sg.acc=неѡбы́чнꙋ×4;short.pos.n.sg.dat=неѡбы́чнꙋ×4	P:A1t*	twin: неѡбычный.a.2
 неѡбꙋвенный.a	неѡбꙋве́нный	a	-	-	A1n*	a	-	-	-	P:A1n*	-
 неѡбꙋзданный.a	неѡбꙋзда́нный	a	-	-	A1n*	a{short.pos.n.sg.nom=2;short.pos.n.sg.acc=2}	ins=неѡбꙋздан	long.pos.m.sg.loc=неѡбꙋзда́нномъ;long.pos.n.sg.loc=неѡбꙋзда́нномъ	-	P:A1n*	-
 неѡбꙋреваемый.a	неѡбꙋрева́емый	a	-	-	A1t	a	-	-	-	P:A1t	-
@@ -4730,7 +4730,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 неꙋвѧдный.a	неꙋвѧ́дный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
 неꙋгасаемый.a	неꙋгаса́емый	a	-	-	A1t	a	-	-	-	P:A1t	-
 неꙋгасающій.a	неꙋгаса́ющій	a	-	-	A1s	a	-	-	-	P:A1s	-
-неꙋгасимый.a	неꙋгаси́мый	a	-	-	A1t	a	-	long.pos.m.sg.acc=неꙋгаси́маго	short.pos.n.sg.nom=оу҆гаси́мо×1;short.pos.n.sg.acc=оу҆гаси́мо×1	P:A1t	-
+неꙋгасимый.a	неꙋгаси́мый	a	-	-	A1t	a	-	long.pos.m.sg.acc=неꙋгаси́маго	short.pos.n.sg.nom=ѹ҆гаси́мо×1;short.pos.n.sg.acc=ѹ҆гаси́мо×1	P:A1t	-
 неꙋгашаемый.a	неꙋгаша́емый	a	-	-	A1t	a	-	-	-	P:A1t	-
 неꙋгашенный.a	неꙋгаше́нный	a	-	-	A1n*	a	-	short.pos.m.sg.dat=неꙋгаше́ннꙋ;short.pos.f.sg.acc=неꙋгаше́ннꙋ;short.pos.n.sg.dat=неꙋгаше́ннꙋ	-	P:A1n*	-
 неꙋгодный.a	неꙋго́дный	a	-	-	A1t*	a	-	short.pos.m.sg.gen=неꙋгѡ́дна;short.pos.f.sg.nom=неꙋгѡ́дна;short.pos.n.sg.gen=неꙋгѡ́дна;long.pos.f.sg.gen=неꙋгѡ́дныѧ	short.pos.m.sg.acc=неꙋгѡ́дна×3	P:A1t*	-
@@ -5077,158 +5077,158 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 отцепреданный.a	ѻ҆тцепре́данный	a	-	-	A1n*	a	-	-	-	P:A1n*	-
 отческій.a	ѻ҆тческій	a	-	-	A1sk	-	1=ѿческ	-	-	P:A1k	-
 отчій.a	ѻ҆́тчій	a	-	-	A1s	a	-	short.pos.m.sg.nom=ѻ҆те́чь;short.pos.m.pl.acc=ѡ҆́тчи	short.pos.m.sg.acc=ѻ҆те́чь×7;short.pos.m.sg.loc=ѡ҆́тчи×1;short.pos.m.pl.gen=ѻ҆́тчїихъ×1;short.pos.m.pl.loc=ѻ҆́тчїихъ×1;short.pos.f.sg.nom=ѡ҆́тчи×1;short.pos.f.sg.dat=ѡ҆́тчи×1;short.pos.f.sg.loc=ѡ҆́тчи×1;short.pos.f.pl.nom=ѡ҆́тчи×1;short.pos.f.pl.gen=ѻ҆́тчїихъ×1;short.pos.f.pl.acc=ѡ҆́тчи×1;short.pos.f.pl.loc=ѻ҆́тчїихъ×1;short.pos.n.sg.loc=ѡ҆́тчи×1;short.pos.n.pl.gen=ѻ҆́тчїихъ×1;short.pos.n.pl.loc=ѻ҆́тчїихъ×1;long.pos.m.pl.gen=ѻ҆́тчїихъ×1;long.pos.m.pl.loc=ѻ҆́тчїихъ×1;long.pos.f.pl.gen=ѻ҆́тчїихъ×1;long.pos.f.pl.loc=ѻ҆́тчїихъ×1;long.pos.n.pl.gen=ѻ҆́тчїихъ×1;long.pos.n.pl.loc=ѻ҆́тчїихъ×1	P:A1s/A2i	poss
-оуалентовъ.a	оу҆а́лентовъ	a	-	-	A2t	a	-	short.pos.m.pl.nom=оу҆а́лентовы;short.pos.f.sg.nom=оу҆а́лентовы	short.pos.f.sg.nom=оу҆а́лентѡвы×1	P:A2t	poss
-оуалеріановъ.a	оу҆алеріа́новъ	a	-	-	A2t	a	-	-	-	P:A2t	poss
-оубивательный.a	оу҆бива́тельный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
-оубогій.a	оу҆бо́гій	a	-	-	A1g	a	-	short.pos.m.sg.ins=оу҆бѡ́гимъ;short.pos.m.pl.nom=оу҆бо́зи;short.pos.n.sg.ins=оу҆бѡ́гимъ;long.pos.m.sg.acc=оу҆бо́гаго;long.pos.m.sg.ins=оу҆бѡ́гимъ;long.pos.m.pl.nom=оу҆бо́зїи;long.pos.f.sg.gen=оу҆бѡ́гїѧ;long.pos.n.sg.ins=оу҆бѡ́гимъ	long.pos.m.pl.nom=оу҆бо́гїи×1;long.pos.f.sg.nom=оу҆бѡ́гаѧ×2	P:A1g	-
-оубійственноѡбразный.a	оу҆бійственноѡбра́зный	a	-	-	A1t*	a	-	-	short.pos.m.sg.ins=оу҆бїйственноѻбра́знымъ×1;short.pos.n.sg.ins=оу҆бїйственноѻбра́знымъ×1;long.pos.m.sg.ins=оу҆бїйственноѻбра́знымъ×1;long.pos.n.sg.ins=оу҆бїйственноѻбра́знымъ×1	P:A1t*	-
-оубійственный.a	оу҆бі́йственный	a	-	-	A1n*	a	-	short.pos.m.sg.dat=оу҆бі́йственнꙋ;short.pos.m.pl.ins=оу҆бі́йственными;short.pos.f.sg.acc=оу҆бі́йственнꙋ;short.pos.f.pl.ins=оу҆бі́йственными;short.pos.n.sg.dat=оу҆бі́йственнꙋ;short.pos.n.pl.ins=оу҆бі́йственными	-	P:A1n*	-
-оубѣжный.a	оу҆бѣ́жный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
-оувѣтливый.a	оу҆вѣ́тливый	a	-	-	A1t	a	-	-	-	P:A1t	-
-оувѣчный.a	оу҆вѣ́чный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
-оугленосный.a	оу҆глено́сный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
-оуглечскій.a	оу҆́глечскій	a	-	-	A1sk	a	-	-	-	P:A1k	-
-оугличскій.a	оу҆́гличскій	a	-	-	A1sk	a	-	long.pos.m.sg.loc=оу҆́гличскомъ;long.pos.n.sg.loc=оу҆́гличскомъ	-	P:A1k	-
-оугнетенный.a	оу҆гнете́нный	a	-	-	A1n*	a	-	short.pos.m.sg.dat=оу҆гнѣте́нꙋ;short.pos.f.sg.acc=оу҆гнѣте́нꙋ;short.pos.n.sg.dat=оу҆гнѣте́нꙋ;long.pos.m.sg.acc=оу҆гнете́наго	-	P:A1n*	-
-оугодный.a	оу҆го́дный	a	-	-	A1t*	a	-	long.pos.f.sg.nom=оу҆гѡ́днаѧ;long.pos.f.sg.gen=оу҆гѡ́дныѧ	short.pos.m.sg.gen=оу҆гѡ́дна×20;short.pos.m.sg.acc=оу҆гѡ́дна×20;short.pos.m.sg.ins=оу҆гѡ́днымъ×1;short.pos.f.sg.nom=оу҆гѡ́дна×20|оу҆гѡ́дны×4;short.pos.n.sg.gen=оу҆гѡ́дна×20;short.pos.n.sg.ins=оу҆гѡ́днымъ×1;long.pos.m.sg.ins=оу҆гѡ́днымъ×1;long.pos.n.sg.ins=оу҆гѡ́днымъ×1	P:A1t*	adv P:4
-оугорницкій.a	оу҆го́рницкій	a	-	-	A1k	a	5=оугорницт	-	-	P:A1k	-
-оудобный.a	оу҆до́бный	a	-	-	A1t*	a	-	short.comp.m.sg.gen=оу҆дѡ́бнѣйша;short.comp.m.sg.acc=оу҆дѡ́бнѣйша;short.comp.n.sg.gen=оу҆дѡ́бнѣйша;long.pos.m.sg.acc=оу҆до́бнаго;long.pos.f.sg.gen=оу҆дѡ́бныѧ;long.comp.f.sg.nom=оу҆дѡ́бнѣйшаѧ	short.pos.m.sg.gen=оу҆дѡ́бна×2;short.pos.m.sg.acc=оу҆дѡ́бна×2;short.pos.f.sg.nom=оу҆дѡ́бна×2;short.pos.n.sg.gen=оу҆дѡ́бна×2	P:A1t*	adv P:57
-оудобоводительный.a	оу҆добоводи́тельный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
-оудобоврачꙋемый.a	оу҆добоврачꙋ́емый	a	-	-	A1t	a	-	-	-	P:A1t	-
-оудободержный.a	оу҆дободе́ржный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
-оудободостꙋпный.a	оу҆дободостꙋ́пный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
-оудобозапалимый.a	оу҆добозапали́мый	a	-	-	A1t	a	-	-	-	P:A1t	-
-оудобонебрегомый.a	оу҆добонебрего́мый	a	-	-	A1t	a	-	-	-	P:A1t	-
-оудобообманчивый.a	оу҆добообма́нчивый	a	-	-	A1t	a	1=оудобоѻбманчив	-	-	P:A1t	-
-оудобопалимый.a	оу҆добопали́мый	a	-	-	A1t	a	-	-	-	P:A1t	-
-оудобопальный.a	оу҆добопа́льный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
-оудобопознаваемый.a	оу҆добопознава́емый	a	-	-	A1t	a	-	-	-	P:A1t	-
-оудобопопалѧемый.a	оу҆добопопалѧ́емый	a	-	-	A1t	a	-	-	-	P:A1t	-
-оудобопоползновенный.a	оу҆добопоползнове́нный	a	-	-	A1n*	a	-	-	-	P:A1n*	-
-оудобопостижимый.a	оу҆добопостижи́мый	a	-	-	A1t	a	-	-	-	P:A1t	-
-оудобопостижный.a	оу҆добопости́жный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
-оудобопредѣльный.a	оу҆добопредѣ́льный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
-оудобопрезрѣнный.a	оу҆добопрезрѣ́нный	a	-	-	A1n*	a	ins=оудобопрезрѣн	-	-	P:A1n*	-
-оудобопреклонный.a	оу҆добопрекло́нный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
-оудобопрелестный.a	оу҆добопреле́стный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
-оудобопреложный.a	оу҆добопрело́жный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
-оудобопрельщаемый.a	оу҆добопрельща́емый	a	-	-	A1t	a	-	-	-	P:A1t	-
-оудобопремѣнный.a	оу҆добопремѣ́нный	a	-	-	A1n*	a	-	short.pos.f.sg.nom=оу҆добопремѣ́нны	-	P:A1n*	-
-оудобопримирительный.a	оу҆добопримири́тельный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
-оудобопримирѧемый.a	оу҆добопримирѧ́емый	a	-	-	A1t	a	-	-	-	P:A1t	-
-оудобопристꙋпный.a	оу҆добопристꙋ́пный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
-оудобопродательный.a	оу҆добопрода́тельный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
-оудобопростительный.a	оу҆добопрости́тельный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
-оудобопріѧтельный.a	оу҆добопріѧ́тельный	a	-	-	A1t*	a	ins=оудобопріѧтелен	-	-	P:A1t*	-
-оудоборазливаемый.a	оу҆доборазлива́емый	a	-	-	A1t	a	-	-	-	P:A1t	-
-оудоборазрѣшный.a	оу҆доборазрѣ́шный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
-оудоборазсꙋждающій.a	оу҆доборазсꙋжда́ющій	a	-	-	A1s	a	-	-	-	P:A1s	-
-оудоборазꙋмѣваемый.a	оу҆доборазꙋмѣва́емый	a	-	-	A1t	a	-	-	-	P:A1t	-
-оудобосовершимый.a	оу҆добосоверши́мый	a	-	-	A1t	a	-	-	-	P:A1t	-
-оудобосожигаемый.a	оу҆добосожига́емый	a	-	-	A1t	a	-	-	-	P:A1t	-
-оудобоспасительный.a	оу҆добоспаси́тельный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
-оудоботающій.a	оу҆добота́ющій	a	-	-	A1s	a	-	short.pos.m.sg.nom=оу҆добота́ѧй;short.pos.n.sg.nom=оу҆добота́ѧй	-	P:A1s	-
-оудоботлѣнный.a	оу҆доботлѣ́нный	a	-	-	A1n*	a	-	-	-	P:A1n*	-
-оудобоѡбращательный.a	оу҆добоѡбраща́тельный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
-оудобоѡбстоимый.a	оу҆добоѡбстои́мый	a	-	-	A1t	a	-	-	-	P:A1t	-
-оудобоѡбстоѧтельный.a	оу҆добоѡбстоѧ́тельный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
-оудобоѡдержимый.a	оу҆добоѡдержи́мый	a	-	-	A1t	a	-	-	-	P:A1t	-
-оудобоѡтдатливый.a	оу҆добоѡтда́тливый	a	-	-	A1t	a	-	-	-	P:A1t	-
-оудобьпоползновенный.a	оу҆добьпоползнове́нный	a	-	-	A1n*	a	-	-	-	P:A1n*	-
-оудобьснискиваемый.a	оу҆добьсни́скиваемый	a	-	-	A1t	a	-	-	-	P:A1t	-
-оудольный.a	оу҆до́льный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
-оудопостижный.a	оу҆допости́жный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
-оудорскій.a	оу҆до́рскій	a	-	-	A1sk	a	-	-	-	P:A1k	-
-оудостойный.a	оу҆досто́йный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
-оудскій.a	оу҆́дскій	a	-	-	A1sk	a	-	-	-	P:A1k	-
-оудꙋиль.a	оу҆дꙋи́ль	a	-	-	A2j	a	-	-	-	P:A2j	poss
-оуединенный.a	оу҆едине́нный	a	-	-	A1n*	a	-	-	-	P:A1n*	-
-оуеспасіановъ.a	оу҆еспасіа́новъ	a	-	-	A2t	a	-	-	-	P:A2t	poss
-оужасный.a	оу҆жа́сный	a	-	-	A1t*	a	-	long.pos.m.sg.acc=оу҆жа́снаго;long.pos.m.sg.loc=оу҆жа́сномъ;long.pos.n.sg.loc=оу҆жа́сномъ	-	P:A1t*	adv P:41
-оужастивый.a	оу҆жа́стивый	a	-	-	A1t	a	-	-	-	P:A1t	-
-оузаинъ.a	оу҆за́инъ	a	-	-	A2t	a	-	-	-	P:A2t	poss
-оузкій.a	оу҆́зкій	a	-	-	A1k*	a	-	long.pos.m.sg.loc=оу҆́зкомъ;long.pos.n.sg.loc=оу҆́зкомъ	-	P:A1k*	-
-оузрѣлый.a	оу҆зрѣ́лый	a	-	-	A1t	a	-	-	-	P:A1t	-
-оуказательный.a	оу҆каза́тельный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
-оукоризненный.a	оу҆кори́зненный	a	-	-	A1n*	a	ins=оукоризнен	-	-	P:A1n*	-
-оукорный.a	оу҆ко́рный	a	-	-	A1t*	a	-	short.pos.f.sg.nom=оу҆ко́рны	-	P:A1t*	adv P:1
-оукоснительный.a	оу҆косни́тельный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
-оуламль.a	оу҆ла́мль	a	-	-	A2j	a	-	-	-	P:A2j	poss
-оуламовъ.a	оу҆ла́мовъ	a	-	-	A2t	a	-	short.pos.f.sg.nom=оу҆ла́мѡвы	-	P:A2t	poss
-оулейминскій.a	оу҆ле́йминскій	a	-	-	A1sk	a	-	-	-	P:A1k	-
-оумаленный.a	оу҆ма́ленный	a	-	-	A1n*	a	3=оумаленѣ	-	-	P:A1n*	-
-оумиленный.a	оу҆миле́нный	a	-	-	A1n*	a	ins=оумилен	short.pos.m.pl.ins=оу҆миле́нными;short.pos.f.pl.ins=оу҆миле́нными;short.pos.n.pl.ins=оу҆миле́нными;long.pos.m.sg.loc=оу҆миле́нномъ;long.pos.n.sg.loc=оу҆миле́нномъ;long.comp.n.sg.nom=оу҆миле́ншее;long.comp.n.sg.acc=оу҆миле́ншее	-	P:A1n*	-
-оумилительный.a	оу҆мили́тельный	a	-	-	A1t*	a	ins=оумилителен	short.pos.f.sg.nom=оу҆мили́тельны;short.pos.n.sg.nom=оу҆мили́телно;short.pos.n.sg.acc=оу҆мили́телно	-	P:A1t*	-
-оумилостивительный.a	оу҆милостиви́тельный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
-оумильный.a	оу҆ми́льный	a	-	-	A1t*	a	-	-	-	P:A1t*	adv P:85
-оумный.a	оу҆́мный	a	-	-	A1t*	a	-	long.pos.m.sg.acc=оу҆́мнаго;adv=оу҆́мнѣ	short.pos.m.sg.gen=оу҆мна̀×1;short.pos.m.sg.acc=оу҆мна̀×1;short.pos.f.sg.nom=оу҆мна̀×1;short.pos.n.sg.gen=оу҆мна̀×1	P:A1t*	adv P:74
-оумовредный.a	оу҆мовре́дный	a	-	-	A1t*	a	-	-	-	P:A1t*	adv P:18
-оумодержавный.a	оу҆модержа́вный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
-оумозрительный.a	оу҆мозри́тельный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
-оумоимѣтельный.a	оу҆моимѣ́тельный	a	-	-	A1t*	a	ins=оумоимѣтелен	-	-	P:A1t*	-
-оумоимꙋщій.a	оу҆моимꙋ́щій	a	-	-	A1s	a	-	-	-	P:A1s	-
-оумственный.a	оу҆́мственный	a	-	-	A1n*	a	-	-	-	P:A1n*	-
-оумышленный.a	оу҆мы́шленный	a	-	-	A1n*	a	-	-	-	P:A1n*	-
-оумѣренный.a	оу҆мѣ́ренный	a	-	-	A1n*	a	-	short.pos.m.sg.dat=оу҆мѣ́реннꙋ;short.pos.f.sg.nom=оу҆мѣ́ренна;short.pos.f.sg.acc=оу҆мѣ́реннꙋ;short.pos.n.sg.dat=оу҆мѣ́реннꙋ;long.pos.m.sg.loc=оу҆мѣ́ренномъ;long.pos.n.sg.loc=оу҆мѣ́ренномъ	-	P:A1n*	twin: оумѣренный.a.2
-оунамль.a	оу҆на́мль	a	-	-	A2j	a	-	-	-	P:A2j	poss
-оунженскій.a	оу҆́нженскій	a	-	-	A1sk	a	-	long.pos.m.sg.loc=оу҆́нженскомъ;long.pos.n.sg.loc=оу҆́нженскомъ	-	P:A1k	-
-оунжескій.a	оу҆́нжескій	a	-	-	A1sk	a	-	-	-	P:A1k	-
-оунылотворный.a	оу҆нылотво́рный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
-оунылый.a	оу҆ны́лый	a	-	-	A1t	a	-	long.pos.m.sg.acc=оу҆ны́лаго	-	P:A1t	adv P:3
-оунытельный.a	оу҆ны́тельный	a	-	-	A1t*	a	ins=оунытелен	-	-	P:A1t*	-
-оунітскій.a	оу҆ні́тскій	a	-	-	A1sk	a	-	-	-	P:A1k	-
-оупещреннопостланный.a	оу҆пещреннопостла́нный	a	-	-	A1n*	a	-	-	-	P:A1n*	-
-оупещренный.a	оу҆пещре́нный	a	-	-	A1n*	a	ins=оупещрен	short.pos.m.sg.dat=оу҆пещре́ннꙋ;short.pos.f.sg.acc=оу҆пещре́ннꙋ;short.pos.n.sg.dat=оу҆пещре́ннꙋ	-	P:A1n*	-
-оупитѣнный.a	оу҆питѣ́нный	a	-	-	A1n*	a	-	-	-	P:A1n*	-
-оуповательный.a	оу҆пова́тельный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
-оупокойный.a	оу҆поко́йный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
-оупорный.a	оу҆по́рный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
-оуразличествованный.a	оу҆разли́чествованный	a	-	-	A1n*	a	-	-	-	P:A1n*	-
-оуральскій.a	оу҆ра́льскій	a	-	-	A1sk	a	-	-	-	P:A1k	-
-оуреченный.a	оу҆рече́нный	a	-	-	A1n*	a	-	long.pos.m.sg.loc=оу҆рече́нномъ;long.pos.n.sg.loc=оу҆рече́нномъ	-	P:A1n*	-
-оуродивый.a	оу҆ро́дивый	a	-	-	A1t	a	-	-	-	P:A1t	-
-оурочный.a	оу҆ро́чный	a	-	-	A1t*	a	-	long.pos.f.sg.nom=оу҆рѡ́чнаѧ;long.pos.f.sg.gen=оу҆рѡ́чныѧ	-	P:A1t*	-
-оуріевъ.a	оу҆рі́евъ	a	-	-	A2t	a	-	-	-	P:A2t	poss
-оуріилевъ.a	оу҆ріи́левъ	a	-	-	A2t	a	-	-	-	P:A2t	poss
-оуріинъ.a	оу҆рі́инъ	a	-	-	A2t	a	-	short.pos.m.pl.nom=оу҆рі́ины	-	P:A2t	poss
-оусердный.a	оу҆се́рдный	a	-	-	A1t*	a	-	long.pos.m.sg.acc=оу҆се́рднаго;long.pos.m.sg.loc=оу҆се́рдномъ;long.pos.n.sg.loc=оу҆се́рдномъ	-	P:A1t*	adv P:665
-оусильный.a	оу҆си́льный	a	-	-	A1t*	a	-	-	-	P:A1t*	adv P:2
-оусладительный.a	оу҆слади́тельный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
-оусменный.a	оу҆сме́нный	a	-	-	A1n*	a	ins=оусмен	short.pos.f.sg.nom=оу҆сме́нна	-	P:A1n*	-
-оусобный.a	оу҆со́бный	a	-	-	A1t*	a	-	-	long.pos.f.sg.gen=оу҆сѡ́бныѧ×2	P:A1t*	-
-оусопшій.a	оу҆со́пшій	a	-	-	A1s	a	-	long.pos.m.sg.acc=оу҆со́пшаго	-	P:A1s	-
-оуспенскій.a	оу҆спе́нскій	a	-	-	A1sk	a	-	long.pos.m.sg.loc=оу҆спе́нскомъ;long.pos.n.sg.loc=оу҆спе́нскомъ	-	P:A1k	-
-оустный.a	оу҆́стный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
-оустьвымскій.a	оу҆стьвы́мскій	a	-	-	A1sk	a	-	-	-	P:A1k	-
-оустьнедꙋмскій.a	оу҆стьнедꙋ́мскій	a	-	-	A1sk	a	-	-	-	P:A1k	-
-оустьѧнскій.a	оу҆стьѧ́нскій	a	-	-	A1sk	a	-	-	-	P:A1k	-
-оустюжскій.a	оу҆́стюжскій	a	-	-	A1sk	a.plL	-	-	-	P:A1k	-
-оусьѧнскій.a	оу҆́сьѧнскій	a	-	-	A1sk	a	-	-	-	P:A1k	-
-оусѣкновенный.a	оу҆сѣкнове́нный	a	-	-	A1n*	a	ins=оусѣкновен	-	-	P:A1n*	-
-оутаевъ.a	оу҆та́евъ	a	-	-	A2t	a	-	-	-	P:A2t	poss
-оутисненный.a	оу҆тисне́нный	a	-	-	A1n*	a	-	-	-	P:A1n*	-
-оутишный.a	оу҆ти́шный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
-оутлый.a	оу҆́тлый	a	-	-	A1t	a	-	-	-	P:A1t	-
-оутренній.a	оу҆́тренній	a	-	-	A1j*	a	-	short.pos.m.sg.ins=оу҆́треннѣмъ;short.pos.n.sg.ins=оу҆́треннѣмъ;long.pos.m.sg.ins=оу҆́треннѣмъ;long.pos.n.sg.ins=оу҆́треннѣмъ	-	P:A1j*	-
-оутреній.a	оу҆́треній	a	-	-	A1j*	a	-	-	-	P:A1j*	-
-оутрешній.a	оу҆́трешній	a	-	-	A1j*	a	-	-	-	P:A1j*	-
-оутробный.a	оу҆тро́бный	a	-	-	A1t*	a	-	short.pos.m.sg.ins=оу҆трѡ́бнымъ;short.pos.n.sg.ins=оу҆трѡ́бнымъ;long.pos.m.sg.ins=оу҆трѡ́бнымъ;long.pos.n.sg.ins=оу҆трѡ́бнымъ	long.pos.f.sg.gen=оу҆трѡ́бныѧ×2	P:A1t*	-
-оутылый.a	оу҆ты́лый	a	-	-	A1t	a	-	short.pos.f.sg.nom=оу҆ты́лы	-	P:A1t	-
-оутѣшителевъ.a	оу҆тѣ́шителевъ	a	-	-	A2t	a	-	short.pos.m.pl.nom=оу҆тѣ́шителевы	short.pos.f.sg.ins=оу҆тѣши́телевою×1	P:A2t	poss
-оутѣшительный.a	оу҆тѣ́шительный	a	-	-	A1t*	a{short.pos.m.sg.nom=3;short.pos.m.sg.acc=3}	ins=оутѣшителен	-	-	P:A1t*	adv P:1
-оутѣшный.a	оу҆тѣ́шный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
-оухищренный.a	оу҆хищре́нный	a	-	-	A1n*	a	-	short.pos.m.pl.ins=оу҆хищре́нными;short.pos.f.pl.ins=оу҆хищре́нными;short.pos.n.pl.ins=оу҆хищре́нными	long.pos.m.pl.acc=оу҆хищрє́ныѧ×1;long.pos.f.pl.nom=оу҆хищрє́ныѧ×1;long.pos.f.pl.acc=оу҆хищрє́ныѧ×1	P:A1n*	-
-оухорѣзанный.a	оу҆хорѣ́занный	a	-	-	A1n*	a	ins=оухорѣзан	-	-	P:A1n*	-
-оухорѣзный.a	оу҆хорѣ́зный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
-оухꙋдожественный.a	оу҆хꙋдо́жественный	a	-	-	A1n*	a	-	-	-	P:A1n*	-
-оученическій.a	оу҆чени́ческій	a	-	-	A1sk	a	-	-	-	P:A1k	-
-оученичій.a	оу҆чени́чій	a	-	-	A1s	a	-	-	-	P:A1s	poss
-оученолюбивый.a	оу҆ченолюби́вый	a	-	-	A1t	a	-	long.pos.m.sg.acc=оу҆ченолюби́ваго	-	P:A1t	-
-оучителевъ.a	оу҆чи́телевъ	a	-	-	A2t	a	-	-	-	P:A2t	poss
-оучительный.a	оу҆чи́тельный	a	-	-	A1t*	a	ins=оучителен	-	short.pos.m.sg.dat=оу҆чи́телнꙋ×2;short.pos.f.sg.acc=оу҆чи́телнꙋ×2;short.pos.n.sg.dat=оу҆чи́телнꙋ×2	P:A1t*	adv P:1
-оучительскій.a	оу҆чи́тельскій	a	-	-	A1sk	a	-	-	-	P:A1k	-
-оущельскій.a	оу҆ще́льскій	a	-	-	A1sk	a	-	-	-	P:A1k	-
-оуѕвѣзденный.a	оу҆ѕвѣ́зденный	a	-	-	A1n*	a	-	short.pos.f.sg.nom=оу҆ѕвѣ́здены	-	P:A1n*	-
+оуалентовъ.a	ѹ҆а́лентовъ	a	-	-	A2t	a	-	short.pos.m.pl.nom=ѹ҆а́лентовы;short.pos.f.sg.nom=ѹ҆а́лентовы	short.pos.f.sg.nom=ѹ҆а́лентѡвы×1	P:A2t	poss
+оуалеріановъ.a	ѹ҆алеріа́новъ	a	-	-	A2t	a	-	-	-	P:A2t	poss
+оубивательный.a	ѹ҆бива́тельный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
+оубогій.a	ѹ҆бо́гій	a	-	-	A1g	a	-	short.pos.m.sg.ins=ѹ҆бѡ́гимъ;short.pos.m.pl.nom=ѹ҆бо́зи;short.pos.n.sg.ins=ѹ҆бѡ́гимъ;long.pos.m.sg.acc=ѹ҆бо́гаго;long.pos.m.sg.ins=ѹ҆бѡ́гимъ;long.pos.m.pl.nom=ѹ҆бо́зїи;long.pos.f.sg.gen=ѹ҆бѡ́гїѧ;long.pos.n.sg.ins=ѹ҆бѡ́гимъ	long.pos.m.pl.nom=ѹ҆бо́гїи×1;long.pos.f.sg.nom=ѹ҆бѡ́гаѧ×2	P:A1g	-
+оубійственноѡбразный.a	ѹ҆бійственноѡбра́зный	a	-	-	A1t*	a	-	-	short.pos.m.sg.ins=ѹ҆бїйственноѻбра́знымъ×1;short.pos.n.sg.ins=ѹ҆бїйственноѻбра́знымъ×1;long.pos.m.sg.ins=ѹ҆бїйственноѻбра́знымъ×1;long.pos.n.sg.ins=ѹ҆бїйственноѻбра́знымъ×1	P:A1t*	-
+оубійственный.a	ѹ҆бі́йственный	a	-	-	A1n*	a	-	short.pos.m.sg.dat=ѹ҆бі́йственнꙋ;short.pos.m.pl.ins=ѹ҆бі́йственными;short.pos.f.sg.acc=ѹ҆бі́йственнꙋ;short.pos.f.pl.ins=ѹ҆бі́йственными;short.pos.n.sg.dat=ѹ҆бі́йственнꙋ;short.pos.n.pl.ins=ѹ҆бі́йственными	-	P:A1n*	-
+оубѣжный.a	ѹ҆бѣ́жный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
+оувѣтливый.a	ѹ҆вѣ́тливый	a	-	-	A1t	a	-	-	-	P:A1t	-
+оувѣчный.a	ѹ҆вѣ́чный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
+оугленосный.a	ѹ҆глено́сный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
+оуглечскій.a	ѹ҆́глечскій	a	-	-	A1sk	a	-	-	-	P:A1k	-
+оугличскій.a	ѹ҆́гличскій	a	-	-	A1sk	a	-	long.pos.m.sg.loc=ѹ҆́гличскомъ;long.pos.n.sg.loc=ѹ҆́гличскомъ	-	P:A1k	-
+оугнетенный.a	ѹ҆гнете́нный	a	-	-	A1n*	a	-	short.pos.m.sg.dat=ѹ҆гнѣте́нꙋ;short.pos.f.sg.acc=ѹ҆гнѣте́нꙋ;short.pos.n.sg.dat=ѹ҆гнѣте́нꙋ;long.pos.m.sg.acc=ѹ҆гнете́наго	-	P:A1n*	-
+оугодный.a	ѹ҆го́дный	a	-	-	A1t*	a	-	long.pos.f.sg.gen=ѹ҆гѡ́дныѧ	short.pos.m.sg.gen=ѹ҆гѡ́дна×20;short.pos.m.sg.acc=ѹ҆гѡ́дна×20;short.pos.m.sg.ins=ѹ҆гѡ́днымъ×1;short.pos.f.sg.nom=ѹ҆гѡ́дна×20|ѹ҆гѡ́дны×4;short.pos.n.sg.gen=ѹ҆гѡ́дна×20;short.pos.n.sg.ins=ѹ҆гѡ́днымъ×1;long.pos.m.sg.ins=ѹ҆гѡ́днымъ×1;long.pos.f.sg.nom=ѹ҆гѡ́днаѧ×42;long.pos.n.sg.ins=ѹ҆гѡ́днымъ×1	P:A1t*	adv P:4
+оугорницкій.a	ѹ҆го́рницкій	a	-	-	A1k	a	5=ѹгорницт	-	-	P:A1k	-
+оудобный.a	ѹ҆до́бный	a	-	-	A1t*	a	-	short.comp.m.sg.gen=ѹ҆дѡ́бнѣйша;short.comp.m.sg.acc=ѹ҆дѡ́бнѣйша;short.comp.n.sg.gen=ѹ҆дѡ́бнѣйша;long.pos.m.sg.acc=ѹ҆до́бнаго;long.pos.f.sg.gen=ѹ҆дѡ́бныѧ;long.comp.f.sg.nom=ѹ҆дѡ́бнѣйшаѧ	short.pos.m.sg.gen=ѹ҆дѡ́бна×2;short.pos.m.sg.acc=ѹ҆дѡ́бна×2;short.pos.f.sg.nom=ѹ҆дѡ́бна×2;short.pos.n.sg.gen=ѹ҆дѡ́бна×2	P:A1t*	adv P:57
+оудобоводительный.a	ѹ҆добоводи́тельный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
+оудобоврачꙋемый.a	ѹ҆добоврачꙋ́емый	a	-	-	A1t	a	-	-	-	P:A1t	-
+оудободержный.a	ѹ҆дободе́ржный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
+оудободостꙋпный.a	ѹ҆дободостꙋ́пный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
+оудобозапалимый.a	ѹ҆добозапали́мый	a	-	-	A1t	a	-	-	-	P:A1t	-
+оудобонебрегомый.a	ѹ҆добонебрего́мый	a	-	-	A1t	a	-	-	-	P:A1t	-
+оудобообманчивый.a	ѹ҆добообма́нчивый	a	-	-	A1t	a	1=ѹдобоѻбманчив	-	-	P:A1t	-
+оудобопалимый.a	ѹ҆добопали́мый	a	-	-	A1t	a	-	-	-	P:A1t	-
+оудобопальный.a	ѹ҆добопа́льный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
+оудобопознаваемый.a	ѹ҆добопознава́емый	a	-	-	A1t	a	-	-	-	P:A1t	-
+оудобопопалѧемый.a	ѹ҆добопопалѧ́емый	a	-	-	A1t	a	-	-	-	P:A1t	-
+оудобопоползновенный.a	ѹ҆добопоползнове́нный	a	-	-	A1n*	a	-	-	-	P:A1n*	-
+оудобопостижимый.a	ѹ҆добопостижи́мый	a	-	-	A1t	a	-	-	-	P:A1t	-
+оудобопостижный.a	ѹ҆добопости́жный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
+оудобопредѣльный.a	ѹ҆добопредѣ́льный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
+оудобопрезрѣнный.a	ѹ҆добопрезрѣ́нный	a	-	-	A1n*	a	ins=ѹдобопрезрѣн	-	-	P:A1n*	-
+оудобопреклонный.a	ѹ҆добопрекло́нный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
+оудобопрелестный.a	ѹ҆добопреле́стный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
+оудобопреложный.a	ѹ҆добопрело́жный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
+оудобопрельщаемый.a	ѹ҆добопрельща́емый	a	-	-	A1t	a	-	-	-	P:A1t	-
+оудобопремѣнный.a	ѹ҆добопремѣ́нный	a	-	-	A1n*	a	-	short.pos.f.sg.nom=ѹ҆добопремѣ́нны	-	P:A1n*	-
+оудобопримирительный.a	ѹ҆добопримири́тельный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
+оудобопримирѧемый.a	ѹ҆добопримирѧ́емый	a	-	-	A1t	a	-	-	-	P:A1t	-
+оудобопристꙋпный.a	ѹ҆добопристꙋ́пный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
+оудобопродательный.a	ѹ҆добопрода́тельный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
+оудобопростительный.a	ѹ҆добопрости́тельный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
+оудобопріѧтельный.a	ѹ҆добопріѧ́тельный	a	-	-	A1t*	a	ins=ѹдобопріѧтелен	-	-	P:A1t*	-
+оудоборазливаемый.a	ѹ҆доборазлива́емый	a	-	-	A1t	a	-	-	-	P:A1t	-
+оудоборазрѣшный.a	ѹ҆доборазрѣ́шный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
+оудоборазсꙋждающій.a	ѹ҆доборазсꙋжда́ющій	a	-	-	A1s	a	-	-	-	P:A1s	-
+оудоборазꙋмѣваемый.a	ѹ҆доборазꙋмѣва́емый	a	-	-	A1t	a	-	-	-	P:A1t	-
+оудобосовершимый.a	ѹ҆добосоверши́мый	a	-	-	A1t	a	-	-	-	P:A1t	-
+оудобосожигаемый.a	ѹ҆добосожига́емый	a	-	-	A1t	a	-	-	-	P:A1t	-
+оудобоспасительный.a	ѹ҆добоспаси́тельный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
+оудоботающій.a	ѹ҆добота́ющій	a	-	-	A1s	a	-	short.pos.m.sg.nom=ѹ҆добота́ѧй;short.pos.n.sg.nom=ѹ҆добота́ѧй	-	P:A1s	-
+оудоботлѣнный.a	ѹ҆доботлѣ́нный	a	-	-	A1n*	a	-	-	-	P:A1n*	-
+оудобоѡбращательный.a	ѹ҆добоѡбраща́тельный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
+оудобоѡбстоимый.a	ѹ҆добоѡбстои́мый	a	-	-	A1t	a	-	-	-	P:A1t	-
+оудобоѡбстоѧтельный.a	ѹ҆добоѡбстоѧ́тельный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
+оудобоѡдержимый.a	ѹ҆добоѡдержи́мый	a	-	-	A1t	a	-	-	-	P:A1t	-
+оудобоѡтдатливый.a	ѹ҆добоѡтда́тливый	a	-	-	A1t	a	-	-	-	P:A1t	-
+оудобьпоползновенный.a	ѹ҆добьпоползнове́нный	a	-	-	A1n*	a	-	-	-	P:A1n*	-
+оудобьснискиваемый.a	ѹ҆добьсни́скиваемый	a	-	-	A1t	a	-	-	-	P:A1t	-
+оудольный.a	ѹ҆до́льный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
+оудопостижный.a	ѹ҆допости́жный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
+оудорскій.a	ѹ҆до́рскій	a	-	-	A1sk	a	-	-	-	P:A1k	-
+оудостойный.a	ѹ҆досто́йный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
+оудскій.a	ѹ҆́дскій	a	-	-	A1sk	a	-	-	-	P:A1k	-
+оудꙋиль.a	ѹ҆дꙋи́ль	a	-	-	A2j	a	-	-	-	P:A2j	poss
+оуединенный.a	ѹ҆едине́нный	a	-	-	A1n*	a	-	-	-	P:A1n*	-
+оуеспасіановъ.a	ѹ҆еспасіа́новъ	a	-	-	A2t	a	-	-	-	P:A2t	poss
+оужасный.a	ѹ҆жа́сный	a	-	-	A1t*	a	-	long.pos.m.sg.acc=ѹ҆жа́снаго;long.pos.m.sg.loc=ѹ҆жа́сномъ;long.pos.n.sg.loc=ѹ҆жа́сномъ	-	P:A1t*	adv P:41
+оужастивый.a	ѹ҆жа́стивый	a	-	-	A1t	a	-	-	-	P:A1t	-
+оузаинъ.a	ѹ҆за́инъ	a	-	-	A2t	a	-	-	-	P:A2t	poss
+оузкій.a	ѹ҆́зкій	a	-	-	A1k*	a	-	long.pos.m.sg.loc=ѹ҆́зкомъ;long.pos.n.sg.loc=ѹ҆́зкомъ	-	P:A1k*	-
+оузрѣлый.a	ѹ҆зрѣ́лый	a	-	-	A1t	a	-	-	-	P:A1t	-
+оуказательный.a	ѹ҆каза́тельный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
+оукоризненный.a	ѹ҆кори́зненный	a	-	-	A1n*	a	ins=ѹкоризнен	-	-	P:A1n*	-
+оукорный.a	ѹ҆ко́рный	a	-	-	A1t*	a	-	short.pos.f.sg.nom=ѹ҆ко́рны	-	P:A1t*	adv P:1
+оукоснительный.a	ѹ҆косни́тельный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
+оуламль.a	ѹ҆ла́мль	a	-	-	A2j	a	-	-	-	P:A2j	poss
+оуламовъ.a	ѹ҆ла́мовъ	a	-	-	A2t	a	-	short.pos.f.sg.nom=ѹ҆ла́мѡвы	-	P:A2t	poss
+оулейминскій.a	ѹ҆ле́йминскій	a	-	-	A1sk	a	-	-	-	P:A1k	-
+оумаленный.a	ѹ҆ма́ленный	a	-	-	A1n*	a	3=ѹмаленѣ	-	-	P:A1n*	-
+оумиленный.a	ѹ҆миле́нный	a	-	-	A1n*	a	ins=ѹмилен	short.pos.m.pl.ins=ѹ҆миле́нными;short.pos.f.pl.ins=ѹ҆миле́нными;short.pos.n.pl.ins=ѹ҆миле́нными;long.pos.m.sg.loc=ѹ҆миле́нномъ;long.pos.n.sg.loc=ѹ҆миле́нномъ;long.comp.n.sg.nom=ѹ҆миле́ншее;long.comp.n.sg.acc=ѹ҆миле́ншее	-	P:A1n*	-
+оумилительный.a	ѹ҆мили́тельный	a	-	-	A1t*	a	ins=ѹмилителен	short.pos.f.sg.nom=ѹ҆мили́тельны;short.pos.n.sg.nom=ѹ҆мили́телно;short.pos.n.sg.acc=ѹ҆мили́телно	-	P:A1t*	-
+оумилостивительный.a	ѹ҆милостиви́тельный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
+оумильный.a	ѹ҆ми́льный	a	-	-	A1t*	a	-	-	-	P:A1t*	adv P:85
+оумный.a	ѹ҆́мный	a	-	-	A1t*	a	-	long.pos.m.sg.acc=ѹ҆́мнаго;adv=ѹ҆́мнѣ	short.pos.m.sg.gen=ѹ҆мна̀×1;short.pos.m.sg.acc=ѹ҆мна̀×1;short.pos.f.sg.nom=ѹ҆мна̀×1;short.pos.n.sg.gen=ѹ҆мна̀×1	P:A1t*	adv P:74
+оумовредный.a	ѹ҆мовре́дный	a	-	-	A1t*	a	-	-	-	P:A1t*	adv P:18
+оумодержавный.a	ѹ҆модержа́вный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
+оумозрительный.a	ѹ҆мозри́тельный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
+оумоимѣтельный.a	ѹ҆моимѣ́тельный	a	-	-	A1t*	a	ins=ѹмоимѣтелен	-	-	P:A1t*	-
+оумоимꙋщій.a	ѹ҆моимꙋ́щій	a	-	-	A1s	a	-	-	-	P:A1s	-
+оумственный.a	ѹ҆́мственный	a	-	-	A1n*	a	-	-	-	P:A1n*	-
+оумышленный.a	ѹ҆мы́шленный	a	-	-	A1n*	a	-	-	-	P:A1n*	-
+оумѣренный.a	ѹ҆мѣ́ренный	a	-	-	A1n*	a	-	short.pos.m.sg.dat=ѹ҆мѣ́реннꙋ;short.pos.f.sg.nom=ѹ҆мѣ́ренна;short.pos.f.sg.acc=ѹ҆мѣ́реннꙋ;short.pos.n.sg.dat=ѹ҆мѣ́реннꙋ;long.pos.m.sg.loc=ѹ҆мѣ́ренномъ;long.pos.n.sg.loc=ѹ҆мѣ́ренномъ	-	P:A1n*	twin: оумѣренный.a.2
+оунамль.a	ѹ҆на́мль	a	-	-	A2j	a	-	-	-	P:A2j	poss
+оунженскій.a	ѹ҆́нженскій	a	-	-	A1sk	a	-	long.pos.m.sg.loc=ѹ҆́нженскомъ;long.pos.n.sg.loc=ѹ҆́нженскомъ	-	P:A1k	-
+оунжескій.a	ѹ҆́нжескій	a	-	-	A1sk	a	-	-	-	P:A1k	-
+оунылотворный.a	ѹ҆нылотво́рный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
+оунылый.a	ѹ҆ны́лый	a	-	-	A1t	a	-	long.pos.m.sg.acc=ѹ҆ны́лаго	-	P:A1t	adv P:3
+оунытельный.a	ѹ҆ны́тельный	a	-	-	A1t*	a	ins=ѹнытелен	-	-	P:A1t*	-
+оунітскій.a	ѹ҆ні́тскій	a	-	-	A1sk	a	-	-	-	P:A1k	-
+оупещреннопостланный.a	ѹ҆пещреннопостла́нный	a	-	-	A1n*	a	-	-	-	P:A1n*	-
+оупещренный.a	ѹ҆пещре́нный	a	-	-	A1n*	a	ins=ѹпещрен	short.pos.m.sg.dat=ѹ҆пещре́ннꙋ;short.pos.f.sg.acc=ѹ҆пещре́ннꙋ;short.pos.n.sg.dat=ѹ҆пещре́ннꙋ	-	P:A1n*	-
+оупитѣнный.a	ѹ҆питѣ́нный	a	-	-	A1n*	a	-	-	-	P:A1n*	-
+оуповательный.a	ѹ҆пова́тельный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
+оупокойный.a	ѹ҆поко́йный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
+оупорный.a	ѹ҆по́рный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
+оуразличествованный.a	ѹ҆разли́чествованный	a	-	-	A1n*	a	-	-	-	P:A1n*	-
+оуральскій.a	ѹ҆ра́льскій	a	-	-	A1sk	a	-	-	-	P:A1k	-
+оуреченный.a	ѹ҆рече́нный	a	-	-	A1n*	a	-	long.pos.m.sg.loc=ѹ҆рече́нномъ;long.pos.n.sg.loc=ѹ҆рече́нномъ	-	P:A1n*	-
+оуродивый.a	ѹ҆ро́дивый	a	-	-	A1t	a	-	-	-	P:A1t	-
+оурочный.a	ѹ҆ро́чный	a	-	-	A1t*	a	-	long.pos.f.sg.nom=ѹ҆рѡ́чнаѧ;long.pos.f.sg.gen=ѹ҆рѡ́чныѧ	-	P:A1t*	-
+оуріевъ.a	ѹ҆рі́евъ	a	-	-	A2t	a	-	-	-	P:A2t	poss
+оуріилевъ.a	ѹ҆ріи́левъ	a	-	-	A2t	a	-	-	-	P:A2t	poss
+оуріинъ.a	ѹ҆рі́инъ	a	-	-	A2t	a	-	short.pos.m.pl.nom=ѹ҆рі́ины	-	P:A2t	poss
+оусердный.a	ѹ҆се́рдный	a	-	-	A1t*	a	-	long.pos.m.sg.acc=ѹ҆се́рднаго;long.pos.m.sg.loc=ѹ҆се́рдномъ;long.pos.n.sg.loc=ѹ҆се́рдномъ	-	P:A1t*	adv P:665
+оусильный.a	ѹ҆си́льный	a	-	-	A1t*	a	-	-	-	P:A1t*	adv P:2
+оусладительный.a	ѹ҆слади́тельный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
+оусменный.a	ѹ҆сме́нный	a	-	-	A1n*	a	ins=ѹсмен	short.pos.f.sg.nom=ѹ҆сме́нна	-	P:A1n*	-
+оусобный.a	ѹ҆со́бный	a	-	-	A1t*	a	-	-	long.pos.f.sg.gen=ѹ҆сѡ́бныѧ×2	P:A1t*	-
+оусопшій.a	ѹ҆со́пшій	a	-	-	A1s	a	-	long.pos.m.sg.acc=ѹ҆со́пшаго	-	P:A1s	-
+оуспенскій.a	ѹ҆спе́нскій	a	-	-	A1sk	a	-	long.pos.m.sg.loc=ѹ҆спе́нскомъ;long.pos.n.sg.loc=ѹ҆спе́нскомъ	-	P:A1k	-
+оустный.a	ѹ҆́стный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
+оустьвымскій.a	ѹ҆стьвы́мскій	a	-	-	A1sk	a	-	-	-	P:A1k	-
+оустьнедꙋмскій.a	ѹ҆стьнедꙋ́мскій	a	-	-	A1sk	a	-	-	-	P:A1k	-
+оустьѧнскій.a	ѹ҆стьѧ́нскій	a	-	-	A1sk	a	-	-	-	P:A1k	-
+оустюжскій.a	ѹ҆́стюжскій	a	-	-	A1sk	a.plL	-	-	-	P:A1k	-
+оусьѧнскій.a	ѹ҆́сьѧнскій	a	-	-	A1sk	a	-	-	-	P:A1k	-
+оусѣкновенный.a	ѹ҆сѣкнове́нный	a	-	-	A1n*	a	ins=ѹсѣкновен	-	-	P:A1n*	-
+оутаевъ.a	ѹ҆та́евъ	a	-	-	A2t	a	-	-	-	P:A2t	poss
+оутисненный.a	ѹ҆тисне́нный	a	-	-	A1n*	a	-	-	-	P:A1n*	-
+оутишный.a	ѹ҆ти́шный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
+оутлый.a	ѹ҆́тлый	a	-	-	A1t	a	-	-	-	P:A1t	-
+оутренній.a	ѹ҆́тренній	a	-	-	A1j*	a	-	short.pos.m.sg.ins=ѹ҆́треннѣмъ;short.pos.n.sg.ins=ѹ҆́треннѣмъ;long.pos.m.sg.ins=ѹ҆́треннѣмъ;long.pos.n.sg.ins=ѹ҆́треннѣмъ	-	P:A1j*	-
+оутреній.a	ѹ҆́треній	a	-	-	A1j*	a	-	-	-	P:A1j*	-
+оутрешній.a	ѹ҆́трешній	a	-	-	A1j*	a	-	-	-	P:A1j*	-
+оутробный.a	ѹ҆тро́бный	a	-	-	A1t*	a	-	short.pos.m.sg.ins=ѹ҆трѡ́бнымъ;short.pos.n.sg.ins=ѹ҆трѡ́бнымъ;long.pos.m.sg.ins=ѹ҆трѡ́бнымъ;long.pos.n.sg.ins=ѹ҆трѡ́бнымъ	long.pos.f.sg.gen=ѹ҆трѡ́бныѧ×2	P:A1t*	-
+оутылый.a	ѹ҆ты́лый	a	-	-	A1t	a	-	short.pos.f.sg.nom=ѹ҆ты́лы	-	P:A1t	-
+оутѣшителевъ.a	ѹ҆тѣ́шителевъ	a	-	-	A2t	a	-	short.pos.m.pl.nom=ѹ҆тѣ́шителевы	short.pos.f.sg.ins=ѹ҆тѣши́телевою×1	P:A2t	poss
+оутѣшительный.a	ѹ҆тѣ́шительный	a	-	-	A1t*	a{short.pos.m.sg.nom=2;short.pos.m.sg.acc=2}	ins=ѹтѣшителен	-	-	P:A1t*	adv P:1
+оутѣшный.a	ѹ҆тѣ́шный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
+оухищренный.a	ѹ҆хищре́нный	a	-	-	A1n*	a	-	short.pos.m.pl.ins=ѹ҆хищре́нными;short.pos.f.pl.ins=ѹ҆хищре́нными;short.pos.n.pl.ins=ѹ҆хищре́нными	long.pos.m.pl.acc=ѹ҆хищрє́ныѧ×1;long.pos.f.pl.nom=ѹ҆хищрє́ныѧ×1;long.pos.f.pl.acc=ѹ҆хищрє́ныѧ×1	P:A1n*	-
+оухорѣзанный.a	ѹ҆хорѣ́занный	a	-	-	A1n*	a	ins=ѹхорѣзан	-	-	P:A1n*	-
+оухорѣзный.a	ѹ҆хорѣ́зный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
+оухꙋдожественный.a	ѹ҆хꙋдо́жественный	a	-	-	A1n*	a	-	-	-	P:A1n*	-
+оученическій.a	ѹ҆чени́ческій	a	-	-	A1sk	a	-	-	-	P:A1k	-
+оученичій.a	ѹ҆чени́чій	a	-	-	A1s	a	-	-	-	P:A1s	poss
+оученолюбивый.a	ѹ҆ченолюби́вый	a	-	-	A1t	a	-	long.pos.m.sg.acc=ѹ҆ченолюби́ваго	-	P:A1t	-
+оучителевъ.a	ѹ҆чи́телевъ	a	-	-	A2t	a	-	-	-	P:A2t	poss
+оучительный.a	ѹ҆чи́тельный	a	-	-	A1t*	a	ins=ѹчителен	-	short.pos.m.sg.dat=ѹ҆чи́телнꙋ×2;short.pos.f.sg.acc=ѹ҆чи́телнꙋ×2;short.pos.n.sg.dat=ѹ҆чи́телнꙋ×2	P:A1t*	adv P:1
+оучительскій.a	ѹ҆чи́тельскій	a	-	-	A1sk	a	-	-	-	P:A1k	-
+оущельскій.a	ѹ҆ще́льскій	a	-	-	A1sk	a	-	-	-	P:A1k	-
+оуѕвѣзденный.a	ѹ҆ѕвѣ́зденный	a	-	-	A1n*	a	-	short.pos.f.sg.nom=ѹ҆ѕвѣ́здены	-	P:A1n*	-
 оферовъ.a	ѻ҆фе́ровъ	a	-	-	A2t	a	-	short.pos.m.sg.ins=ѻ҆фе́рѡвымъ;short.pos.n.sg.ins=ѻ҆фе́рѡвымъ	-	P:A2t	poss
 оферскій.a	ѻ҆фе́рскій	a	-	-	A1sk	a	-	-	-	P:A1k	-
 охозіинъ.a	ѻ҆хозі́инъ	a	-	-	A2t	a	-	-	-	P:A2t	poss
@@ -6853,7 +6853,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 сонный.a	со́нный	a	-	-	A1t*	a	-	long.pos.m.sg.loc=со́нномъ;long.pos.f.sg.nom=сѡ́ннаѧ;long.pos.n.sg.loc=со́нномъ	-	P:A1t*	-
 сонравный.a	сонра́вный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
 сообитательный.a	сообита́тельный	a	-	-	A1t*	a	-	long.pos.f.sg.nom=соѻбита́тельнаѧ	-	P:A1t*	-
-сообразный.a	сообра́зный	a	-	-	A1t*	a	1=соѻбразн	short.pos.m.sg.nom=соѻбра́зенъ;short.pos.m.sg.acc=соѻбра́зенъ;short.pos.f.sg.nom=соѻбра́зны;adv=соѡбра́знѡ	adv=сообра́знѡ×2|соѡбра́знѣ×1	P:A1t*	adv P:2
+сообразный.a	сообра́зный	a	-	-	A1t*	a	1=соѻбразн	short.pos.m.sg.nom=соѻбра́зенъ;short.pos.m.sg.acc=соѻбра́зенъ;short.pos.f.sg.nom=соѻбра́зны;adv=сообра́знѡ	adv=соѡбра́знѡ×2|соѡбра́знѣ×1	P:A1t*	adv P:2
 сообщный.a	соо́бщный	a	-	-	A1t*	a	-	long.pos.m.sg.loc=соѡ́бщномъ;long.pos.n.sg.loc=соѡ́бщномъ	-	P:A1t*	-
 сопостатный.a	сопоста́тный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
 сопребывательный.a	сопребыва́тельный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
@@ -6891,7 +6891,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 сочевный.a	со́чевный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
 сочетательный.a	сочета́тельный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
 сошественный.a	соше́ственный	a	-	-	A1n*	a	-	-	-	P:A1n*	-
-соѡбразный.a	соѡбра́зный	a	-	-	A1t*	a	-	long.pos.m.sg.gen=соѻбра́знагѡ;long.pos.n.sg.gen=соѻбра́знагѡ	adv=сообра́знѡ×2	P:A1t*	adv P:2
+соѡбразный.a	соѡбра́зный	a	-	-	A1t*	a	-	long.pos.m.sg.gen=соѻбра́знагѡ;long.pos.n.sg.gen=соѻбра́знагѡ;adv=сообра́знѡ	-	P:A1t*	adv P:2
 соѳѳꙋевъ.a	соѳѳꙋ́евъ	a	-	-	A2t	a	-	-	-	P:A2t	poss
 спасителевъ.a	спаси́телевъ	a	-	-	A2t	a	-	-	-	P:A2t	poss
 спасительный.a	спаси́тельный	a	-	-	A1t*	a	ins=спасителен	short.pos.m.pl.acc=спаси́тєлны;short.pos.f.pl.nom=спаси́тєлны;short.pos.f.pl.acc=спаси́тєлны;long.pos.m.sg.acc=спаси́тельнаго;long.pos.m.sg.loc=спаси́тельномъ;long.pos.n.sg.loc=спаси́тельномъ	short.pos.m.pl.gen=спаси́телныхъ×1;short.pos.m.pl.loc=спаси́телныхъ×1;short.pos.f.pl.gen=спаси́телныхъ×1;short.pos.f.pl.loc=спаси́телныхъ×1;short.pos.n.pl.gen=спаси́телныхъ×1;short.pos.n.pl.loc=спаси́телныхъ×1;long.pos.m.sg.gen=спаси́телнагѡ×2;long.pos.m.du.nom=спаси́тєлнаѧ×6;long.pos.m.du.acc=спаси́тєлнаѧ×6;long.pos.m.pl.gen=спаси́телныхъ×1;long.pos.m.pl.acc=спаси̑тельныѧ×1;long.pos.m.pl.loc=спаси́телныхъ×1;long.pos.f.pl.nom=спаси̑тельныѧ×1;long.pos.f.pl.gen=спаси́телныхъ×1;long.pos.f.pl.acc=спаси̑тельныѧ×1;long.pos.f.pl.loc=спаси́телныхъ×1;long.pos.n.sg.nom=спаси́телное×1;long.pos.n.sg.gen=спаси́телнагѡ×2;long.pos.n.sg.acc=спаси́телное×1;long.pos.n.pl.nom=спаси́тєлнаѧ×6;long.pos.n.pl.gen=спаси́телныхъ×1;long.pos.n.pl.acc=спаси́тєлнаѧ×6;long.pos.n.pl.loc=спаси́телныхъ×1	P:A1t*	adv P:4
@@ -7589,7 +7589,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 храмный.a	хра́мный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
 храмовый.a	хра́мовый	a	-	-	A1t	d{long.pos.m.sg.nom=S;long.pos.m.sg.acc=S;long.pos.m.pl.acc=E;long.pos.f.pl.nom=E;long.pos.f.pl.acc=E}	-	-	-	P:A1t	-
 хранительный.a	храни́тельный	a	-	-	A1t*	a	-	short.pos.f.sg.nom=храни́тельны	-	P:A1t*	-
-хромый.a	хромы́й	a	-	-	A1t	c{short.pos.m.sg.ins=E;short.pos.m.pl.nom=S;short.pos.n.sg.ins=E;long.pos.m.sg.nom=E;long.pos.m.sg.dat=E;long.pos.m.sg.acc=E;long.pos.m.sg.ins=E;long.pos.m.pl.nom=S;long.pos.f.sg.gen=E;long.pos.n.sg.dat=E;long.pos.n.sg.ins=E}	-	short.pos.m.sg.ins=хрѡмы́мъ;short.pos.m.pl.dat=хромы̑мъ;short.pos.f.pl.dat=хромы̑мъ;short.pos.n.sg.ins=хрѡмы́мъ;short.pos.n.pl.dat=хромы̑мъ;long.pos.m.sg.acc=хрома́го;long.pos.m.sg.ins=хрѡмы́мъ;long.pos.m.pl.dat=хромы̑мъ;long.pos.f.sg.nom=хрѡ́маѧ;long.pos.f.sg.gen=хрѡмы́ѧ;long.pos.f.pl.dat=хромы̑мъ;long.pos.n.sg.ins=хрѡмы́мъ;long.pos.n.pl.dat=хромы̑мъ	long.pos.m.sg.nom=хро́мый×3;long.pos.m.sg.acc=хро́мый×3;long.pos.m.pl.nom=хромі́и×10;long.pos.f.sg.nom=хрома́ѧ×1;long.pos.f.sg.gen=хрѡ́мыѧ×3	P:A1t	-
+хромый.a	хромы́й	a	-	-	A1t	b.shortn{short.pos.m.sg.gen=S;short.pos.m.sg.dat=S;short.pos.m.pl.nom=S;short.pos.f.sg.nom=S;short.pos.f.sg.acc=S;short.pos.n.sg.gen=S;short.pos.n.sg.dat=S;long.pos.m.pl.nom=S;long.pos.n.sg.nom=S;long.pos.n.sg.acc=S}	-	short.pos.m.sg.ins=хрѡмы́мъ;short.pos.m.pl.dat=хромы̑мъ;short.pos.f.pl.dat=хромы̑мъ;short.pos.n.sg.ins=хрѡмы́мъ;short.pos.n.pl.dat=хромы̑мъ;long.pos.m.sg.acc=хрома́го;long.pos.m.sg.ins=хрѡмы́мъ;long.pos.m.pl.dat=хромы̑мъ;long.pos.f.sg.gen=хрѡмы́ѧ;long.pos.f.pl.dat=хромы̑мъ;long.pos.n.sg.ins=хрѡмы́мъ;long.pos.n.pl.dat=хромы̑мъ	short.pos.m.sg.acc=хро́ма×3;long.pos.m.sg.nom=хро́мый×3;long.pos.m.sg.acc=хро́мый×3;long.pos.m.pl.nom=хромі́и×10;long.pos.f.sg.nom=хрѡ́маѧ×1;long.pos.f.sg.gen=хрѡ́мыѧ×3	P:A1t	-
 хрістоборный.a	хрістобо́рный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
 хрістовъ.a	хрісто́въ	a	-	-	A2t	a	-	short.pos.m.pl.nom=хрісто́вы	-	P:A2t	poss
 хрістоименитый.a	хрістоимени́тый	a	-	-	A1t	a	-	-	-	P:A1t	-

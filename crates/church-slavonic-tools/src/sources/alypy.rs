@@ -934,7 +934,7 @@ mod tests {
         assert_eq!(lemma_key("клѧ́-ти = клен-ꙋ́тъ").as_deref(), Some("клѧ́ти"));
         assert_eq!(lemma_key("и҆-тѝ — и҆д-ꙋ́тъ").as_deref(), Some("и҆тѝ"));
         assert_eq!(lemma_key("ѻ҆́чи (ѻ҆́цѣ)").as_deref(), Some("ѻ҆́чи"));
-        assert_eq!(lemma_key("ᲂу҆́ши").as_deref(), Some("оу҆́ши"));
+        assert_eq!(lemma_key("ᲂу҆́ши").as_deref(), Some("ѹ҆́ши"));
         assert_eq!(lemma_key("бж҃ї-й кра́-й"), None);
     }
 

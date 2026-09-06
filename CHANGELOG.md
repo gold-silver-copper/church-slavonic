@@ -26,6 +26,22 @@ The plan is `V3.0-PROMPT.md` Parts 3–4.
 | hand overlay | 2,097 leaves, rules exclude none, tagger 74.8% | 2,097 leaves, rules exclude none, tagger 74.95% (820 of 1,094) |
 | ids changed | — | 0 (158 absorbed ids listed in `data/twins.tsv`) |
 
+### Part 4 — the gold by register: the lexicon finding first (2026-09-05, in progress)
+
+- **The word-initial uk is the one letter ѹ.** The pinned Bible never
+  writes «оу»; the crate realised it so, and 11,777 + 229 tokens stayed
+  verbatim by typography. `realise` writes ѹ, `Form::from_print` folds a
+  print's «оу», `comparison_key` folds ѹ, `orthography::id_stem` keeps
+  every id's «оу» spelling; the Synodal lexicon files re-imported
+  (1,191 lines re-spelled), `write_outcome` re-realises kept variants.
+
+| Number | before | after |
+|---|---|---|
+| Bible treebank | one cell 205,403 (32.5%), sets 1,779, tagger 185,910 (29.4%), closed 177,091 (28.0%), several lexemes 11,774 (1.9%), verbatim 48,972 (7.7%) | one cell 211,123 (33.4%), sets 1,790 (0.3%), tagger 189,408 (30.0%), closed 178,214 (28.2%), several lexemes 12,180 (1.9%), verbatim **38,214 (6.0%)**; zero mismatches |
+| analyzer, tokens with no reading | 71,870 (11.39%) | 61,044 (9.68%) |
+| hand overlay out of reach | 54 | 42 (tagger 74.86%) |
+| held-out recall / ids changed | — | unchanged / 0 |
+
 ## 3.0.0 (2026-09-05) — the accent-paradigm inventory and weighted evidence
 
 The plan is `V2.2-PROMPT.md` Part 6, then `V3.0-PROMPT.md` Parts 0–2 and

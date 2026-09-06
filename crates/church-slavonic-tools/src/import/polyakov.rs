@@ -1122,7 +1122,7 @@ fn merge_twins(o: &mut Outcome, pos: Pos, entries: &[Entry], evidence: &HashMap<
 
 /// The id's stem: the lemma's letters with marks stripped.
 fn lexeme_stem(lemma: &Form) -> String {
-    lemma.letters.clone()
+    church_slavonic::orthography::id_stem(&lemma.letters)
 }
 
 /// The noun import (the Part 1 entry point, kept for the floor test).

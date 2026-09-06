@@ -352,6 +352,9 @@ fn write_outcome(o: &Outcome, recension: Recension, pos: Pos, prefix: &str) -> R
             for (cell, variants) in &l.variants {
                 let produced: Vec<String> = new.forms(*cell).iter().map(|f| f.print(recension)).collect();
                 for v in variants {
+                    // in the print's current typography (3.1: an initial
+                    // uk kept from a 2.x file is re-realised as ѹ)
+                    let v = &church_slavonic::Form::from_print(v).print(recension);
                     if !produced.contains(v) {
                         match new.variants.iter_mut().find(|(c, _)| c == cell) {
                             Some((_, vs)) => {

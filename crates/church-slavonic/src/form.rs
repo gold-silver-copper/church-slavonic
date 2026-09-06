@@ -68,6 +68,12 @@ impl Form {
     /// against the class's prediction which are lexical), the stressed
     /// vowel's index, and `number_mark` when the print wrote a kamora.
     pub fn from_print(printed: &str) -> Form {
+        // a print that still spells the initial uk «оу» (a source's
+        // typography, the 2.x lexicon files) is the same word as one with
+        // ѹ: fold before counting vowels, so the stress index is the
+        // letters' (3.1)
+        let folded = fold_initial_uk(printed);
+        let printed = folded.as_str();
         let stress = stressed_vowel_index(printed).and_then(|i| u8::try_from(i).ok());
         let kamora = units(printed)
             .iter()
@@ -228,6 +234,16 @@ impl Form {
         let realised = realise(&word, &Recension::Synodal);
         apply_izhitsa_rule(&realised)
     }
+}
+
+/// «оу» at the head of a word (with the у's marks) as the one letter ѹ.
+fn fold_initial_uk(printed: &str) -> String {
+    let mut us = units(printed);
+    if us.len() >= 2 && us[0].base == 'о' && us[0].marks.is_empty() && us[1].base == 'у' {
+        us[1].base = 'ѹ';
+        us.remove(0);
+    }
+    join(&us)
 }
 
 /// The print's `ї`: an unstressed non-initial `і` before a vowel or `й`.

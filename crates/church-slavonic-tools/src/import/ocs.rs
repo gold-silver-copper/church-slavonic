@@ -124,6 +124,7 @@ fn best_fit(id: &str, lemma: &str, pos: Pos, classes: &[&Class], seeded: Option<
 fn id_for(ids: &mut HashMap<String, u32>, letters: &str, pos: Pos) -> String {
     let n = ids.entry(letters.to_string()).or_default();
     *n += 1;
+    let letters = church_slavonic::orthography::id_stem(letters);
     if *n == 1 { format!("{letters}.{}", pos.tag()) } else { format!("{letters}.{}.{n}", pos.tag()) }
 }
 

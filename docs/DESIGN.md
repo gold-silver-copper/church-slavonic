@@ -299,7 +299,11 @@ at the ending and inside a derivation (пишѫ, пишетъ, рождѫ, хо�
 beside люблѭ, глаголѥтъ, гонꙗахъ) — which is what lets one class name
 `2-ѭ` once; the Synodal rule (ѧ/ѣ → а after a husher) is a derivation's
 only. The derivations are recension-aware (the second palatalisation of
-г is ѕ in OCS, з in the print). No stress: the stress
+г is ѕ in OCS, з in the print). The word-initial uk is the one letter
+ѹ in the print (ѹ҆чени́къ — the pinned Bible never writes «оу»; 3.1) and
+the monograph ꙋ inside the word; the letters layer and the ids spell the
+initial uk «оу» (`orthography::id_stem`), and `Form::from_print` folds a
+print's «оу» before it counts vowels. No stress: the stress
 column is `-` and the print drops it, mapping ы→ꙑ and ꙋ→оу; ѫ, ѧ, ѥ, ꙗ, ѣ
 are letters of the layer. Provenance `K:<class>` Kaikki, `U:` the UD
 PROIEL train split (variants on Kaikki's lexemes, new lexemes fitted to
