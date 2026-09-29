@@ -1,10 +1,7 @@
 target/
-/data/intermediate/
-/references/downloads/
 .DS_Store
-data/bible-src/
-/treebank/
-# the corpus export (cargo xtask export), rebuilt from the treebank
-/export/
-# the Ponomar library's pinned pages (scripts/fetch-ponomar.sh; the manifest and the licence are committed)
-/data/corpus/ponomar/*/
+# downloads over GitHub's 100 MB file limit; they are release assets instead
+# (references/downloads/LARGE_FILES.md)
+/references/downloads/english-wiktionary-ocs-lineage/enwiktionary-20260801-pages-articles.xml.bz2
+/references/downloads/english-wiktionary-ocs-lineage/raw-wiktextract-data.jsonl.gz
+/references/downloads/ponomar-elizabeth-bible/ponomar-0af645f438856f45c22026912d2e4a9ce495e531.tar.gz

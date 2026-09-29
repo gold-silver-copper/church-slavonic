@@ -1,0 +1,97 @@
+{{DISPLAYTITLE:<span class="script-slavonic" style= "font-family: <!-- Unicode 5.1 Slavonic fonts: -->'Monomakh Unicode', Monomachus, BukyVede, 'Kliment Std', 'RomanCyrillic Std', Dilyana, Menaion, 'Menaion Medieval', Lazov, Code2000, 'DejaVu Sans', <!-- Unicode fallback: --> Code2001, 'Free Serif', 'TITUS Cyberbit Basic', 'Charis SIL', 'Doulos SIL', 'Chrysanthi Unicode', 'Bitstream Cyberbit', 'Bitstream CyberBase', Thryomanes, 'Lucida Grande', 'Free Sans', 'Arial Unicode MS', 'Microsoft Sans Serif', 'Lucida Sans Unicode'; font-size: 120%;">{{PAGENAME}}</span>}}
+{{header
+ | title      = <span class="script-slavonic" style= "font-family: <!-- Unicode 5.1 Slavonic fonts: -->'Monomakh Unicode', Monomachus, BukyVede, 'Kliment Std', 'RomanCyrillic Std', Dilyana, Menaion, 'Menaion Medieval', Lazov, Code2000, 'DejaVu Sans', <!-- Unicode fallback: --> Code2001, 'Free Serif', 'TITUS Cyberbit Basic', 'Charis SIL', 'Doulos SIL', 'Chrysanthi Unicode', 'Bitstream Cyberbit', 'Bitstream CyberBase', Thryomanes, 'Lucida Grande', 'Free Sans', 'Arial Unicode MS', 'Microsoft Sans Serif', 'Lucida Sans Unicode'; font-size: 120%;">[[Бі́блїа|Бі́блїа, си́рѣчь кни̑ги сщ҃е́ннагѡ писа́нїѧ <br>ве́тхагѡ и҆ но́вагѡ завѣ́та]]</span>
+ | author          = 
+ | override_author = 
+ | section    = <span class="script-slavonic" style= "font-family: <!-- Unicode 5.1 Slavonic fonts: -->'Monomakh Unicode', Monomachus, BukyVede, 'Kliment Std', 'RomanCyrillic Std', Dilyana, Menaion, 'Menaion Medieval', Lazov, Code2000, 'DejaVu Sans', <!-- Unicode fallback: --> Code2001, 'Free Serif', 'TITUS Cyberbit Basic', 'Charis SIL', 'Doulos SIL', 'Chrysanthi Unicode', 'Bitstream Cyberbit', 'Bitstream CyberBase', Thryomanes, 'Lucida Grande', 'Free Sans', 'Arial Unicode MS', 'Microsoft Sans Serif', 'Lucida Sans Unicode'; font-size: 120%;">Кни́га прⷪ҇ро́ка наꙋ́ма</span>
+ | notes = This page contains Church Slavonic text. Without proper font support, you may see question marks, boxes, or other symbols instead of letters and diacritics. Click [http://sci.ponomar.net/ru/fonts.html here] to download required fonts.
+ | previous   =  <span class="script-slavonic" style= "font-family: <!-- Unicode 5.1 Slavonic fonts: -->'Monomakh Unicode', Monomachus, BukyVede, 'Kliment Std', 'RomanCyrillic Std', Dilyana, Menaion, 'Menaion Medieval', Lazov, Code2000, 'DejaVu Sans', <!-- Unicode fallback: --> Code2001, 'Free Serif', 'TITUS Cyberbit Basic', 'Charis SIL', 'Doulos SIL', 'Chrysanthi Unicode', 'Bitstream Cyberbit', 'Bitstream CyberBase', Thryomanes, 'Lucida Grande', 'Free Sans', 'Arial Unicode MS', 'Microsoft Sans Serif', 'Lucida Sans Unicode'; font-size: 120%;">[[Кни́га прⷪ҇ро́ка мїхе́а]]</span>
+ | previous2  =
+ | next       = <span class="script-slavonic" style= "font-family: <!-- Unicode 5.1 Slavonic fonts: -->'Monomakh Unicode', Monomachus, BukyVede, 'Kliment Std', 'RomanCyrillic Std', Dilyana, Menaion, 'Menaion Medieval', Lazov, Code2000, 'DejaVu Sans', <!-- Unicode fallback: --> Code2001, 'Free Serif', 'TITUS Cyberbit Basic', 'Charis SIL', 'Doulos SIL', 'Chrysanthi Unicode', 'Bitstream Cyberbit', 'Bitstream CyberBase', Thryomanes, 'Lucida Grande', 'Free Sans', 'Arial Unicode MS', 'Microsoft Sans Serif', 'Lucida Sans Unicode'; font-size: 120%;">[[Кни́га прⷪ҇ро́ка а҆ввакꙋ́ма]]</span>
+ | next2      =
+ | year       = 
+ | categories =
+ | portal     =
+}}
+{{CSText}}
+<br>
+__NOTOC__
+----
+<br>
+{{Smaller|{{Colors|#B22222||Главы̀:}}}} 
+[[#глаⷡ҇ а҃|а҃]], [[#глаⷡ҇ в҃|в҃]], [[#глаⷡ҇ г҃|г҃]].
+
+<br>
+----
+<br>
+
+<div style="font-size: 350%; font-family: 'Cathisma Unicode'; text-align:center; color:#B22222">Кни́га прⷪ҇ро́ка наꙋ́ма.</div >
+
+{{Anchor|глаⷡ҇ а҃}} 
+==== <div style="text-align: center;"><span style="font-weight:normal; color:#B22222">Глава̀ а҃.</span></div> ====
+
+{{Буквица|font-size=5em|margin-right=0.05em|margin-bottom=-0.1em|П}}рⷪ҇ро́чество ѡ҆ нїнеѵі́и: кни́га видѣ́нїѧ наꙋ́ма сы́на є҆лкесе́ева.
+{{Smaller|{{Colors|#B22222||в҃}}}} Бг҃ъ ревни́въ и҆ мстѧ́й гдⷭ҇ь, мстѧ́й гдⷭ҇ь съ ꙗ҆́ростїю, гдⷭ҇ь мстѧ́й сопоста́тѡмъ свои̑мъ и҆ потреблѧ́ѧй са́мъ врагѝ своѧ̑.
+{{Smaller|{{Colors|#B22222||г҃}}}} Гдⷭ҇ь долготерпѣли́въ, и҆ вели́ка крѣ́пость є҆гѡ̀, и҆ ѡ҆чища́ѧй не ѡ҆чи́ститъ гдⷭ҇ь: въ сконча́нїи и҆ трꙋ́сѣ пꙋ́ть є҆гѡ̀, и҆ ѡ҆́блацы пра́хъ но́гъ є҆гѡ̀:
+{{Smaller|{{Colors|#B22222||д҃}}}} запреща́ѧй мо́рю и҆ и҆зсꙋша́ѧй є҆̀ и҆ всѧ̑ рѣ́ки ѡ҆пꙋстоша́ѧй. Ѹ҆ма́лисѧ васані́тїда и҆ карми́лъ, и҆ процвѣта̑ющаѧ лїва́на ѡ҆скꙋдѣ́ша:
+{{Smaller|{{Colors|#B22222||є҃}}}} го́ры потрѧсо́шасѧ ѿ негѡ̀, и҆ хо́лми поколеба́шасѧ, и҆ ѹ҆жасе́сѧ землѧ̀ ѿ лица̀ є҆гѡ̀, вселе́ннаѧ и҆ всѝ живꙋ́щїи на не́й.
+{{Smaller|{{Colors|#B22222||ѕ҃}}}} Ѿ лица̀ гнѣ́ва є҆гѡ̀ кто̀ постои́тъ; и҆ кто̀ сопроти́витсѧ во гнѣ́вѣ ꙗ҆́рости є҆гѡ̀; ꙗ҆́рость є҆гѡ̀ растаева́етъ вла̑сти, и҆ ка́менїе сотро́шасѧ ѿ негѡ̀.
+{{Smaller|{{Colors|#B22222||з҃}}}} Бл҃гъ гдⷭ҇ь терпѧ́щымъ є҆го̀ въ де́нь скорбѣ́нїѧ, и҆ зна́ѧй боѧ́щыѧсѧ є҆гѡ̀:
+{{Smaller|{{Colors|#B22222||и҃}}}} и҆ въ пото́пѣ пꙋтѝ сконча́нїе сотвори́тъ: востаю́щыѧ и҆ врагѝ є҆гѡ̀ пожене́тъ тма̀.
+{{Smaller|{{Colors|#B22222||ѳ҃}}}} Что̀ помышлѧ́ете на гдⷭ҇а; сконча́нїе са́мъ сотвори́тъ, не ѿмсти́тъ два́жды кꙋ́пнѡ въ ско́рби:
+{{Smaller|{{Colors|#B22222||і҃}}}} поне́же до ѡ҆снова́нїѧ своегѡ̀ ѡ҆лѧденѣ́етъ, и҆ а҆́ки блю́щь и҆ ѡ҆плета́ющьсѧ снѣде́нъ бꙋ́детъ, и҆ а҆́ки тро́сть сꙋхоты̀ полна̀.
+{{Smaller|{{Colors|#B22222||а҃і}}}} И҆з̾ тебє̀ и҆зы́детъ по́мыслъ на гдⷭ҇а ѕлы́й, совѣщава́ѧй сопрѡти́внаѧ.
+{{Smaller|{{Colors|#B22222||в҃і}}}} Сїѧ̑ гл҃етъ гдⷭ҇ь: ѡ҆блада́ѧй вода́ми мно́гими, и҆ си́це разстꙋ́пѧтсѧ, и҆ слꙋ́хъ тво́й не ѹ҆слы́шитсѧ ктомꙋ̀:
+{{Smaller|{{Colors|#B22222||г҃і}}}} и҆ нн҃ѣ сокрꙋшꙋ̀ же́злъ є҆гѡ̀ ѿ тебє̀ и҆ ѹ҆́зы твоѧ̑ расто́ргнꙋ.
+{{Smaller|{{Colors|#B22222||д҃і}}}} И҆ заповѣ́сть ѡ҆ тебѣ̀ гдⷭ҇ь, не разсѣ́етсѧ ѿ и҆́мене твоегѡ̀ ктомꙋ̀: ѿ до́мꙋ бг҃а твоегѡ̀ потреблю̀ и҆зва̑ѧннаѧ и҆ слїѧ̑ннаѧ положꙋ̀ гро́бъ тво́й, ꙗ҆́кѡ ско́ри (є҆стѐ).
+{{Smaller|{{Colors|#B22222||є҃і}}}} Сѐ, на гора́хъ но́ги благовѣствꙋ́ющагѡ и҆ возвѣща́ющагѡ ми́ръ: пра́зднꙋй, і҆ꙋ́до, пра́здники твоѧ̑, возда́ждь ѡ҆бѣ́ты твоѧ̑, занѐ не приложа́тъ ктомꙋ̀ є҆́же проитѝ сквозѣ̀ тебѐ во ѡ҆бетша́нїе: сконча́сѧ и҆ и҆зве́ржесѧ.
+
+{{Anchor|глаⷡ҇ в҃}} 
+==== <div style="text-align: center;"><span style="font-weight:normal; color:#B22222">Глава̀ в҃.</span></div> ====
+
+{{Буквица|font-size=5em|margin-right=0.05em|margin-bottom=-0.1em|В}}зы́де вдыха́ѧй въ лицѐ твоѐ, ѿе́млѧй ѿ ѡ҆скорбле́нїѧ: ѹ҆смотрѝ пꙋ́ть, ѹ҆крѣпѝ чрє́сла, возмꙋжа́й крѣ́постїю ѕѣлѡ̀:
+{{Smaller|{{Colors|#B22222||в҃}}}} поне́же ѿвратѝ гдⷭ҇ь ѹ҆кори́знꙋ і҆а́кѡвлю, ꙗ҆́коже ѹ҆кори́знꙋ і҆и҃левꙋ: занѐ ѡ҆трѧса́ющїи ѡ҆трѧсо́ша ѧ҆̀ и҆ ло́зы и҆́хъ растли́ша.
+{{Smaller|{{Colors|#B22222||г҃}}}} Ѻ҆рꙋ̑жїѧ си́лы и҆́хъ ѿ человѣ̑къ, мꙋ́жы си̑льныѧ и҆гра́ющыѧ во ѻ҆гнѝ: брѡзды̀ колесни́цъ и҆́хъ въ де́нь ѹ҆гото́ванїѧ є҆гѡ̀, и҆ кѡ́нницы возмѧтꙋ́тсѧ на пꙋте́хъ,
+{{Smaller|{{Colors|#B22222||д҃}}}} и҆ смѧтꙋ́тсѧ колєсни́цы и҆ сплетꙋ́тсѧ на сто́гнахъ: ви́дъ и҆́хъ ꙗ҆́кѡ свѣщы̀ ѻ҆́гнєнны, и҆ ꙗ҆́кѡ мо́лнїѧ протека́ющаѧ.
+{{Smaller|{{Colors|#B22222||є҃}}}} И҆ помѧнꙋ́тсѧ старѣ̑йшины и҆́хъ, и҆ побѣ́гнꙋтъ въ де́нь, и҆ и҆знемо́гꙋтъ въ пꙋтѝ свое́мъ, и҆ потща́тсѧ на забра̑ла є҆гѡ̀, и҆ ѹ҆гото́вѧтъ прє́днїѧ стражбы̑ своѧ̑.
+{{Smaller|{{Colors|#B22222||ѕ҃}}}} Врата̀ гра̑днаѧ ѿверзо́шасѧ, и҆ ца̑рства падо́ша, и҆ и҆мѣ́нїе ѿкры́сѧ.
+{{Smaller|{{Colors|#B22222||з҃}}}} Сїѧ́ же восхожда́ше, и҆ рабы̑ни є҆ѧ̀ ведѧ́хꙋсѧ, ꙗ҆́кѡ голꙋби̑цы воркꙋ́ющѧ въ сердца́хъ свои́хъ:
+{{Smaller|{{Colors|#B22222||и҃}}}} и҆ нїнеѵі́а, а҆́ки кꙋпѣ́ль водна́ѧ во́ды є҆ѧ̀, и҆ ті́и бѣжа́ще не ста́ша, и҆ не бѣ̀ взира́ющагѡ.
+{{Smaller|{{Colors|#B22222||ѳ҃}}}} Расхища́хꙋ сребро̀, расхища́хꙋ зла́то, и҆ не бѧ́ше конца̀ и҆мѣ́нїѧ є҆ѧ̀: ѡ҆тѧготи́шасѧ па́че всѣ́хъ сосꙋ́дѡвъ вожделѣ̑ннаѧ є҆ѧ̀.
+{{Smaller|{{Colors|#B22222||і҃}}}} И҆стрѧсе́нїе и҆ вострѧсе́нїе, и҆ воскипѣ́нїе и҆ се́рдца сокрꙋше́нїе, и҆ разслабле́нїе колѣ́нъ и҆ бѡлѣ́зни по всѣ̑мъ чре́слѡмъ, и҆ лицѐ всѣ́хъ, а҆́ки ѡ҆пале́нїе котла̀.
+{{Smaller|{{Colors|#B22222||а҃і}}}} Гдѣ̀ є҆́сть вита́лище львѡ́въ и҆ па́жить сꙋ́щаѧ льви́чищємъ; ка́мѡ и҆́де ле́въ, є҆́же влѣ́зти та́мѡ льви́чищꙋ, и҆ не бѧ́ше ѹ҆страша́ющагѡ.
+{{Smaller|{{Colors|#B22222||в҃і}}}} Ле́въ восхи́ти довѡ́лнаѧ льви́чищємъ свои̑мъ и҆ ѹ҆давѝ льви́цамъ свои̑мъ, и҆ напо́лни лови́твы гнѣздо̀ своѐ и҆ вита́лище своѐ похище́нїѧ.
+{{Smaller|{{Colors|#B22222||г҃і}}}} Сѐ, а҆́зъ на тѧ̀, гл҃етъ гдⷭ҇ь вседержи́тель, и҆ пожгꙋ̀ ды́момъ мно́жество твоѐ, и҆ львы̀ твоѧ̑ поѧ́стъ ѻ҆рꙋ́жїе: и҆ потреблю̀ ѿ землѝ лови́твꙋ твою̀, и҆ не ѹ҆слы́шатсѧ ктомꙋ̀ дѣла̀ твоѧ̑.
+
+{{Anchor|глаⷡ҇ г҃}} 
+==== <div style="text-align: center;"><span style="font-weight:normal; color:#B22222">Глава̀ г҃.</span></div> ====
+
+{{Буквица|font-size=5em|margin-right=0.05em|margin-bottom=-0.1em|Ѽ}}, гра́де крове́й, ве́сь лжи́вый, по́лнъ непра́вды! не ѡ҆сѧ́жетсѧ лови́тва.
+{{Smaller|{{Colors|#B22222||в҃}}}} Гла́съ биче́й и҆ гла́съ трꙋ́са коле́съ, и҆ конѧ̀ текꙋ́ща и҆ колесни́цы шꙋмѧ́щїѧ,
+{{Smaller|{{Colors|#B22222||г҃}}}} и҆ ко́нника ѣ҆́дꙋща, и҆ блиста́юща меча̀ и҆ блиста́ющихъ ѻ҆рꙋ́жїй, и҆ мно́жества ꙗ҆́звеныхъ и҆ тѧ́жкагѡ паде́нїѧ, и҆ не бѧ́ше конца̀ ꙗ҆зы́кѡмъ є҆ѧ̀: и҆ и҆знемо́гꙋтъ въ тѣлесѣ́хъ свои́хъ ѿ мно́жества блꙋже́нїѧ.
+{{Smaller|{{Colors|#B22222||д҃}}}} Блꙋдни́ца добра̀ и҆ прїѧ́тна, нача́лница волхвова́нїй, продаю́щаѧ ꙗ҆зы́ки во блꙋже́нїи свое́мъ и҆ племена̀ въ чародѣѧ́нїихъ свои́хъ.
+{{Smaller|{{Colors|#B22222||є҃}}}} Сѐ, а҆́зъ на тѧ̀, гл҃етъ гдⷭ҇ь бг҃ъ вседержи́тель, и҆ ѿкры́ю за̑днѧѧ твоѧ̑ къ лицꙋ̀ твоемꙋ̀, и҆ покажꙋ̀ ꙗ҆зы́кѡмъ срамотꙋ̀ твою̀ и҆ ца́рствамъ безче́стїе твоѐ,
+{{Smaller|{{Colors|#B22222||ѕ҃}}}} и҆ возве́ргꙋ на тѧ̀ ѡ҆гнꙋше́нїе по нечистота́мъ твои̑мъ, и҆ положꙋ́ тѧ въ при́тчꙋ.
+{{Smaller|{{Colors|#B22222||з҃}}}} И҆ бꙋ́детъ, всѧ́къ ви́дѧй тѧ̀ сни́детъ съ тебє̀ и҆ рече́тъ: ѡ҆каѧ́ннаѧ нїнеѵі́а, кто̀ постене́тъ по не́й; ѿкꙋ́дꙋ взыщꙋ̀ ѹ҆тѣше́нїе є҆́й;
+{{Smaller|{{Colors|#B22222||и҃}}}} Ѹ҆гото́вити ча́сть, ѹ҆стро́ити стрꙋнꙋ̀, ѹ҆гото́вити ча́сть а҆ммѡ́нꙋ, живꙋ́щаѧ въ рѣка́хъ, вода̀ ѡ҆́крестъ є҆ѧ̀, є҆́йже нача́ло мо́ре, и҆ вода̀ забра̑ла є҆ѧ̀:
+{{Smaller|{{Colors|#B22222||ѳ҃}}}} и҆ є҆ѳїо́пїа крѣ́пость є҆ѧ̀ и҆ є҆гѵ́петъ, и҆ нѣ́сть конца̀ бѣ́гствꙋ твоемꙋ̀: и҆ фꙋ́дъ и҆ лївѵ́ане бы́ша помѡ́щницы є҆ѧ̀.
+{{Smaller|{{Colors|#B22222||і҃}}}} И҆ сїѧ̀ въ преселе́нїе по́йдетъ плѣ́нница, и҆ младе́нцы є҆ѧ̀ разбїю́тъ въ нача́лѣхъ всѣ́хъ пꙋті́й є҆ѧ̀, и҆ ѡ҆ всѣ́хъ сла́вныхъ є҆ѧ̀ ве́ргꙋтъ жрє́бїѧ, и҆ всѝ воевѡ́ды є҆ѧ̀ свѧ́жꙋтсѧ пꙋ̑ты.
+{{Smaller|{{Colors|#B22222||а҃і}}}} И҆ ты̀ ѹ҆пїе́шисѧ и҆ бꙋ́деши презрѣ́на, и҆ ты̀ сама̀ себѣ̀ взы́щеши по́мощи ѿ вра̑гъ.
+{{Smaller|{{Colors|#B22222||в҃і}}}} Всѧ̑ твердѣ̑ли твоѧ̑ ꙗ҆́кѡ смокви́чїе стра́жꙋ и҆мꙋ́щее: а҆́ще поколе́блютсѧ, впадꙋ́тъ во ѹ҆ста̀ ꙗ҆дꙋ́щагѡ.
+{{Smaller|{{Colors|#B22222||г҃і}}}} Сѐ, лю́дїе твоѝ, ꙗ҆́кѡ жєны̀ въ тебѣ̀: врагѡ́мъ твои̑мъ ѡ҆творѧ́єма ѡ҆творѧ́тсѧ врата̀ землѝ твоеѧ̀, и҆ поѧ́стъ ѻ҆́гнь верєѝ твоѧ̑.
+{{Smaller|{{Colors|#B22222||д҃і}}}} Во́дꙋ ѡ҆держа́нїѧ восхи́ти себѣ̀ сама̀ и҆ ѹ҆твердѝ твердѣ̑ли твоѧ̑: влѣ́зи въ бре́нїе и҆ попери́сѧ въ пле́вахъ, ѹ҆твердѝ па́че плі́нѳа.
+{{Smaller|{{Colors|#B22222||є҃і}}}} Та́мѡ поѧ́стъ тѧ̀ ѻ҆́гнь, потреби́тъ тѧ̀ ме́чь, поѧдѧ́тъ тѧ̀ а҆́ки прꙋ́зи, и҆ ѡ҆тѧгча́еши а҆́ки мши́ца.
+{{Smaller|{{Colors|#B22222||ѕ҃і}}}} Ѹ҆мно́жила є҆сѝ кꙋ̑пли твоѧ̑ па́че ѕвѣ́здъ небе́сныхъ: мши̑цы ѹ҆стреми́шасѧ и҆ возлетѣ́ша.
+{{Smaller|{{Colors|#B22222||з҃і}}}} Возскочѝ а҆́ки прꙋ́гъ смѣ́сникъ тво́й, а҆́ки а҆крі́да восходѧ́щаѧ на ѡ҆гра́дꙋ въ де́нь стꙋде́ный: со́лнце взы́де, и҆ ѿлетѣ̀, и҆ не позна́сѧ мѣ́сто є҆ѧ̀: лю́тѣ и҆̀мъ!
+{{Smaller|{{Colors|#B22222||и҃і}}}} Воздрема́шасѧ пастꙋсѝ твоѝ, ца́рь а҆ссѷрі́йскъ ѹ҆спѝ си̑льныѧ твоѧ̑, воздвиго́шасѧ лю́дїе твоѝ на го́ры, и҆ не бѧ́ше прїе́млющагѡ.
+{{Smaller|{{Colors|#B22222||ѳ҃і}}}} Нѣ́сть цѣльбы̀ сокрꙋше́нїю твоемꙋ̀, разгорѣ́сѧ ꙗ҆́зва твоѧ̀: всѝ слы́шащїи вѣ́сть твою̀ воспле́щꙋтъ рꙋка́ми ѡ҆ тебѣ̀: поне́же на кого̀ не на́йде ѕло́ба твоѧ̀ всегда̀;
+
+<div style="text-align: center;">{{Smaller|{{Colors|#B22222||Коне́цъ кни́зѣ прⷪ҇ро́ка наꙋ́ма: и҆́мать въ себѣ̀ гла́въ г҃.}}}}</div>
+</div>
+
+{{translation license | original = {{PD-old}} | translation = {{PD-old}}}}
+
+
+[[Category:Бі́блїа|Бі́бліа/41 Книга пророка наума]]
+[[Category:Слове́нскїй|Книга пророка наума]]
+[[Category:Кни́ги ве́тхагѡ завѣ́та|Бі́бліа/41 Книга пророка наума]]

@@ -1,0 +1,100 @@
+{{DISPLAYTITLE:<span class="script-slavonic" style= "font-family: <!-- Unicode 5.1 Slavonic fonts: -->'Monomakh Unicode', Monomachus, BukyVede, 'Kliment Std', 'RomanCyrillic Std', Dilyana, Menaion, 'Menaion Medieval', Lazov, Code2000, 'DejaVu Sans', <!-- Unicode fallback: --> Code2001, 'Free Serif', 'TITUS Cyberbit Basic', 'Charis SIL', 'Doulos SIL', 'Chrysanthi Unicode', 'Bitstream Cyberbit', 'Bitstream CyberBase', Thryomanes, 'Lucida Grande', 'Free Sans', 'Arial Unicode MS', 'Microsoft Sans Serif', 'Lucida Sans Unicode'; font-size: 120%;">{{PAGENAME}}</span>}}
+{{header
+ | title      = <span class="script-slavonic" style= "font-family: <!-- Unicode 5.1 Slavonic fonts: -->'Monomakh Unicode', Monomachus, BukyVede, 'Kliment Std', 'RomanCyrillic Std', Dilyana, Menaion, 'Menaion Medieval', Lazov, Code2000, 'DejaVu Sans', <!-- Unicode fallback: --> Code2001, 'Free Serif', 'TITUS Cyberbit Basic', 'Charis SIL', 'Doulos SIL', 'Chrysanthi Unicode', 'Bitstream Cyberbit', 'Bitstream CyberBase', Thryomanes, 'Lucida Grande', 'Free Sans', 'Arial Unicode MS', 'Microsoft Sans Serif', 'Lucida Sans Unicode'; font-size: 120%;">[[Бі́блїа|Бі́блїа, си́рѣчь кни̑ги сщ҃е́ннагѡ писа́нїѧ <br>ве́тхагѡ и҆ но́вагѡ завѣ́та]]</span>
+ | author          = 
+ | override_author = 
+ | section    = <span class="script-slavonic" style= "font-family: <!-- Unicode 5.1 Slavonic fonts: -->'Monomakh Unicode', Monomachus, BukyVede, 'Kliment Std', 'RomanCyrillic Std', Dilyana, Menaion, 'Menaion Medieval', Lazov, Code2000, 'DejaVu Sans', <!-- Unicode fallback: --> Code2001, 'Free Serif', 'TITUS Cyberbit Basic', 'Charis SIL', 'Doulos SIL', 'Chrysanthi Unicode', 'Bitstream Cyberbit', 'Bitstream CyberBase', Thryomanes, 'Lucida Grande', 'Free Sans', 'Arial Unicode MS', 'Microsoft Sans Serif', 'Lucida Sans Unicode'; font-size: 120%;">Посла́нїе второ́е къ солꙋ́нѧнѡмъ ст҃а́гѡ а҆пⷭ҇ла па́ѵла</span>
+ | notes = This page contains Church Slavonic text. Without proper font support, you may see question marks, boxes, or other symbols instead of letters and diacritics. Click [http://sci.ponomar.net/ru/fonts.html here] to download required fonts.
+ | previous   =  <span class="script-slavonic" style= "font-family: <!-- Unicode 5.1 Slavonic fonts: -->'Monomakh Unicode', Monomachus, BukyVede, 'Kliment Std', 'RomanCyrillic Std', Dilyana, Menaion, 'Menaion Medieval', Lazov, Code2000, 'DejaVu Sans', <!-- Unicode fallback: --> Code2001, 'Free Serif', 'TITUS Cyberbit Basic', 'Charis SIL', 'Doulos SIL', 'Chrysanthi Unicode', 'Bitstream Cyberbit', 'Bitstream CyberBase', Thryomanes, 'Lucida Grande', 'Free Sans', 'Arial Unicode MS', 'Microsoft Sans Serif', 'Lucida Sans Unicode'; font-size: 120%;">[[Посла́нїе пе́рвое къ солꙋ́нѧнѡмъ ст҃а́гѡ а҆пⷭ҇ла па́ѵла]]</span>
+ | previous2  =
+ | next       =  <span class="script-slavonic" style= "font-family: <!-- Unicode 5.1 Slavonic fonts: -->'Monomakh Unicode', Monomachus, BukyVede, 'Kliment Std', 'RomanCyrillic Std', Dilyana, Menaion, 'Menaion Medieval', Lazov, Code2000, 'DejaVu Sans', <!-- Unicode fallback: --> Code2001, 'Free Serif', 'TITUS Cyberbit Basic', 'Charis SIL', 'Doulos SIL', 'Chrysanthi Unicode', 'Bitstream Cyberbit', 'Bitstream CyberBase', Thryomanes, 'Lucida Grande', 'Free Sans', 'Arial Unicode MS', 'Microsoft Sans Serif', 'Lucida Sans Unicode'; font-size: 120%;">[[Посла́нїе пе́рвое къ тїмоѳе́ю ст҃а́гѡ а҆пⷭ҇ла па́ѵла]]</span>
+ | next2      =
+ | year       = 
+ | categories =
+ | portal     =
+}}
+{{CSText}}
+<br>
+__NOTOC__
+----
+<br>
+{{Smaller|{{Colors|#B22222||Главы̀:}}}} 
+[[#глаⷡ҇ а҃|а҃]], [[#глаⷡ҇ в҃|в҃]], [[#глаⷡ҇ г҃|г҃]].
+
+<br>
+----
+<br>
+
+<div style="font-size: 350%; font-family: 'Cathisma Unicode'; text-align:center; color:#B22222">Посла́нїе второ́е къ солꙋ́нѧнѡмъ <br>ст҃а́гѡ а҆пⷭ҇ла па́ѵла.</div> 
+
+{{Anchor|глаⷡ҇ а҃}} 
+==== <div style="text-align: center;"><span style="font-weight:normal; color:#B22222">Глава̀ а҃.</span></div> ====
+
+{{Буквица|font-size=5em|margin-right=0.05em|margin-bottom=-0.1em|П}}а́ѵелъ и҆ сїлꙋа́нъ и҆ тїмоѳе́й, цр҃кви солꙋ́нстѣй, ѡ҆ бз҃ѣ ѻ҆ц҃ѣ̀ на́шемъ и҆ гдⷭ҇ѣ і҆и҃сѣ хрⷭ҇тѣ̀:
+{{Smaller|{{Colors|#B22222||в҃}}}} блгⷣть ва́мъ и҆ ми́ръ ѿ бг҃а ѻ҆ц҃а̀ на́шегѡ, и҆ гдⷭ҇а і҆и҃са хрⷭ҇та̀.
+{{Smaller|{{Colors|#B22222||г҃}}}} Благодари́ти до́лжни є҆смы̀ бг҃а всегда̀ ѡ҆ ва́съ, бра́тїе, ꙗ҆́коже досто́йно є҆́сть, ꙗ҆́кѡ превозраста́етъ вѣ́ра ва́ша, и҆ мно́житсѧ любо́вь є҆ди́нагѡ коегѡ́ждо всѣ́хъ ва́съ дрꙋ́гъ ко дрꙋ́гꙋ:
+{{Smaller|{{Colors|#B22222||д҃}}}} ꙗ҆́кѡ самѣ̑мъ на́мъ хвали́тисѧ ѡ҆ ва́съ въ цр҃квахъ бж҃їихъ, ѡ҆ терпѣ́нїи ва́шемъ и҆ вѣ́рѣ во всѣ́хъ гоне́нїихъ ва́шихъ и҆ ско́рбехъ, ꙗ҆̀же прїе́млете,
+{{Smaller|{{Colors|#B22222||є҃}}}} показа́нїе првⷣнагѡ сꙋда̀ бж҃їѧ, во є҆́же сподо́битисѧ ва́мъ црⷭ҇твїѧ бж҃їѧ, є҆гѡ́же ра́ди и҆ стра́ждете.
+{{Smaller|{{Colors|#B22222||ѕ҃}}}} А҆́ще ѹ҆́бѡ првⷣно ѹ҆ бг҃а, возда́ти ско́рбь ѡ҆скорблѧ́ющымъ ва́съ,
+{{Smaller|{{Colors|#B22222||з҃}}}} а҆ ва́мъ ѡ҆скорблѧ́ємымъ ѿра́дꙋ съ на́ми, во ѿкрове́нїи гдⷭ҇а і҆и҃са съ нб҃сѐ, со а҆́гг҃лы си́лы своеѧ̀,
+{{Smaller|{{Colors|#B22222||и҃}}}} во ѻ҆гнѝ пла́меннѣ даю́щагѡ ѿмще́нїе не вѣ́дꙋщымъ бг҃а и҆ не послꙋ́шающымъ бл҃говѣствова́нїѧ гдⷭ҇а на́шегѡ і҆и҃са хрⷭ҇та̀:
+{{Smaller|{{Colors|#B22222||ѳ҃}}}} и҆̀же мꙋ́кꙋ прїи́мꙋтъ, поги́бель вѣ́чнꙋю, ѿ лица̀ гдⷭ҇нѧ и҆ ѿ сла́вы крѣ́пости є҆гѡ̀,
+{{Smaller|{{Colors|#B22222||і҃}}}} є҆гда̀ прїи́детъ просла́витисѧ во ст҃ы́хъ свои́хъ и҆ ди́венъ бы́ти во всѣ́хъ вѣ́ровавшихъ, ꙗ҆́кѡ ѹ҆вѣ́рисѧ свидѣ́телство на́ше въ ва́съ, въ де́нь ѡ҆́нъ.
+{{Smaller|{{Colors|#B22222||а҃і}}}} За сїѐ и҆ мо́лимсѧ всегда̀ ѡ҆ ва́съ, да вы̀ сподо́битъ зва́нїю бг҃ъ на́шъ и҆ и҆спо́лнитъ всѧ́ко бл҃говоле́нїе бл҃гости и҆ дѣ́ло вѣ́ры въ си́лѣ,
+{{Smaller|{{Colors|#B22222||в҃і}}}} ꙗ҆́кѡ да просла́витсѧ и҆́мѧ гдⷭ҇а на́шегѡ і҆и҃са хрⷭ҇та̀ въ ва́съ, и҆ вы̀ въ не́мъ, по блгⷣти бг҃а на́шегѡ и҆ гдⷭ҇а і҆и҃са хрⷭ҇та̀.
+
+{{Anchor|глаⷡ҇ в҃}} 
+==== <div style="text-align: center;"><span style="font-weight:normal; color:#B22222">Глава̀ в҃.</span></div> ====
+
+{{Буквица|font-size=5em|margin-right=0.05em|margin-bottom=-0.1em|М}}о́лимъ же вы̀, бра́тїе, ѡ҆ прише́ствїи гдⷭ҇а на́шегѡ і҆и҃са хрⷭ҇та̀ и҆ на́шемъ собра́нїи ѡ҆ не́мъ,
+{{Smaller|{{Colors|#B22222||в҃}}}} не ско́рѡ подвиза́тисѧ ва́мъ ѿ ѹ҆ма̀, ни ѹ҆жаса́тисѧ нижѐ дꙋ́хомъ, нижѐ сло́вомъ, ни посла́нїемъ а҆́ки ѿ на́съ по́сланнымъ, ꙗ҆́кѡ ѹ҆жѐ настои́тъ де́нь хрⷭ҇то́въ.
+{{Smaller|{{Colors|#B22222||г҃}}}} Да никто́же ва́съ прельсти́тъ ни по є҆ди́номꙋ же ѡ҆́бразꙋ: ꙗ҆́кѡ а҆́ще не прїи́детъ ѿстꙋпле́нїе пре́жде, и҆ ѿкры́етсѧ человѣ́къ беззако́нїѧ, сы́нъ поги́бели,
+{{Smaller|{{Colors|#B22222||д҃}}}} проти́вникъ и҆ превозносѧ́йсѧ па́че всѧ́кагѡ глаго́лемагѡ бо́га и҆́ли чти́лища, ꙗ҆́коже є҆мꙋ̀ сѣ́сти {{Colors|#B22222||꙾}}въ це́ркви бж҃їей{{Colors|#B22222||꙾}}<ref>{{Colors|#B22222||꙾}}въ хра́мꙋ бж҃їю{{Colors|#B22222||꙾}}</ref> а҆́ки бо́гꙋ, показꙋ́ющꙋ себѐ, ꙗ҆́кѡ бо́гъ є҆́сть.
+{{Smaller|{{Colors|#B22222||є҃}}}} Не по́мните ли, ꙗ҆́кѡ є҆щѐ живы́й ѹ҆ ва́съ, сїѧ̑ глаго́лахъ ва́мъ;
+{{Smaller|{{Colors|#B22222||ѕ҃}}}} И҆ нн҃ѣ ѹ҆держава́ющее вѣ́сте, во є҆́же ꙗ҆ви́тисѧ є҆мꙋ̀ въ своѐ є҆мꙋ̀ вре́мѧ.
+{{Smaller|{{Colors|#B22222||з҃}}}} Та́йна бо ѹ҆жѐ дѣ́етсѧ беззако́нїѧ, то́чїю держѧ́й нн҃ѣ до́ндеже ѿ среды̀ бꙋ́детъ:
+{{Smaller|{{Colors|#B22222||и҃}}}} и҆ тогда̀ ꙗ҆ви́тсѧ беззако́нникъ, є҆го́же гдⷭ҇ь і҆и҃съ ѹ҆бїе́тъ дх҃омъ ѹ҆́стъ свои́хъ, и҆ ѹ҆праздни́тъ ꙗ҆вле́нїемъ прише́ствїѧ своегѡ̀,
+{{Smaller|{{Colors|#B22222||ѳ҃}}}} є҆гѡ́же є҆́сть прише́ствїе по дѣ́йствꙋ сатанинꙋ̀ во всѧ́цѣй си́лѣ и҆ зна́менїихъ и҆ чꙋдесѣ́хъ ло́жныхъ,
+{{Smaller|{{Colors|#B22222||і҃}}}} и҆ во всѧ́кой льстѝ непра́вды въ погиба́ющихъ, занѐ любвѐ и҆́стины не прїѧ́ша, во є҆́же спасти́сѧ и҆̀мъ.
+{{Smaller|{{Colors|#B22222||а҃і}}}} И҆ сегѡ̀ ра́ди по́слетъ и҆̀мъ бг҃ъ дѣ́йство льстѝ, во є҆́же вѣ́ровати и҆̀мъ лжѝ,
+{{Smaller|{{Colors|#B22222||в҃і}}}} да сꙋ́дъ прїи́мꙋтъ всѝ не вѣ́ровавшїи и҆́стинѣ, но благоволи́вшїи въ непра́вдѣ.
+{{Smaller|{{Colors|#B22222||г҃і}}}} Мы́ же до́лжни є҆смы̀ благодари́ти бг҃а всегда̀ ѡ҆ ва́съ, бра́тїе возлю́бленнаѧ ѿ гдⷭ҇а, ꙗ҆́кѡ и҆збра́лъ є҆́сть ва́съ бг҃ъ ѿ нача́ла во спⷭ҇нїе во ст҃ы́ни дх҃а и҆ вѣ́ры и҆́стины,
+{{Smaller|{{Colors|#B22222||д҃і}}}} въ не́же призва̀ ва́съ бл҃говѣствова́нїемъ на́шимъ, въ полꙋче́нїе сла́вы гдⷭ҇а на́шегѡ і҆и҃са хрⷭ҇та̀.
+{{Smaller|{{Colors|#B22222||є҃і}}}} Тѣ́мже ѹ҆̀бо, бра́тїе, сто́йте и҆ держи́те преда̑нїѧ, и҆̀мже наꙋчи́стесѧ и҆лѝ сло́вомъ, и҆лѝ посла́нїемъ на́шимъ.
+{{Smaller|{{Colors|#B22222||ѕ҃і}}}} Са́мъ же гдⷭ҇ь на́шъ і҆и҃съ хрⷭ҇то́съ, и҆ бг҃ъ и҆ ѻ҆ц҃ъ на́шъ, возлюби́вый на́съ и҆ да́вый ѹ҆тѣше́нїе вѣ́чно и҆ ѹ҆пова́нїе бл҃го въ блгⷣти,
+{{Smaller|{{Colors|#B22222||з҃і}}}} да ѹ҆тѣ́шитъ сердца̀ ва̑ша и҆ да ѹ҆тверди́тъ (ва́съ) во всѧ́цѣмъ сло́вѣ и҆ дѣ́лѣ бла́зѣ.
+
+{{Anchor|глаⷡ҇ г҃}} 
+==== <div style="text-align: center;"><span style="font-weight:normal; color:#B22222">Глава̀ г҃.</span></div> ====
+
+{{Буквица|font-size=5em|margin-right=0.05em|margin-bottom=-0.1em|П}}ро́чее, моли́тесѧ ѡ҆ на́съ, бра́тїе, да сло́во гдⷭ҇не тече́тъ и҆ сла́витсѧ, ꙗ҆́коже и҆ въ ва́съ,
+{{Smaller|{{Colors|#B22222||в҃}}}} и҆ да и҆зба́вимсѧ ѿ ѕлы́хъ и҆ лꙋка́выхъ человѣ̑къ: не всѣ́хъ бо є҆́сть вѣ́ра.
+{{Smaller|{{Colors|#B22222||г҃}}}} Вѣ́ренъ же є҆́сть гдⷭ҇ь, и҆́же ѹ҆тверди́тъ ва́съ и҆ сохрани́тъ ѿ лꙋка́вагѡ.
+{{Smaller|{{Colors|#B22222||д҃}}}} Ѹ҆пова́емъ же на гдⷭ҇а ѡ҆ ва́съ, ꙗ҆́кѡ, ꙗ҆̀же повелѣва́емъ ва́мъ, и҆ творитѐ и҆ сотворитѐ.
+{{Smaller|{{Colors|#B22222||є҃}}}} Гдⷭ҇ь же да и҆спра́витъ сердца̀ ва̑ша въ любо́вь бж҃їю и҆ въ терпѣ́нїе хрⷭ҇то́во.
+{{Smaller|{{Colors|#B22222||ѕ҃}}}} Повелѣва́емъ же ва́мъ, бра́тїе, ѡ҆ и҆́мени гдⷭ҇а на́шегѡ і҆и҃са хрⷭ҇та̀, ѿлꙋча́тисѧ ва́мъ ѿ всѧ́кагѡ бра́та безчи́ннѡ ходѧ́ща, а҆ не по преда́нїю, є҆́же прїѧ́ша ѿ на́съ:
+{{Smaller|{{Colors|#B22222||з҃}}}} са́ми бо вѣ́сте, ка́кѡ лѣ́по є҆́сть ва́мъ подо́битисѧ на́мъ: ꙗ҆́кѡ не безчи́нновахомъ ѹ҆ ва́съ,
+{{Smaller|{{Colors|#B22222||и҃}}}} нижѐ тꙋ́не хлѣ́бъ ꙗ҆до́хомъ ѹ҆ когѡ̀, но въ трꙋдѣ̀ и҆ по́двизѣ, но́щь и҆ де́нь дѣ́лающе, да не ѡ҆тѧгчи́мъ никогѡ́же ѿ ва́съ:
+{{Smaller|{{Colors|#B22222||ѳ҃}}}} не ꙗ҆́кѡ не и҆́мамы вла́сти, но да себѐ ѡ҆́бразъ да́мы ва́мъ, во є҆́же ѹ҆подо́битисѧ на́мъ.
+{{Smaller|{{Colors|#B22222||і҃}}}} И҆́бо є҆гда̀ бѣ́хомъ ѹ҆ ва́съ, сїѐ завѣщава́хомъ ва́мъ: ꙗ҆́кѡ а҆́ще кто̀ не хо́щетъ дѣ́лати нижѐ да ꙗ҆́стъ.
+{{Smaller|{{Colors|#B22222||а҃і}}}} Слы́шимъ бо нѣ̑кїѧ безчи́ннѡ ходѧ́щыѧ ѹ҆ ва́съ, ничто́же дѣ́лающыѧ, но лꙋка́внѡ ѡ҆бходѧ́щыѧ:
+{{Smaller|{{Colors|#B22222||в҃і}}}} таковы̑мъ запреща́емъ и҆ мо́лимъ ѡ҆ гдⷭ҇ѣ на́шемъ і҆и҃сѣ хрⷭ҇тѣ̀, да съ безмо́лвїемъ дѣ́лающе, сво́й хлѣ́бъ ꙗ҆дѧ́тъ.
+{{Smaller|{{Colors|#B22222||г҃і}}}} Вы́ же, бра́тїе, не стꙋжа́йте, до́брое творѧ́ще.
+{{Smaller|{{Colors|#B22222||д҃і}}}} А҆́ще же кто̀ не послꙋ́шаетъ словесѐ на́шегѡ посла́нїемъ, сего̀ назна́менꙋйте и҆ не примѣша́йтесѧ є҆мꙋ̀, да посрами́тсѧ:
+{{Smaller|{{Colors|#B22222||є҃і}}}} и҆ не а҆́ки врага̀ и҆мѣ́йте є҆го̀, но наказꙋ́йте ꙗ҆́коже бра́та.
+{{Smaller|{{Colors|#B22222||ѕ҃і}}}} Са́мъ же гдⷭ҇ь ми́ра да да́стъ ва́мъ ми́ръ всегда̀ во всѧ́цѣмъ ѡ҆́бразѣ: гдⷭ҇ь со всѣ́ми ва́ми.
+{{Smaller|{{Colors|#B22222||з҃і}}}} Цѣлова́нїе мое́ю рꙋко́ю па́ѵлею, є҆́же є҆́сть зна́менїе во всѧ́цѣмъ посла́нїи, си́це пишꙋ̀:
+{{Smaller|{{Colors|#B22222||и҃і}}}} блгⷣть гдⷭ҇а на́шегѡ і҆и҃са хрⷭ҇та̀ со всѣ́ми ва́ми. А҆ми́нь.
+
+<div style="text-align: center;">{{Smaller|{{Colors|#B22222||Коне́цъ второ́мꙋ посла́нїю є҆́же къ солꙋ́нѧнѡмъ: и҆́мать въ себѣ̀ главы̑ г҃.}}}}</div>
+
+----
+<small><references/></small>
+</div>
+
+{{translation license | original = {{PD-old}} | translation = {{PD-old}}}}
+
+
+[[Category:Бі́блїа|Бі́бліа/71 Посланіе второе къ солунѧнѡмъ свѧтагѡ апостола паѵла]]
+[[Category:Слове́нскїй|Посланіе второе къ солунѧнѡмъ свѧтагѡ апостола паѵла]]
+[[Category:Кни́ги но́вагѡ завѣ́та|Бі́бліа/71 Посланіе второе къ солунѧнѡмъ свѧтагѡ апостола паѵла]]

@@ -1,0 +1,60 @@
+{{DISPLAYTITLE:<span class="script-slavonic" style= "font-family: <!-- Unicode 5.1 Slavonic fonts: -->'Monomakh Unicode', Monomachus, BukyVede, 'Kliment Std', 'RomanCyrillic Std', Dilyana, Menaion, 'Menaion Medieval', Lazov, Code2000, 'DejaVu Sans', <!-- Unicode fallback: --> Code2001, 'Free Serif', 'TITUS Cyberbit Basic', 'Charis SIL', 'Doulos SIL', 'Chrysanthi Unicode', 'Bitstream Cyberbit', 'Bitstream CyberBase', Thryomanes, 'Lucida Grande', 'Free Sans', 'Arial Unicode MS', 'Microsoft Sans Serif', 'Lucida Sans Unicode'; font-size: 120%;">{{PAGENAME}}</span>}}
+{{header
+ | title      = <span class="script-slavonic" style= "font-family: <!-- Unicode 5.1 Slavonic fonts: -->'Monomakh Unicode', Monomachus, BukyVede, 'Kliment Std', 'RomanCyrillic Std', Dilyana, Menaion, 'Menaion Medieval', Lazov, Code2000, 'DejaVu Sans', <!-- Unicode fallback: --> Code2001, 'Free Serif', 'TITUS Cyberbit Basic', 'Charis SIL', 'Doulos SIL', 'Chrysanthi Unicode', 'Bitstream Cyberbit', 'Bitstream CyberBase', Thryomanes, 'Lucida Grande', 'Free Sans', 'Arial Unicode MS', 'Microsoft Sans Serif', 'Lucida Sans Unicode'; font-size: 120%;">[[Бі́блїа|Бі́блїа, си́рѣчь кни̑ги сщ҃е́ннагѡ писа́нїѧ <br>ве́тхагѡ и҆ но́вагѡ завѣ́та]]</span>
+ | author          = 
+ | override_author = 
+ | section    = <span class="script-slavonic" style= "font-family: <!-- Unicode 5.1 Slavonic fonts: -->'Monomakh Unicode', Monomachus, BukyVede, 'Kliment Std', 'RomanCyrillic Std', Dilyana, Menaion, 'Menaion Medieval', Lazov, Code2000, 'DejaVu Sans', <!-- Unicode fallback: --> Code2001, 'Free Serif', 'TITUS Cyberbit Basic', 'Charis SIL', 'Doulos SIL', 'Chrysanthi Unicode', 'Bitstream Cyberbit', 'Bitstream CyberBase', Thryomanes, 'Lucida Grande', 'Free Sans', 'Arial Unicode MS', 'Microsoft Sans Serif', 'Lucida Sans Unicode'; font-size: 120%;">Собо́рное посла́нїе і҆ꙋ́дино</span>
+ | notes = This page contains Church Slavonic text.  Without proper font support, you may see question marks, boxes, or other symbols instead of letters and diacritics. Click [http://sci.ponomar.net/ru/fonts.html here] to download required fonts.
+ | previous   =  <span class="script-slavonic" style= "font-family: <!-- Unicode 5.1 Slavonic fonts: -->'Monomakh Unicode', Monomachus, BukyVede, 'Kliment Std', 'RomanCyrillic Std', Dilyana, Menaion, 'Menaion Medieval', Lazov, Code2000, 'DejaVu Sans', <!-- Unicode fallback: --> Code2001, 'Free Serif', 'TITUS Cyberbit Basic', 'Charis SIL', 'Doulos SIL', 'Chrysanthi Unicode', 'Bitstream Cyberbit', 'Bitstream CyberBase', Thryomanes, 'Lucida Grande', 'Free Sans', 'Arial Unicode MS', 'Microsoft Sans Serif', 'Lucida Sans Unicode'; font-size: 120%;">[[Собо́рное посла́нїе тре́тїе ст҃а́гѡ а҆пⷭ҇ла і҆ѡа́нна бг҃осло́ва]]</span>
+ | previous2  =
+ | next       = <span class="script-slavonic" style= "font-family: <!-- Unicode 5.1 Slavonic fonts: -->'Monomakh Unicode', Monomachus, BukyVede, 'Kliment Std', 'RomanCyrillic Std', Dilyana, Menaion, 'Menaion Medieval', Lazov, Code2000, 'DejaVu Sans', <!-- Unicode fallback: --> Code2001, 'Free Serif', 'TITUS Cyberbit Basic', 'Charis SIL', 'Doulos SIL', 'Chrysanthi Unicode', 'Bitstream Cyberbit', 'Bitstream CyberBase', Thryomanes, 'Lucida Grande', 'Free Sans', 'Arial Unicode MS', 'Microsoft Sans Serif', 'Lucida Sans Unicode'; font-size: 120%;">[[Посла́нїе къ ри́млѧнѡмъ ст҃а́гѡ а҆пⷭ҇ла па́ѵла]]</span>
+ | next2      =
+ | year       = 
+ | categories =
+ | portal     =
+}}
+{{CSText}}
+<br>
+
+<div style="font-size: 350%; font-family: 'Cathisma Unicode'; text-align:center; color:#B22222">Собо́рное посла́нїе і҆ꙋ́дино.</div >
+
+==== <div style="text-align: center;"><span style="font-weight:normal; color:#B22222">Глава̀ а҃.</span></div> ====
+
+{{Буквица|font-size=5em|margin-right=0.05em|margin-bottom=-0.1em|І҆}}ꙋ́да, і҆и҃са хрⷭ҇та̀ ра́бъ, бра́тъ же і҆а́кѡва, сꙋ́щымъ ѡ҆ бз҃ѣ ѻ҆ц҃ѣ̀ ѡ҆свѧщє́ннымъ, і҆и҃съ хрⷭ҇то́мъ соблюдє́ннымъ зва̑ннымъ:
+{{Smaller|{{Colors|#B22222||в҃}}}} млⷭ҇ть ва́мъ и҆ ми́ръ и҆ любы̀ да ѹ҆мно́житсѧ.
+{{Smaller|{{Colors|#B22222||г҃}}}} Возлю́бленнїи, всѧ́ко тща́нїе творѧ̀ писа́ти ва́мъ ѡ҆ ѻ҆́бщемъ спⷭ҇нїи ва́шемъ, нꙋ́ждꙋ воз̾имѣ́хъ писа́ти ва́мъ, молѧ̀ подвиза́тисѧ ѡ҆ преда́ннѣй вѣ́рѣ ст҃ы̑мъ є҆ди́ною.
+{{Smaller|{{Colors|#B22222||д҃}}}} Привнидо́ша бо нѣ́цыи человѣ́цы, дре́вле пред̾ꙋста́вленнїи на сїѐ ѡ҆сꙋжде́нїе, нечести́вїи, бг҃а на́шегѡ блгⷣть прелага́ющїи въ скве́рнꙋ, и҆ є҆ди́нагѡ влⷣки бг҃а и҆ гдⷭ҇а на́шегѡ і҆и҃са хрⷭ҇та̀ ѿмета́ющїисѧ.
+{{Smaller|{{Colors|#B22222||є҃}}}} Воспомѧнꙋ́ти же ва́мъ хощꙋ̀, вѣ́дꙋщымъ и҆ ва́мъ є҆ди́ною сїѐ, ꙗ҆́кѡ гдⷭ҇ь лю́ди ѿ землѝ є҆гѵ́петскїѧ сп҃сѐ, послѣдѝ невѣ́ровавшыѧ погꙋбѝ:
+{{Smaller|{{Colors|#B22222||ѕ҃}}}} а҆́ггелы же не соблю́дшыѧ своегѡ̀ нача́лства, но ѡ҆ста́вльшыѧ своѐ жили́ще, на сꙋ́дъ вели́кагѡ днѐ ѹ҆́зами вѣ́чными под̾ мра́комъ соблюдѐ.
+{{Smaller|{{Colors|#B22222||з҃}}}} Ꙗ҆́коже содо́ма и҆ гомо́рра и҆ ѡ҆кре́стнїи и҆́хъ гра́ды, подо́бнымъ и҆̀мъ ѡ҆́бразомъ преблꙋди́вше и҆ ходи́вше в̾слѣ́дъ пло́ти и҆ны́ѧ, предлежа́тъ въ показа́нїе, ѻ҆гнѧ̀ вѣ́чнагѡ сꙋ́дъ под̾е́мше,
+{{Smaller|{{Colors|#B22222||и҃}}}} та́кожде ѹ҆̀бо и҆ сі́и, сѡ́нїѧ ви́дѧще, пло́ть ѹ҆́бѡ сквернѧ́тъ, госпо́дства же ѿмета́ютсѧ, сла́вы же хꙋ́лѧще (не трепе́щꙋтъ).
+{{Smaller|{{Colors|#B22222||ѳ҃}}}} Мїхаи́лъ же а҆рха́гг҃лъ, є҆гда̀ со дїа́воломъ {{Colors|#B22222||꙾}}разсꙋжда́ѧ{{Colors|#B22222||꙾}}<ref>{{Colors|#B22222||꙾}}препира́ѧсѧ{{Colors|#B22222||꙾}}</ref> глаго́лаше ѡ҆ мѡѷсе́овѣ тѣлесѝ, не смѣ́ѧше сꙋда̀ навестѝ хꙋ́лна, но речѐ: да запрети́тъ тебѣ̀ гдⷭ҇ь.
+{{Smaller|{{Colors|#B22222||і҃}}}} Сі́и же, є҆ли̑ка ѹ҆́бѡ не вѣ́дѧтъ, хꙋ́лѧтъ: є҆ли̑ка же по є҆стествꙋ̀ ꙗ҆́кѡ безсловє́снаѧ живѡ́тнаѧ вѣ́дѧтъ, въ си́хъ {{Colors|#B22222||꙾}}сквернѧ́тсѧ{{Colors|#B22222||꙾}}<ref>{{Colors|#B22222||꙾}}растлѣва́ютсѧ{{Colors|#B22222||꙾}}</ref>.
+{{Smaller|{{Colors|#B22222||а҃і}}}} Го́ре и҆́мъ, ꙗ҆́кѡ въ пꙋ́ть ка́їновъ поидо́ша, и҆ въ ле́сть вала́амовы мзды̀ ѹ҆стреми́шасѧ, и҆ въ пререка́нїи корре́овѣ погибо́ша.
+{{Smaller|{{Colors|#B22222||в҃і}}}} Сі́и сꙋ́ть въ любва́хъ ва́шихъ скверни́тєли, съ ва́ми ꙗ҆дꙋ́ще, без̾ боѧ́зни себѐ пасꙋ́ще: ѡ҆́блацы безво́дни, ѿ вѣ̑тръ преноси́ми: древеса̀ є҆сє́нна, безплѡ́дна, два́жды ѹ҆мє́рша, и҆скоренє́на:
+{{Smaller|{{Colors|#B22222||г҃і}}}} вѡ́лны свирѣ́пыѧ мо́рѧ, воспѣнѧ́ющѧ своѧ̑ стыдѣ̑нїѧ: ѕвѣ́зды пре́лєстныѧ, и҆̀мже мра́къ тмы̀ во вѣ́ки блюде́тсѧ.
+{{Smaller|{{Colors|#B22222||д҃і}}}} Прⷪ҇ро́чествова же и҆ ѡ҆ си́хъ седмы́й ѿ а҆да́ма є҆нѡ́хъ, глаго́лѧ: сѐ прїи́детъ гдⷭ҇ь во тма́хъ ст҃ы́хъ а҆́гг҃лъ свои́хъ,
+{{Smaller|{{Colors|#B22222||є҃і}}}} сотвори́ти сꙋ́дъ ѡ҆ всѣ́хъ и҆ и҆з̾ѡбличи́ти всѣ́хъ нечести́выхъ ѡ҆ всѣ́хъ дѣлѣ́хъ нече́стїѧ и҆́хъ, и҆́миже нече́ствоваша, и҆ ѡ҆ всѣ́хъ же́стокихъ словесѣ́хъ и҆́хъ, ꙗ҆́же глаго́лаша на́нь грѣ̑шницы нечести́вїи.
+{{Smaller|{{Colors|#B22222||ѕ҃і}}}} Сі́и сꙋ́ть ропотницы̀, ѹ҆кори́тєли, (ча́сть поро́чна,) въ по́хотехъ свои́хъ ходѧ́ще нече́стїемъ и҆ законопрестꙋпле́нїемъ: и҆ ѹ҆ста̀ и҆́хъ глаго́лютъ прегѡ́рдаѧ: чꙋдѧ́щесѧ ли́цамъ по́льзы ра́ди.
+{{Smaller|{{Colors|#B22222||з҃і}}}} Вы́ же, возлю́бленнїи, помина́йте глаго́лы преждеречє́нныѧ ѿ а҆пⷭ҇лъ гдⷭ҇а на́шегѡ і҆и҃са хрⷭ҇та̀:
+{{Smaller|{{Colors|#B22222||и҃і}}}} занѐ глаго́лахꙋ ва́мъ, ꙗ҆́кѡ въ послѣ́днее вре́мѧ бꙋ́дꙋтъ рꙋга́тєли, по свои́хъ по́хотехъ ходѧ́ще и҆ нече́стїихъ.
+{{Smaller|{{Colors|#B22222||ѳ҃і}}}} Сі́и сꙋ́ть ѿдѣлѧ́юще себѐ (ѿ є҆ди́ности вѣ́ры, и҆ сꙋ́ть) {{Colors|#B22222||꙾}}тѣле́сни{{Colors|#B22222||꙾}}<ref>{{Colors|#B22222||꙾}}дꙋше́вни{{Colors|#B22222||꙾}}</ref>, дꙋ́ха не и҆мꙋ́ще.
+{{Smaller|{{Colors|#B22222||к҃}}}} Вы́ же, возлю́бленнїи, ст҃о́ю ва́шею вѣ́рою назида́юще себѐ, дх҃омъ ст҃ы́мъ молѧ́щесѧ,
+{{Smaller|{{Colors|#B22222||к҃а}}}} са́ми себѐ въ любвѝ бж҃їей соблю́дайте, ждꙋ́ще млⷭ҇ти гдⷭ҇а на́шегѡ і҆и҃са хрⷭ҇та̀, въ жи́знь вѣ́чнꙋю.
+{{Smaller|{{Colors|#B22222||к҃в}}}} И҆ ѻ҆́вѣхъ ѹ҆́бѡ ми́лꙋйте разсꙋжда́юще,
+{{Smaller|{{Colors|#B22222||к҃г}}}} ѻ҆́вѣхъ же стра́хомъ спаса́йте, ѿ ѻ҆гнѧ̀ восхища́юще: ѡ҆блича́йте же съ боѧ́знїю, ненави́дѧще и҆ ꙗ҆́же ѿ пло́ти ѡ҆скверне́нꙋю ри́зꙋ.
+{{Smaller|{{Colors|#B22222||к҃д}}}} Могꙋ́щемꙋ же сохрани́ти вы̀ без̾ грѣха̀ и҆ без̾ скве́рны и҆ поста́вити пред̾ сла́вою свое́ю непоро́чныхъ въ ра́дости,
+{{Smaller|{{Colors|#B22222||к҃є}}}} є҆ди́номꙋ премⷣромꙋ бг҃ꙋ и҆ сп҃сꙋ на́шемꙋ, і҆и҃сомъ хрⷭ҇то́мъ гдⷭ҇емъ на́шимъ, сла́ва и҆ вели́чїе, держа́ва и҆ вла́сть, пре́жде всегѡ̀ вѣ́ка, и҆ нн҃ѣ, и҆ во всѧ̑ вѣ́ки. А҆ми́нь.
+
+<div style="text-align: center;">{{Smaller|{{Colors|#B22222||Коне́цъ собо́рномꙋ посла́нїю і҆ꙋ́динꙋ: и҆́мать въ себѣ̀ главꙋ̀ а҃.}}}}</div>
+
+----
+<small><references/></small>
+</div>
+
+{{translation license | original = {{PD-old}} | translation = {{PD-old}}}}
+
+
+[[Category:Бі́блїа|Бі́бліа/62 Соборное посланіе іудино]]
+[[Category:Слове́нскїй|Соборное посланіе іудино]]
+[[Category:Кни́ги но́вагѡ завѣ́та|Бі́бліа/62 Соборное посланіе іудино]]
