@@ -21,8 +21,8 @@ use std::sync::OnceLock;
 /// Where a lexeme (or a form) came from.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Provenance {
-    /// A lexicon line.
-    Attested,
+    /// Imported or hand-maintained lexical data; this does not attest any form.
+    LexiconEntry,
     /// Built by the guesser from a lemma alone.
     Guessed,
 }
@@ -43,7 +43,7 @@ pub struct Lexeme {
     pub stems: Vec<(String, String)>,
     /// Cells whose printed form is not what class + stress produce.
     pub overrides: Vec<(Cell, String)>,
-    /// Additional attested forms per cell, for the analyzer.
+    /// Additional supplied forms per cell; source claims need separate validation.
     pub variants: Vec<(Cell, Vec<String>)>,
     /// A source's count on a variant (`form×12` in the column): the
     /// analyzer's weight; a form without one weighs 0.
@@ -102,7 +102,7 @@ impl Lexeme {
 pub(crate) type EndingVotes = HashMap<(Pos, String), HashMap<&'static str, usize>>;
 
 pub struct Lexicon {
-    pub recension: Recension,
+    recension: Recension,
     lexemes: Vec<Lexeme>,
     by_id: HashMap<String, usize>,
     by_key: HashMap<(String, Pos), Vec<usize>>,
@@ -128,13 +128,18 @@ const OCS_FILES: [(Pos, &str); 4] = [
 ];
 
 impl Lexicon {
+    /// The immutable profile used by this lexicon and its indices.
+    pub fn recension(&self) -> Recension {
+        self.recension
+    }
+
     /// The Synodal lexicon, parsed once on first use (about 0.1 s; the
     /// analyzer's index is built on the first `analyze`, see there).
     ///
     /// ```
     /// use church_slavonic::{Lexicon, Recension};
     /// let syn = Lexicon::synodal();
-    /// assert_eq!(syn.recension, Recension::Synodal);
+    /// assert_eq!(syn.recension(), Recension::Synodal);
     /// assert!(syn.len() > 30_000);
     /// ```
     pub fn synodal() -> &'static Lexicon {
@@ -182,15 +187,58 @@ impl Lexicon {
     /// Build a lexicon from parsed lexemes (the tools crate builds
     /// candidate lexicons this way before writing them).
     pub fn from_lexemes(recension: Recension, lexemes: Vec<Lexeme>) -> Lexicon {
+        Self::try_from_lexemes(recension, lexemes).expect("invalid trusted lexicon; use try_from_lexemes for external data")
+    }
+
+    /// Validate all entries before exposing a snapshot. Lexemes are owned by
+    /// the snapshot and can only be borrowed immutably after construction.
+    pub fn try_from_lexemes(recension: Recension, lexemes: Vec<Lexeme>) -> Result<Lexicon, crate::error::LexiconBuildError> {
+        use crate::error::{LexiconBuildError, LexiconBuildProblem as Problem};
+        use std::collections::HashSet;
         let mut by_id = HashMap::with_capacity(lexemes.len());
         let mut by_key: HashMap<(String, Pos), Vec<usize>> = HashMap::new();
         for (i, l) in lexemes.iter().enumerate() {
+            let error = |problem| LexiconBuildError { lexeme_id: l.id.clone(), problem };
+            if l.id.is_empty() || l.id == "-" {
+                return Err(error(Problem::EmptyIdentity));
+            }
             if by_id.insert(l.id.clone(), i).is_some() {
-                panic!("lexicon: duplicate id {}", l.id);
+                return Err(error(Problem::DuplicateIdentity));
+            }
+            if l.recension != recension {
+                return Err(error(Problem::MixedProfile));
+            }
+            crate::stress::StressSpec::parse(&l.stress, l.pos)
+                .map_err(|e| error(Problem::InvalidStress(e)))?;
+            // Empty/0 explicitly represent inherited unknown class information.
+            // They do not license a generated paradigm.
+            if l.pos != Pos::Closed && !l.class.is_empty() && l.class != "0" && l.class().is_none() {
+                return Err(error(Problem::UnknownClass(l.class.clone())));
+            }
+            let mut stems = HashSet::new();
+            for (key, _) in &l.stems {
+                if !stems.insert(key) { return Err(error(Problem::DuplicateField(format!("stem:{key}")))); }
+            }
+            let mut overrides = HashSet::new();
+            for (cell, _) in &l.overrides {
+                if cell.pos() != l.pos { return Err(error(Problem::WrongCell(*cell))); }
+                if !overrides.insert(cell) { return Err(error(Problem::DuplicateField(format!("override:{}", cell.name())))); }
+            }
+            // Variant groups are additive, unlike singleton overrides. Existing
+            // consumers intentionally concatenate repeated groups for a cell.
+            for (cell, _) in &l.variants {
+                if cell.pos() != l.pos { return Err(error(Problem::WrongCell(*cell))); }
+            }
+            let mut weights = HashSet::new();
+            for (cell, form, _) in &l.variant_weights {
+                if cell.pos() != l.pos { return Err(error(Problem::WrongCell(*cell))); }
+                if !weights.insert((cell, form)) {
+                    return Err(error(Problem::DuplicateField(format!("weight:{}:{form}", cell.name()))));
+                }
             }
             by_key.entry((comparison_key(&l.lemma), l.pos)).or_default().push(i);
         }
-        Lexicon { recension, lexemes, by_id, by_key, index: crate::analyze::IndexSlot::new(), endings: std::sync::OnceLock::new() }
+        Ok(Lexicon { recension, lexemes, by_id, by_key, index: crate::analyze::IndexSlot::new(), endings: std::sync::OnceLock::new() })
     }
 
     pub(crate) fn index_cell(&self) -> &crate::analyze::IndexSlot {
@@ -368,6 +416,8 @@ fn parse_lines(text: &str, pos: Pos, recension: Recension) -> Result<Vec<Lexeme>
         } else {
             src.split(';').map(str::to_string).collect()
         };
+        crate::stress::StressSpec::parse(stress, pos)
+            .map_err(|e| format!("line {line_no}: stress: {e}"))?;
         out.push(Lexeme {
             id: id.to_string(),
             lemma: lemma.to_string(),
@@ -382,7 +432,7 @@ fn parse_lines(text: &str, pos: Pos, recension: Recension) -> Result<Vec<Lexeme>
             variant_weights: weights_v,
             src: src_v,
             note: if empty(note) { String::new() } else { note.to_string() },
-            provenance: Provenance::Attested,
+            provenance: Provenance::LexiconEntry,
             recension,
         });
     }

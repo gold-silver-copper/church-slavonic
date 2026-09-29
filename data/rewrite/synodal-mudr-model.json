@@ -1,0 +1,202 @@
+{
+  "version": 4,
+  "input": {
+    "evidence": [
+      {
+        "id": "e-mudr-053",
+        "source": "https://www.ponomar.net/files/gama2/p053.htm",
+        "source_sha256": "68c82d6127d1d56799d5f1b2931ffcba7a1a8174d2d73b5147f5fe2f9277b373",
+        "location": "§53, hard short adjective table",
+        "method": "Assistant checked freshly downloaded online HTML; not expert review or printed-edition authentication.",
+        "claim": "Selected short adjective cells of мꙋ́дръ with explicit stem boundaries.",
+        "kind": "DescriptiveRule",
+        "review": "SourceChecked"
+      },
+      {
+        "id": "e-mudr-106",
+        "source": "https://www.ponomar.net/files/gama2/p106.htm",
+        "source_sha256": "08c244546dea122d1517366c45f482f0c5b309195205efd8437a99ff7a5c5488",
+        "location": "§106, adjective-derived adverb paragraph",
+        "method": "Assistant checked freshly downloaded online HTML; not expert review or printed-edition authentication.",
+        "claim": "мꙋ́дрѡ and мꙋ́дрѣ are listed as adjective-derived adverb forms.",
+        "kind": "LexicalAssertion",
+        "review": "SourceChecked"
+      },
+      {
+        "id": "e-mudr-relation",
+        "source": "https://www.ponomar.net/files/gama2/p106.htm",
+        "source_sha256": "08c244546dea122d1517366c45f482f0c5b309195205efd8437a99ff7a5c5488",
+        "location": "§106, adjective-derived adverb paragraph",
+        "method": "Assistant checked freshly downloaded online HTML; not expert review or printed-edition authentication.",
+        "claim": "Proposed lexical link from the adjective мꙋ́дръ in §53 to the adverb мꙋ́дрѡ / мꙋ́дрѣ in §106. This cross-section identification is an annotation, not independent expert gold.",
+        "kind": "Annotation",
+        "review": "Unverified"
+      }
+    ],
+    "grammars": [
+      {
+        "id": "g-syn-mudr",
+        "description": "Selected Alypy short adjective and adverb cells, not a complete grammar",
+        "evidence": [
+          "e-mudr-053",
+          "e-mudr-106"
+        ]
+      }
+    ],
+    "orthographies": [
+      {
+        "id": "o-syn-mudr",
+        "description": "Preserve source accents and letter distinctions, NFC",
+        "compatible_grammars": [
+          "g-syn-mudr"
+        ],
+        "rules": [],
+        "unicode": "Nfc",
+        "evidence": [
+          "e-mudr-053",
+          "e-mudr-106"
+        ]
+      }
+    ],
+    "paradigms": [
+      {
+        "id": "p-mudr-adjective",
+        "grammar": "g-syn-mudr",
+        "pos": "a",
+        "rules": [
+          {
+            "id": "r-mudr-short.pos.m.sg.nom",
+            "cell": [
+              "a",
+              "short.pos.m.sg.nom"
+            ],
+            "stem": "base",
+            "suffix": "ъ",
+            "evidence": [
+              "e-mudr-053"
+            ]
+          },
+          {
+            "id": "r-mudr-short.pos.n.sg.nom",
+            "cell": [
+              "a",
+              "short.pos.n.sg.nom"
+            ],
+            "stem": "base",
+            "suffix": "о",
+            "evidence": [
+              "e-mudr-053"
+            ]
+          },
+          {
+            "id": "r-mudr-short.pos.m.sg.loc",
+            "cell": [
+              "a",
+              "short.pos.m.sg.loc"
+            ],
+            "stem": "base",
+            "suffix": "ѣ",
+            "evidence": [
+              "e-mudr-053"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "p-mudr-adverb",
+        "grammar": "g-syn-mudr",
+        "pos": "x",
+        "rules": [
+          {
+            "id": "r-mudro-0",
+            "cell": [
+              "x",
+              "word"
+            ],
+            "stem": "base",
+            "suffix": "ѡ",
+            "evidence": [
+              "e-mudr-106"
+            ]
+          },
+          {
+            "id": "r-mudro-1",
+            "cell": [
+              "x",
+              "word"
+            ],
+            "stem": "base",
+            "suffix": "ѣ",
+            "evidence": [
+              "e-mudr-106"
+            ]
+          }
+        ]
+      }
+    ],
+    "lexemes": [
+      {
+        "id": "l-000004",
+        "displayed_lemma": "мꙋ́дръ",
+        "categories": [
+          {
+            "category": "Adjective",
+            "evidence": [
+              "e-mudr-053"
+            ]
+          }
+        ],
+        "paradigm": "p-mudr-adjective",
+        "stems": [
+          {
+            "name": "base",
+            "text": "мꙋ́др",
+            "evidence": [
+              "e-mudr-053"
+            ]
+          }
+        ],
+        "unavailable": [],
+        "relations": [
+          {
+            "kind": "DerivedAdverb",
+            "target": "l-000005",
+            "evidence": [
+              "e-mudr-relation"
+            ]
+          }
+        ],
+        "evidence": [
+          "e-mudr-053"
+        ]
+      },
+      {
+        "id": "l-000005",
+        "displayed_lemma": "мꙋ́дрѡ",
+        "categories": [
+          {
+            "category": "Adverb",
+            "evidence": [
+              "e-mudr-106"
+            ]
+          }
+        ],
+        "paradigm": "p-mudr-adverb",
+        "stems": [
+          {
+            "name": "base",
+            "text": "мꙋ́др",
+            "evidence": [
+              "e-mudr-106"
+            ]
+          }
+        ],
+        "unavailable": [],
+        "relations": [],
+        "evidence": [
+          "e-mudr-106"
+        ]
+      }
+    ]
+  }
+}

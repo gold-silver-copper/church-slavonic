@@ -1,17 +1,15 @@
-//! The constraint layer (V2.2 Part 4): rules over a verse's readings that
-//! ELIMINATE and never SELECT, each named, each recorded on the leaf it
-//! narrowed (`:by prep-gov :from nom|acc|voc.sg`; a several-lexeme token
-//! reduced to one lexeme carries `:from-lexemes n`). A rule that would
-//! leave nothing leaves everything. The structure a rule reads is
-//! adjacency in the flat auto-lifted tree: a preposition and the nominal
-//! after it, an adjective and the noun beside it, a nominative noun and
-//! the finite verb beside it. Scored against the hand overlay by
-//! `cargo xtask score-disambiguation`; a rule that ever excludes a hand
-//! cell is wrong and goes.
+//! Legacy local contextual heuristics. Applied exclusions are recorded on leaves,
+//! but are not independently validated grammatical judgments. The former
+//! voc-drop and bare-voc rules are retired: absence of an adjacent imperative
+//! or interjection does not establish that a vocative reading is impossible.
+//! Bare-loc is also retired: absence of a preposition does not rule out a
+//! locative. `one-subject` is proposal-only: its local nominative/transitivity
+//! tests do not establish subject, object, or apposition attachments. Remaining
+//! applied rules require profile-specific premise and retention audits.
 
 use crate::sentence::node::Node;
 use crate::cell::{Cell, CellSet, VerbCell};
-use crate::grammar::{Case, Gender, Number, Person, Prosody};
+use crate::grammar::{Case, Gender, Number, Person};
 use crate::{Lexicon, Pos};
 use std::collections::BTreeMap;
 
@@ -20,9 +18,11 @@ use std::collections::BTreeMap;
 pub struct Stats {
     /// rule → (leaves narrowed, several-lexeme tokens reduced to one)
     pub by_rule: BTreeMap<&'static str, (usize, usize)>,
+    pub(crate) recorder: Option<super::trace::Recorder>,
 }
 
 impl Stats {
+    /// Aggregate counts only; per-tree trace addresses cannot be concatenated.
     pub fn add(&mut self, other: &Stats) {
         for (k, (a, b)) in &other.by_rule {
             let e = self.by_rule.entry(k).or_default();
@@ -87,10 +87,6 @@ fn is_finite(cell: &Cell) -> bool {
     matches!(cell, Cell::Verb(VerbCell::Finite { .. }))
 }
 
-fn is_imperative(cell: &Cell) -> bool {
-    matches!(cell, Cell::Verb(VerbCell::Imperative { .. }))
-}
-
 /// Narrow a leaf to the cells `keep` admits; records the rule and the set
 /// it narrowed from (the first narrowing's). Returns whether it narrowed.
 pub fn narrow(node: &mut Node, lexicon: &Lexicon, rule: &'static str, keep: impl Fn(&Cell) -> bool, stats: &mut Stats) -> bool {
@@ -105,9 +101,9 @@ pub fn narrow(node: &mut Node, lexicon: &Lexicon, rule: &'static str, keep: impl
     // it, or leave the leaf alone
     if set.first() != cells.first() {
         let Some(lexeme) = lexicon.get(id) else { return false };
-        let token = lexeme.forms(cells.first()).get(*alt).map(|f| f.print(lexicon.recension));
+        let token = lexeme.forms(cells.first()).get(*alt).map(|f| f.print(lexicon.recension()));
         let Some(token) = token else { return false };
-        let Some(k) = lexeme.forms(set.first()).iter().position(|f| f.print(lexicon.recension) == token) else { return false };
+        let Some(k) = lexeme.forms(set.first()).iter().position(|f| f.print(lexicon.recension()) == token) else { return false };
         *alt = k;
     }
     if !notes.iter().any(|(k, _)| k == "from") {
@@ -143,15 +139,6 @@ fn frame(lexicon: &Lexicon, word: &str) -> Vec<Case> {
         }
     }
     out
-}
-
-fn is_interjection(lexicon: &Lexicon, word: &str) -> bool {
-    let lexemes: Vec<&crate::Lexeme> = if crate::sentence::node::is_lexeme_id(word) {
-        lexicon.get(word).into_iter().collect()
-    } else {
-        lexicon.find(word, Pos::Closed)
-    };
-    lexemes.iter().any(|l| l.subcategory() == Some("intj"))
 }
 
 /// Is the child at `i` a boundary no rule reads across (punctuation)?
@@ -197,7 +184,7 @@ pub fn reduce(node: &mut Node, lexicon: &Lexicon, rule: &'static str, keep: impl
     }
     let capped = crate::sentence::lift::decapitalized(&surface).is_some();
     let candidate = if capped { Node::Cap(Box::new(leaf)) } else { leaf };
-    match crate::sentence::node::render(&candidate, &lexicon.recension) {
+    match crate::sentence::node::render_with(&candidate, lexicon) {
         Ok(rendered) if rendered == surface => {
             *node = candidate;
             stats.reduced(rule);
@@ -209,7 +196,16 @@ pub fn reduce(node: &mut Node, lexicon: &Lexicon, rule: &'static str, keep: impl
 
 /// Apply the rules to one auto-lifted verse tree, in place.
 pub fn disambiguate(tree: &mut Node, lexicon: &Lexicon) -> Stats {
-    let mut stats = Stats::default();
+    apply_rules(tree, lexicon, Stats::default(), Schedule::Applied)
+}
+
+pub(crate) fn disambiguate_recorded(tree: &mut Node, lexicon: &Lexicon) -> Stats {
+    apply_rules(tree, lexicon, Stats { recorder: Some(super::trace::Recorder::default()), ..Stats::default() }, Schedule::Diagnostic)
+}
+
+enum Schedule { Applied, Diagnostic }
+
+fn apply_rules(tree: &mut Node, lexicon: &Lexicon, mut stats: Stats, schedule: Schedule) -> Stats {
     let Node::Group { children, .. } = tree else { return stats };
     let n = children.len();
     // 1. prep-gov: a preposition's frame narrows the nominal after it
@@ -234,8 +230,8 @@ pub fn disambiguate(tree: &mut Node, lexicon: &Lexicon) -> Stats {
             if !nominal {
                 break;
             }
-            if !narrow(&mut children[j], lexicon, "prep-gov", keep, &mut stats) && targets == 0 {
-                reduce(&mut children[j], lexicon, "prep-gov", keep, &mut stats);
+            if !narrow_child(children, j, lexicon, "prep-gov", keep, &mut stats) && targets == 0 {
+                reduce_child(children, j, lexicon, "prep-gov", keep, &mut stats);
             }
             targets += 1;
             if !adjective_first {
@@ -298,132 +294,18 @@ pub fn disambiguate(tree: &mut Node, lexicon: &Lexicon) -> Stats {
             }
             let keep_adj = |c: &Cell| noun_cells.iter().any(|y| agree(c, y));
             let keep_noun = |c: &Cell| adj_cells.iter().any(|x| agree(x, c));
-            narrow(&mut children[a], lexicon, "np-agree", keep_adj, &mut stats);
-            narrow(&mut children[b], lexicon, "np-agree", keep_noun, &mut stats);
+            narrow_child(children, a, lexicon, "np-agree", keep_adj, &mut stats);
+            narrow_child(children, b, lexicon, "np-agree", keep_noun, &mut stats);
         }
     }
-    // 3. subj-verb: a noun whose every reading is nominative beside a
-    //    finite verb: the verb is third person and agrees in number
-    for i in 0..n {
-        let Some(Node::Lex { cells, .. }) = leaf(&children[i]) else { continue };
-        if !cells.iter().all(|c| matches!(c, Cell::Noun(_)) && c.case() == Some(Case::Nominative)) {
-            continue;
-        }
-        let numbers: Vec<Number> = cells.iter().filter_map(|c| c.number()).collect();
-        for j in [i.checked_sub(1), i.checked_add(1)].into_iter().flatten() {
-            if j >= n || boundary(children, j) {
-                continue;
-            }
-            let is_verb = leaf(&children[j]).is_some_and(|l| matches!(l, Node::Lex { cells, .. } if cells.iter().all(|c| is_finite(&c)) && cells.iter().any(|c| c.person() == Some(Person::Third))));
-            if !is_verb {
-                continue;
-            }
-            let numbers = numbers.clone();
-            narrow(&mut children[j], lexicon, "subj-verb", move |c| c.person() == Some(Person::Third) && c.number().is_some_and(|k| numbers.contains(&k)), &mut stats);
-        }
-    }
-    // 4. voc-drop: the vocative goes from a set with other members unless
-    //    an imperative or an interjection stands beside the token
-    for i in 0..n {
-        let Some(Node::Lex { cells, .. }) = leaf(&children[i]) else { continue };
-        if !cells.iter().any(|c| c.case() == Some(Case::Vocative)) || cells.iter().all(|c| c.case() == Some(Case::Vocative)) {
-            continue;
-        }
-        let beside = |j: Option<usize>| -> bool {
-            let Some(j) = j else { return false };
-            if j >= n {
-                return false;
-            }
-            let imperative = leaf(&children[j]).is_some_and(|l| matches!(l, Node::Lex { cells, .. } if cells.iter().any(|c| is_imperative(&c))));
-            let interjection = fn_word(&children[j]).is_some_and(|w| is_interjection(lexicon, w));
-            imperative || interjection
-        };
-        if beside(i.checked_sub(1)) || beside(i.checked_add(1)) {
-            continue;
-        }
-        narrow(&mut children[i], lexicon, "voc-drop", |c| c.case() != Some(Case::Vocative), &mut stats);
-    }
-    // 4b. bare-voc (3.4): the same for a several-lexeme token — a reading
-    //     whose every cell is vocative goes unless an imperative or an
-    //     interjection stands beside the token
-    for i in 0..n {
-        if amb_surface(&children[i]).is_none() {
-            continue;
-        }
-        let beside = |j: Option<usize>| -> bool {
-            let Some(j) = j else { return false };
-            if j >= n {
-                return false;
-            }
-            let imperative = leaf(&children[j]).is_some_and(|l| matches!(l, Node::Lex { cells, .. } if cells.iter().any(|c| is_imperative(&c))));
-            let interjection = fn_word(&children[j]).is_some_and(|w| is_interjection(lexicon, w));
-            imperative || interjection
-        };
-        if beside(i.checked_sub(1)) || beside(i.checked_add(1)) {
-            continue;
-        }
-        reduce(&mut children[i], lexicon, "bare-voc", |c| c.case() != Some(Case::Vocative), &mut stats);
-    }
-    // 4c. bare-loc (3.4): a locative is governed by a preposition; a
-    //     reading whose every cell is locative with no locative-governing
-    //     preposition before it in the chunk (the look back crosses
-    //     adjective-like leaves, never a noun, a verb, a function word
-    //     without a locative frame, or punctuation) is impossible and goes
-    //     — from a set (narrow) or from a several-lexeme token (reduce:
-    //     ви́дѣ the aorist beside ви́дъ's locative). A leaf that is only
-    //     locative is left as it is: eliminating everything is a claim
-    //     the grammar's exceptions (the locative of time) forbid.
-    for i in 0..n {
-        let has_locative = match (leaf(&children[i]), amb_surface(&children[i])) {
-            (Some(Node::Lex { cells, .. }), _) => cells.iter().any(|c| c.case() == Some(Case::Locative)) && !cells.iter().all(|c| c.case() == Some(Case::Locative)),
-            (_, Some(_)) => true,
-            _ => false,
-        };
-        if !has_locative {
-            continue;
-        }
-        let mut governed = false;
-        // a chunk that reaches the verse's start may continue the previous
-        // verse's phrase (Romans 1:3–4: ѡ҆ сн҃ѣ … нарече́ннѣмъ сн҃ѣ бж҃їи):
-        // the verse is the treebank's unit, not the clause's, so nothing
-        // is eliminated there
-        let mut open_start = false;
-        let mut j = i;
-        loop {
-            if j == 0 {
-                open_start = true;
-                break;
-            }
-            if boundary(children, j - 1) {
-                break;
-            }
-            j -= 1;
-            if let Some(word) = fn_word(&children[j]) {
-                governed = frame(lexicon, word).contains(&Case::Locative);
-                break;
-            }
-            // the look back crosses an adjective-like leaf and a nominal
-            // that can itself be the preposition's locative (по тве́рди
-            // небе́снѣй, въ дѣ́лѣхъ жесто́кихъ: the attribute after its noun)
-            let crosses = leaf(&children[j]).is_some_and(|l| matches!(l, Node::Lex { cells, .. } if cells.iter().all(|c| is_adjective_like(&c)) || cells.iter().any(|c| c.case() == Some(Case::Locative))))
-                || amb_surface(&children[j]).is_some_and(|s| {
-                    // a several-lexeme token one of whose readings is locative
-                    // (на пе́рсехъ твои́хъ) may be the governed nominal too
-                    let looked_up = crate::sentence::lift::decapitalized(s).unwrap_or_else(|| s.to_string());
-                    lexicon.readings(&looked_up).iter().any(|r| r.exact && r.cells.iter().any(|(c, _)| c.case() == Some(Case::Locative)))
-                });
-            if !crosses {
-                break;
-            }
-        }
-        if governed || open_start {
-            continue;
-        }
-        if !narrow(&mut children[i], lexicon, "bare-loc", |c| c.case() != Some(Case::Locative), &mut stats) {
-            reduce(&mut children[i], lexicon, "bare-loc", |c| c.case() != Some(Case::Locative), &mut stats);
-        }
-    }
-    let _ = Prosody::Tonic;
+    // No person/number exclusion from an adjacent nominative noun alone.
+    // The former subj-verb rule assumed a subject attachment that the tree
+    // does not establish. Keep finite alternatives until a separately supported
+    // contextual relation justifies narrowing; see subject_retention.rs.
+    // No vocative elimination based on missing adjacent imperative/interjection.
+    // See tests/vocative_retention.rs in tools for the ordinary Sentence path.
+    // No locative exclusion from an absent local prepositional governor:
+    // non-prepositional locatives and verbal complements require richer analysis.
     // 5. one-subject (3.2): the clause has one finite transitive verb; a
     //    noun that can only be nominative and agrees with it in number is
     //    the subject, so every other noun of the clause that reads
@@ -434,14 +316,19 @@ pub fn disambiguate(tree: &mut Node, lexicon: &Lexicon) -> Stats {
     //    noun after a preposition is that preposition's and is left
     //    alone; a copula or an intransitive verb (быти, ꙗвитисѧ) takes a
     //    predicate nominative and no rule fires.
-    let mut start = 0;
-    while start < n {
-        let mut end = start;
-        while end < n && !clause_boundary(children, end, lexicon) {
-            end += 1;
+    // This heuristic has no validated attachment premises. Keep its behavior
+    // available only on the recorded, disposable proposal tree. Ordinary
+    // Sentence and treebank consumers must not turn it into an exclusion.
+    if matches!(schedule, Schedule::Diagnostic) {
+        let mut start = 0;
+        while start < n {
+            let mut end = start;
+            while end < n && !clause_boundary(children, end, lexicon) {
+                end += 1;
+            }
+            one_subject(children, start, end, lexicon, &mut stats);
+            start = end + 1;
         }
-        one_subject(children, start, end, lexicon, &mut stats);
-        start = end + 1;
     }
 
     stats
@@ -526,18 +413,52 @@ fn one_subject(children: &mut [Node], start: usize, end: usize, lexicon: &Lexico
                 hi > lo + 1 && (lo + 1..hi).all(|k| leaf(&children[k]).is_some_and(|l| matches!(l, Node::Lex { cells, .. } if cells.iter().all(|c| is_adjective_like(&c)))))
             })
             .collect();
-        for i in start..end {
-            if i == v || i == subject || !noun_leaf(children, i) || in_prepositional_phrase(children, i, lexicon) || apposed[i] {
+        for (i, is_apposed) in apposed.iter().enumerate().take(end).skip(start) {
+            if i == v || i == subject || !noun_leaf(children, i) || in_prepositional_phrase(children, i, lexicon) || *is_apposed {
                 continue;
             }
-            narrow(&mut children[i], lexicon, "one-subject", |c| c.case() != Some(Case::Nominative), stats);
+            narrow_child(children, i, lexicon, "one-subject", |c| c.case() != Some(Case::Nominative), stats);
         }
     } else {
         for i in start..end {
             if i == v || !noun_leaf(children, i) || in_prepositional_phrase(children, i, lexicon) {
                 continue;
             }
-            narrow(&mut children[i], lexicon, "one-subject", |c| c.case() != Some(Case::Nominative), stats);
+            narrow_child(children, i, lexicon, "one-subject", |c| c.case() != Some(Case::Nominative), stats);
         }
     }
+}
+
+// Evaluate a candidate child before modifying the live proposal. This lets the
+// trace capture the precise group state read at each successful update.
+fn update_child(children: &mut [Node], index: usize, lexicon: &Lexicon, rule: &'static str,
+    keep: impl Fn(&Cell) -> bool, stats: &mut Stats, reduction: bool) -> bool {
+    let apply = |node: &mut Node, stats: &mut Stats| {
+        if reduction { reduce(node, lexicon, rule, &keep, stats) }
+        else { narrow(node, lexicon, rule, &keep, stats) }
+    };
+    if stats.recorder.is_none() { return apply(&mut children[index], stats); }
+    if stats.recorder.as_ref().is_some_and(|r| r.exhausted) { return false; }
+    let mut proposed = children[index].clone();
+    let changed = apply(&mut proposed, stats);
+    if !changed { return false; }
+    if let Some(recorder) = &mut stats.recorder {
+        if recorder.events.len() >= super::trace::MAX_EVENTS
+            || super::trace::check(children).is_err()
+            || super::trace::check(std::slice::from_ref(&proposed)).is_err() {
+            recorder.exhausted = true;
+            return false;
+        }
+        recorder.events.push(super::trace::Event { rule, applied_by_default: rule != "one-subject", child: index, context: children.to_vec(), proposed: proposed.clone() });
+    }
+    children[index] = proposed;
+    true
+}
+fn narrow_child(children: &mut [Node], index: usize, lexicon: &Lexicon, rule: &'static str,
+    keep: impl Fn(&Cell) -> bool, stats: &mut Stats) -> bool {
+    update_child(children, index, lexicon, rule, keep, stats, false)
+}
+fn reduce_child(children: &mut [Node], index: usize, lexicon: &Lexicon, rule: &'static str,
+    keep: impl Fn(&Cell) -> bool, stats: &mut Stats) -> bool {
+    update_child(children, index, lexicon, rule, keep, stats, true)
 }

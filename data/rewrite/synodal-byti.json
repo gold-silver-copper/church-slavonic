@@ -1,0 +1,77 @@
+{
+  "schema": 2,
+  "id": "alypy-byti-present-primary",
+  "purpose": "Source-table reproduction of explicitly supplied irregular principal parts, not productive generalization or independent held-out evaluation.",
+  "source": {
+    "url": "https://www.ponomar.net/files/gama2/p081.htm",
+    "section": "§81, lemma and first table, present column",
+    "sha256": "47e294d9a3c95926dd5b0746970c62b8ec8f60814ef1864d550baf055b6b327f"
+  },
+  "edition_limit": "Ponomar revised online transcription; printed facsimile and expert review unverified.",
+  "exclusions": [
+    "Parenthesized dual variants",
+    "Other tenses and periphrastic constructions"
+  ],
+  "forms": [
+    {
+      "pos": "v",
+      "cell": "inf",
+      "source_display": "бы́ти",
+      "surface": "бы́ти"
+    },
+    {
+      "pos": "v",
+      "cell": "pres.1.sg",
+      "source_display": "є҆́смь",
+      "surface": "є҆́смь"
+    },
+    {
+      "pos": "v",
+      "cell": "pres.2.sg",
+      "source_display": "є҆сѝ",
+      "surface": "є҆сѝ"
+    },
+    {
+      "pos": "v",
+      "cell": "pres.3.sg",
+      "source_display": "є҆́сть",
+      "surface": "є҆́сть"
+    },
+    {
+      "pos": "v",
+      "cell": "pres.1.du",
+      "source_display": "є҆сва̀",
+      "surface": "є҆сва̀"
+    },
+    {
+      "pos": "v",
+      "cell": "pres.2.du",
+      "source_display": "є҆ста̀",
+      "surface": "є҆ста̀"
+    },
+    {
+      "pos": "v",
+      "cell": "pres.3.du",
+      "source_display": "є҆ста̀",
+      "surface": "є҆ста̀"
+    },
+    {
+      "pos": "v",
+      "cell": "pres.1.pl",
+      "source_display": "є҆смы̀",
+      "surface": "є҆смы̀"
+    },
+    {
+      "pos": "v",
+      "cell": "pres.2.pl",
+      "source_display": "є҆стѐ",
+      "surface": "є҆стѐ"
+    },
+    {
+      "pos": "v",
+      "cell": "pres.3.pl",
+      "source_display": "сꙋ́ть",
+      "surface": "сꙋ́ть"
+    }
+  ]
+}

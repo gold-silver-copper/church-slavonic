@@ -925,7 +925,7 @@ pub fn import(pos: Pos) -> Result<Outcome, Box<dyn Error>> {
                 src,
                 note: notes.iter().chain(extra_notes.iter()).cloned().collect::<Vec<_>>().join("; "),
                 variant_weights: Vec::new(),
-                provenance: church_slavonic::Provenance::Attested,
+                provenance: church_slavonic::Provenance::LexiconEntry,
                 recension: SYN,
             });
             continue;

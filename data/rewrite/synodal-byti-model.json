@@ -1,0 +1,261 @@
+{
+  "version": 4,
+  "input": {
+    "evidence": [
+      {
+        "id": "e-syn-byti-table",
+        "source": "https://www.ponomar.net/files/gama2/p081.htm",
+        "source_sha256": "47e294d9a3c95926dd5b0746970c62b8ec8f60814ef1864d550baf055b6b327f",
+        "location": "§81, displayed lemma and first conjugation table, primary present forms",
+        "method": "Assistant compared the explicit forms against freshly retrieved HTML. No expert review or facsimile authentication.",
+        "claim": "The ten selected lemma/present cell spellings are explicitly supplied lexical forms; no productive derivation or completeness of the paradigm is claimed.",
+        "kind": "LexicalAssertion",
+        "review": "SourceChecked"
+      }
+    ],
+    "grammars": [
+      {
+        "id": "g-syn-byti",
+        "description": "Selected present and infinitive forms in Alypy online §81 only",
+        "evidence": [
+          "e-syn-byti-table"
+        ]
+      }
+    ],
+    "orthographies": [
+      {
+        "id": "o-syn-byti-table",
+        "description": "Preserve supplied accent and breathing; NFC",
+        "compatible_grammars": [
+          "g-syn-byti"
+        ],
+        "rules": [],
+        "unicode": "Nfc",
+        "evidence": [
+          "e-syn-byti-table"
+        ]
+      }
+    ],
+    "paradigms": [
+      {
+        "id": "p-syn-byti",
+        "grammar": "g-syn-byti",
+        "pos": "v",
+        "rules": [
+          {
+            "id": "r-byti-inf",
+            "cell": [
+              "v",
+              "inf"
+            ],
+            "stem": "inf",
+            "suffix": "",
+            "evidence": [
+              "e-syn-byti-table"
+            ]
+          },
+          {
+            "id": "r-byti-pres.1.sg",
+            "cell": [
+              "v",
+              "pres.1.sg"
+            ],
+            "stem": "pres.1.sg",
+            "suffix": "",
+            "evidence": [
+              "e-syn-byti-table"
+            ]
+          },
+          {
+            "id": "r-byti-pres.2.sg",
+            "cell": [
+              "v",
+              "pres.2.sg"
+            ],
+            "stem": "pres.2.sg",
+            "suffix": "",
+            "evidence": [
+              "e-syn-byti-table"
+            ]
+          },
+          {
+            "id": "r-byti-pres.3.sg",
+            "cell": [
+              "v",
+              "pres.3.sg"
+            ],
+            "stem": "pres.3.sg",
+            "suffix": "",
+            "evidence": [
+              "e-syn-byti-table"
+            ]
+          },
+          {
+            "id": "r-byti-pres.1.du",
+            "cell": [
+              "v",
+              "pres.1.du"
+            ],
+            "stem": "pres.1.du",
+            "suffix": "",
+            "evidence": [
+              "e-syn-byti-table"
+            ]
+          },
+          {
+            "id": "r-byti-pres.2.du",
+            "cell": [
+              "v",
+              "pres.2.du"
+            ],
+            "stem": "pres.2.du",
+            "suffix": "",
+            "evidence": [
+              "e-syn-byti-table"
+            ]
+          },
+          {
+            "id": "r-byti-pres.3.du",
+            "cell": [
+              "v",
+              "pres.3.du"
+            ],
+            "stem": "pres.3.du",
+            "suffix": "",
+            "evidence": [
+              "e-syn-byti-table"
+            ]
+          },
+          {
+            "id": "r-byti-pres.1.pl",
+            "cell": [
+              "v",
+              "pres.1.pl"
+            ],
+            "stem": "pres.1.pl",
+            "suffix": "",
+            "evidence": [
+              "e-syn-byti-table"
+            ]
+          },
+          {
+            "id": "r-byti-pres.2.pl",
+            "cell": [
+              "v",
+              "pres.2.pl"
+            ],
+            "stem": "pres.2.pl",
+            "suffix": "",
+            "evidence": [
+              "e-syn-byti-table"
+            ]
+          },
+          {
+            "id": "r-byti-pres.3.pl",
+            "cell": [
+              "v",
+              "pres.3.pl"
+            ],
+            "stem": "pres.3.pl",
+            "suffix": "",
+            "evidence": [
+              "e-syn-byti-table"
+            ]
+          }
+        ]
+      }
+    ],
+    "lexemes": [
+      {
+        "id": "l-000003",
+        "displayed_lemma": "бы́ти",
+        "paradigm": "p-syn-byti",
+        "stems": [
+          {
+            "name": "inf",
+            "text": "бы́ти",
+            "evidence": [
+              "e-syn-byti-table"
+            ]
+          },
+          {
+            "name": "pres.1.sg",
+            "text": "є҆́смь",
+            "evidence": [
+              "e-syn-byti-table"
+            ]
+          },
+          {
+            "name": "pres.2.sg",
+            "text": "є҆сѝ",
+            "evidence": [
+              "e-syn-byti-table"
+            ]
+          },
+          {
+            "name": "pres.3.sg",
+            "text": "є҆́сть",
+            "evidence": [
+              "e-syn-byti-table"
+            ]
+          },
+          {
+            "name": "pres.1.du",
+            "text": "є҆сва̀",
+            "evidence": [
+              "e-syn-byti-table"
+            ]
+          },
+          {
+            "name": "pres.2.du",
+            "text": "є҆ста̀",
+            "evidence": [
+              "e-syn-byti-table"
+            ]
+          },
+          {
+            "name": "pres.3.du",
+            "text": "є҆ста̀",
+            "evidence": [
+              "e-syn-byti-table"
+            ]
+          },
+          {
+            "name": "pres.1.pl",
+            "text": "є҆смы̀",
+            "evidence": [
+              "e-syn-byti-table"
+            ]
+          },
+          {
+            "name": "pres.2.pl",
+            "text": "є҆стѐ",
+            "evidence": [
+              "e-syn-byti-table"
+            ]
+          },
+          {
+            "name": "pres.3.pl",
+            "text": "сꙋ́ть",
+            "evidence": [
+              "e-syn-byti-table"
+            ]
+          }
+        ],
+        "unavailable": [],
+        "relations": [],
+        "evidence": [
+          "e-syn-byti-table"
+        ],
+        "categories": [
+          {
+            "category": "Verb",
+            "evidence": [
+              "e-syn-byti-table"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

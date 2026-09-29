@@ -1,10 +1,7 @@
 //! The tree model and the renderer.
 //!
-//! **The round-trip invariant**: for every verse that has a tree,
-//! [`render`] equals the pinned print byte-for-byte (the verse text
-//! trimmed of the JSON arrangement's cosmetic leading space — the source
-//! has no interior double spaces, verified over all 34,470 verses, so
-//! "join tokens with single spaces" IS the print's own spacing).
+//! This renderer regenerates text with normalized spacing. Exact source
+//! preservation is provided by `witness::Witness`, independently of this tree.
 //!
 //! Children are ORDERED: Church Slavonic word order is free and
 //! meaningful, so the tree records order and never derives it. Rendering
@@ -115,9 +112,14 @@ fn glues_right(p: &str) -> bool {
 /// single spaces between tokens, punctuation glued by the glue rule.
 /// Analyzed leaves inflect through the lexicon of the given recension.
 pub fn render(node: &Node, recension: &crate::Recension) -> Result<String, TreeError> {
+    render_with(node, crate::Lexicon::of(*recension))
+}
+
+/// Regenerate with the explicitly supplied lexicon, including custom lexemes.
+pub fn render_with(node: &Node, lexicon: &crate::Lexicon) -> Result<String, TreeError> {
     let mut out = String::new();
     let mut glue_next = false;
-    walk(node, recension, &mut out, &mut glue_next)?;
+    walk(node, lexicon, &mut out, &mut glue_next)?;
     Ok(out)
 }
 
@@ -131,7 +133,10 @@ fn emit(token: &str, glue_left: bool, out: &mut String, glue_next: &mut bool) {
 
 /// The form of one analyzed leaf (its layers, before the print).
 pub fn leaf_form(id: &str, cell: Cell, alt: usize, recension: crate::Recension) -> Result<crate::Form, TreeError> {
-    let lexicon = crate::Lexicon::of(recension);
+    leaf_form_with(id, cell, alt, crate::Lexicon::of(recension))
+}
+
+pub fn leaf_form_with(id: &str, cell: Cell, alt: usize, lexicon: &crate::Lexicon) -> Result<crate::Form, TreeError> {
     let Some(lexeme) = lexicon.get(id) else {
         return err(format!("{id}: no such lexeme in the lexicon"));
     };
@@ -144,15 +149,19 @@ pub fn leaf_form(id: &str, cell: Cell, alt: usize, recension: crate::Recension) 
 
 /// The print of one analyzed leaf.
 pub fn leaf_print(id: &str, cell: Cell, alt: usize, recension: crate::Recension) -> Result<String, TreeError> {
-    Ok(leaf_form(id, cell, alt, recension)?.print(recension))
+    leaf_print_with(id, cell, alt, crate::Lexicon::of(recension))
+}
+
+pub fn leaf_print_with(id: &str, cell: Cell, alt: usize, lexicon: &crate::Lexicon) -> Result<String, TreeError> {
+    Ok(leaf_form_with(id, cell, alt, lexicon)?.print(lexicon.recension()))
 }
 
 /// The form of a phonological word's host: an analyzed leaf's, or a
 /// closed lexeme's lemma.
-fn host_form(host: &Node, recension: crate::Recension) -> Result<crate::Form, TreeError> {
+fn host_form(host: &Node, lexicon: &crate::Lexicon) -> Result<crate::Form, TreeError> {
     match host {
-        Node::Lex { id, cells, alt, .. } => leaf_form(id, cells.first(), *alt, recension),
-        Node::Fn(id) if is_lexeme_id(id) => match crate::Lexicon::of(recension).get(id) {
+        Node::Lex { id, cells, alt, .. } => leaf_form_with(id, cells.first(), *alt, lexicon),
+        Node::Fn(id) if is_lexeme_id(id) => match lexicon.get(id) {
             Some(l) => Ok(crate::Form::from_print(&l.lemma)),
             None => err(format!("{id}: no such lexeme in the lexicon")),
         },
@@ -170,8 +179,12 @@ fn unaccented(printed: &str) -> String {
 /// accented as one unit — written solid (и҆̀хже), or apart with the host
 /// keeping the unit's oxia (Землѧ́ же).
 pub fn unit_print(host: &Node, enclitics: &[Node], apart: bool, recension: crate::Recension) -> Result<String, TreeError> {
-    let form = host_form(host, recension)?;
-    let lexicon = crate::Lexicon::of(recension);
+    unit_print_with(host, enclitics, apart, crate::Lexicon::of(recension))
+}
+
+pub fn unit_print_with(host: &Node, enclitics: &[Node], apart: bool, lexicon: &crate::Lexicon) -> Result<String, TreeError> {
+    let recension = lexicon.recension();
+    let form = host_form(host, lexicon)?;
     let mut letters: Vec<String> = Vec::new();
     for e in enclitics {
         match e {
@@ -190,7 +203,7 @@ pub fn unit_print(host: &Node, enclitics: &[Node], apart: bool, recension: crate
                 if !matches!(cells.first(), Cell::Pron(pc) if pc.clitic) {
                     return err(format!("(pw …): {id} {} is not a clitic cell", cells.name()));
                 }
-                letters.push(unaccented(&leaf_print(id, cells.first(), *alt, recension)?));
+                letters.push(unaccented(&leaf_print_with(id, cells.first(), *alt, lexicon)?));
             }
             _ => return err("(pw …): an enclitic is (f <id>) or a clitic pronoun leaf"),
         }
@@ -207,7 +220,7 @@ pub fn unit_print(host: &Node, enclitics: &[Node], apart: bool, recension: crate
     Ok(form.print_unit(recension, &refs))
 }
 
-fn walk(node: &Node, recension: &crate::Recension, out: &mut String, glue_next: &mut bool) -> Result<(), TreeError> {
+fn walk(node: &Node, lexicon: &crate::Lexicon, out: &mut String, glue_next: &mut bool) -> Result<(), TreeError> {
     match node {
         Node::W { surface, .. } => emit(surface, false, out, glue_next),
         Node::Punct(p) => {
@@ -220,28 +233,28 @@ fn walk(node: &Node, recension: &crate::Recension, out: &mut String, glue_next: 
         }
         Node::Fn(word) => {
             if is_lexeme_id(word) {
-                let print = leaf_print(word, Cell::Word, 0, *recension)?;
+                let print = leaf_print_with(word, Cell::Word, 0, lexicon)?;
                 emit(&print, false, out, glue_next);
             } else {
-                if !is_function_word(word, *recension) {
+                if !is_function_word_with(word, lexicon) {
                     return err(format!("(f {word}) is neither a lexeme id, a closed-class lexeme's print, nor in the hand table"));
                 }
                 emit(word, false, out, glue_next);
             }
         }
         Node::Lex { id, cells, alt, .. } => {
-            let print = leaf_print(id, cells.first(), *alt, *recension)?;
+            let print = leaf_print_with(id, cells.first(), *alt, lexicon)?;
             emit(&print, false, out, glue_next);
         }
         Node::Abbr { prefix, full, child } => {
             let mut inner = String::new();
             let mut inner_glue = false;
-            walk(child, recension, &mut inner, &mut inner_glue)?;
+            walk(child, lexicon, &mut inner, &mut inner_glue)?;
             // the rows of the prefix (and of the skeleton when the node
             // names one), those naming the child's lexeme first: гдⷭ҇ has
             // a strip row for госпо́дь and a keep row for господи́нъ
             let lemma_key = match crate::sentence::rules::leaf(child) {
-                Some(Node::Lex { id, .. }) => crate::Lexicon::synodal().get(id).map(|l| crate::orthography::comparison_key(&l.lemma)),
+                Some(Node::Lex { id, .. }) => lexicon.get(id).map(|l| crate::orthography::comparison_key(&l.lemma)),
                 _ => None,
             };
             let mut rows: Vec<&crate::titlo::Row> = crate::titlo::rows()
@@ -256,13 +269,13 @@ fn walk(node: &Node, recension: &crate::Recension, out: &mut String, glue_next: 
             }
         }
         Node::Pw { host, enclitics, apart } => {
-            let print = unit_print(host, enclitics, *apart, *recension)?;
+            let print = unit_print_with(host, enclitics, *apart, lexicon)?;
             emit(&print, false, out, glue_next);
         }
         Node::Cap(child) => {
             let mut inner = String::new();
             let mut inner_glue = false;
-            walk(child, recension, &mut inner, &mut inner_glue)?;
+            walk(child, lexicon, &mut inner, &mut inner_glue)?;
             let mut chars = inner.chars();
             let capped: String = match chars.next() {
                 Some(first) => first.to_uppercase().chain(chars).collect(),
@@ -272,7 +285,7 @@ fn walk(node: &Node, recension: &crate::Recension, out: &mut String, glue_next: 
         }
         Node::Group { children, .. } => {
             for child in children {
-                walk(child, recension, out, glue_next)?;
+                walk(child, lexicon, out, glue_next)?;
             }
         }
     }
@@ -282,8 +295,12 @@ fn walk(node: &Node, recension: &crate::Recension, out: &mut String, glue_next: 
 /// Is a word a function word: the print of a closed-class lexeme, or an
 /// entry of the hand table in `closed.rs`?
 pub fn is_function_word(word: &str, recension: crate::Recension) -> bool {
+    is_function_word_with(word, crate::Lexicon::of(recension))
+}
+
+fn is_function_word_with(word: &str, lexicon: &crate::Lexicon) -> bool {
     crate::sentence::closed::is_closed(word)
-        || crate::Lexicon::of(recension).analyze(word).iter().any(|a| a.exact && a.cell == Cell::Word)
+        || lexicon.analyze(word).iter().any(|a| a.exact && a.cell == Cell::Word)
 }
 
 /// Is an atom a 2.0 lexeme id (`землѧ.n`, `сꙑнъ.n.2`)?
@@ -309,8 +326,8 @@ pub fn tokenize(verse: &str) -> Vec<&str> {
     verse.split_whitespace().collect()
 }
 
-/// Wrap a verse verbatim: every token a `(w …)` leaf under `(s …)`. The
-/// starting point of every tree — round-trips by construction.
+/// Wrap whitespace-delimited tokens under a group. Regeneration normalizes
+/// separators; use `Witness` for exact source preservation.
 pub fn verbatim_tree(verse: &str) -> Node {
     Node::Group {
         head: "s".to_string(),

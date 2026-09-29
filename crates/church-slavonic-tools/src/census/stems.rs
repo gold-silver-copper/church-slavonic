@@ -89,7 +89,7 @@ pub fn run(args: &[String]) -> Result<(), Box<dyn Error>> {
         }
         lines += 1;
         for (k, v) in numbered {
-            let r = relation(l, v, lexicon.recension);
+            let r = relation(l, v, lexicon.recension());
             counts.entry((k.clone(), r)).or_default().push(format!("{} {}={}", l.lemma, k, v));
         }
     }

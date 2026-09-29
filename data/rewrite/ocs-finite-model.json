@@ -1,0 +1,621 @@
+{
+  "version": 4,
+  "input": {
+    "evidence": [
+      {
+        "id": "e-finite-l-000025",
+        "source": "https://lrc.la.utexas.edu/eieol/ocsol/10",
+        "source_sha256": "e48074ee67e730fcf2df8722605b409b0e5ade5d9a5875538fd0634ed236c9cb",
+        "location": "§§4.1–4.2, глаголати tables and infinitive headings",
+        "claim": "The displayed present/imperfect table cells and infinitive spelling; stem segmentation/allomorph supply and rule-local replacements are assistant modeling choices. Not individual manuscript attestation, blind productivity evidence, or expert approval.",
+        "kind": "DescriptiveRule",
+        "review": "SourceChecked",
+        "method": "Reacquired the same previously consulted teaching source; literal table transcription with supplied lexical stems."
+      },
+      {
+        "id": "e-finite-l-000026",
+        "source": "https://lrc.la.utexas.edu/eieol/ocsol/10",
+        "source_sha256": "e48074ee67e730fcf2df8722605b409b0e5ade5d9a5875538fd0634ed236c9cb",
+        "location": "§§4.1–4.2, молити tables and infinitive headings",
+        "claim": "The displayed present/imperfect table cells and infinitive spelling; stem segmentation/allomorph supply and rule-local replacements are assistant modeling choices. Not individual manuscript attestation, blind productivity evidence, or expert approval.",
+        "kind": "DescriptiveRule",
+        "review": "SourceChecked",
+        "method": "Reacquired the same previously consulted teaching source; literal table transcription with supplied lexical stems."
+      }
+    ],
+    "grammars": [
+      {
+        "id": "g-ocs-lrc-finite-tables",
+        "description": "Literal present/imperfect tables for two OCS teaching verbs, plus cited infinitives. Prose-described later/unspecified textual variants are outside this selected profile.",
+        "evidence": [
+          "e-finite-l-000025",
+          "e-finite-l-000026"
+        ]
+      }
+    ],
+    "orthographies": [
+      {
+        "id": "o-lrc-finite-tables",
+        "description": "Literal Cyrillic teaching spellings with U+0484 palatalization mark retained; no stress supplied or inferred",
+        "compatible_grammars": [
+          "g-ocs-lrc-finite-tables"
+        ],
+        "rules": [],
+        "evidence": [
+          "e-finite-l-000025",
+          "e-finite-l-000026"
+        ]
+      }
+    ],
+    "paradigms": [
+      {
+        "id": "p-finite-l-000025",
+        "grammar": "g-ocs-lrc-finite-tables",
+        "pos": "v",
+        "rules": [
+          {
+            "id": "r-pres.1.sg",
+            "cell": [
+              "v",
+              "pres.1.sg"
+            ],
+            "stem": "present",
+            "suffix": "ѭ",
+            "evidence": [
+              "e-finite-l-000025"
+            ]
+          },
+          {
+            "id": "r-pres.1.du",
+            "cell": [
+              "v",
+              "pres.1.du"
+            ],
+            "stem": "present",
+            "suffix": "ѥвѣ",
+            "evidence": [
+              "e-finite-l-000025"
+            ]
+          },
+          {
+            "id": "r-pres.1.pl",
+            "cell": [
+              "v",
+              "pres.1.pl"
+            ],
+            "stem": "present",
+            "suffix": "ѥмъ",
+            "evidence": [
+              "e-finite-l-000025"
+            ]
+          },
+          {
+            "id": "r-pres.2.sg",
+            "cell": [
+              "v",
+              "pres.2.sg"
+            ],
+            "stem": "present",
+            "suffix": "ѥши",
+            "evidence": [
+              "e-finite-l-000025"
+            ]
+          },
+          {
+            "id": "r-pres.2.du",
+            "cell": [
+              "v",
+              "pres.2.du"
+            ],
+            "stem": "present",
+            "suffix": "ѥта",
+            "evidence": [
+              "e-finite-l-000025"
+            ]
+          },
+          {
+            "id": "r-pres.2.pl",
+            "cell": [
+              "v",
+              "pres.2.pl"
+            ],
+            "stem": "present",
+            "suffix": "ѥтє",
+            "evidence": [
+              "e-finite-l-000025"
+            ]
+          },
+          {
+            "id": "r-pres.3.sg",
+            "cell": [
+              "v",
+              "pres.3.sg"
+            ],
+            "stem": "present",
+            "suffix": "ѥтъ",
+            "evidence": [
+              "e-finite-l-000025"
+            ]
+          },
+          {
+            "id": "r-pres.3.du",
+            "cell": [
+              "v",
+              "pres.3.du"
+            ],
+            "stem": "present",
+            "suffix": "ѥтє",
+            "evidence": [
+              "e-finite-l-000025"
+            ]
+          },
+          {
+            "id": "r-pres.3.pl",
+            "cell": [
+              "v",
+              "pres.3.pl"
+            ],
+            "stem": "present",
+            "suffix": "ѭтъ",
+            "evidence": [
+              "e-finite-l-000025"
+            ]
+          },
+          {
+            "id": "r-impf.1.sg",
+            "cell": [
+              "v",
+              "impf.1.sg"
+            ],
+            "stem": "imperfect",
+            "suffix": "ахъ",
+            "evidence": [
+              "e-finite-l-000025"
+            ]
+          },
+          {
+            "id": "r-impf.1.du",
+            "cell": [
+              "v",
+              "impf.1.du"
+            ],
+            "stem": "imperfect",
+            "suffix": "аховѣ",
+            "evidence": [
+              "e-finite-l-000025"
+            ]
+          },
+          {
+            "id": "r-impf.1.pl",
+            "cell": [
+              "v",
+              "impf.1.pl"
+            ],
+            "stem": "imperfect",
+            "suffix": "ахомъ",
+            "evidence": [
+              "e-finite-l-000025"
+            ]
+          },
+          {
+            "id": "r-impf.2.sg",
+            "cell": [
+              "v",
+              "impf.2.sg"
+            ],
+            "stem": "imperfect",
+            "suffix": "ашє",
+            "evidence": [
+              "e-finite-l-000025"
+            ]
+          },
+          {
+            "id": "r-impf.2.du",
+            "cell": [
+              "v",
+              "impf.2.du"
+            ],
+            "stem": "imperfect",
+            "suffix": "ашєта",
+            "evidence": [
+              "e-finite-l-000025"
+            ]
+          },
+          {
+            "id": "r-impf.2.pl",
+            "cell": [
+              "v",
+              "impf.2.pl"
+            ],
+            "stem": "imperfect",
+            "suffix": "ашєтє",
+            "evidence": [
+              "e-finite-l-000025"
+            ]
+          },
+          {
+            "id": "r-impf.3.sg",
+            "cell": [
+              "v",
+              "impf.3.sg"
+            ],
+            "stem": "imperfect",
+            "suffix": "ашє",
+            "evidence": [
+              "e-finite-l-000025"
+            ]
+          },
+          {
+            "id": "r-impf.3.du",
+            "cell": [
+              "v",
+              "impf.3.du"
+            ],
+            "stem": "imperfect",
+            "suffix": "ашєтє",
+            "evidence": [
+              "e-finite-l-000025"
+            ]
+          },
+          {
+            "id": "r-impf.3.pl",
+            "cell": [
+              "v",
+              "impf.3.pl"
+            ],
+            "stem": "imperfect",
+            "suffix": "ахѫ",
+            "evidence": [
+              "e-finite-l-000025"
+            ]
+          },
+          {
+            "id": "r-inf",
+            "cell": [
+              "v",
+              "inf"
+            ],
+            "stem": "infinitive",
+            "suffix": "ти",
+            "evidence": [
+              "e-finite-l-000025"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "p-finite-l-000026",
+        "grammar": "g-ocs-lrc-finite-tables",
+        "pos": "v",
+        "rules": [
+          {
+            "id": "r-pres.1.sg",
+            "cell": [
+              "v",
+              "pres.1.sg"
+            ],
+            "stem": "present",
+            "suffix": "ѭ",
+            "evidence": [
+              "e-finite-l-000026"
+            ],
+            "stem_replacement": {
+              "from": "и",
+              "to": "҄",
+              "evidence": [
+                "e-finite-l-000026"
+              ]
+            }
+          },
+          {
+            "id": "r-pres.1.du",
+            "cell": [
+              "v",
+              "pres.1.du"
+            ],
+            "stem": "present",
+            "suffix": "вѣ",
+            "evidence": [
+              "e-finite-l-000026"
+            ]
+          },
+          {
+            "id": "r-pres.1.pl",
+            "cell": [
+              "v",
+              "pres.1.pl"
+            ],
+            "stem": "present",
+            "suffix": "мъ",
+            "evidence": [
+              "e-finite-l-000026"
+            ]
+          },
+          {
+            "id": "r-pres.2.sg",
+            "cell": [
+              "v",
+              "pres.2.sg"
+            ],
+            "stem": "present",
+            "suffix": "ши",
+            "evidence": [
+              "e-finite-l-000026"
+            ]
+          },
+          {
+            "id": "r-pres.2.du",
+            "cell": [
+              "v",
+              "pres.2.du"
+            ],
+            "stem": "present",
+            "suffix": "та",
+            "evidence": [
+              "e-finite-l-000026"
+            ]
+          },
+          {
+            "id": "r-pres.2.pl",
+            "cell": [
+              "v",
+              "pres.2.pl"
+            ],
+            "stem": "present",
+            "suffix": "тє",
+            "evidence": [
+              "e-finite-l-000026"
+            ]
+          },
+          {
+            "id": "r-pres.3.sg",
+            "cell": [
+              "v",
+              "pres.3.sg"
+            ],
+            "stem": "present",
+            "suffix": "тъ",
+            "evidence": [
+              "e-finite-l-000026"
+            ]
+          },
+          {
+            "id": "r-pres.3.du",
+            "cell": [
+              "v",
+              "pres.3.du"
+            ],
+            "stem": "present",
+            "suffix": "тє",
+            "evidence": [
+              "e-finite-l-000026"
+            ]
+          },
+          {
+            "id": "r-pres.3.pl",
+            "cell": [
+              "v",
+              "pres.3.pl"
+            ],
+            "stem": "present",
+            "suffix": "ѧтъ",
+            "evidence": [
+              "e-finite-l-000026"
+            ],
+            "stem_replacement": {
+              "from": "и",
+              "to": "",
+              "evidence": [
+                "e-finite-l-000026"
+              ]
+            }
+          },
+          {
+            "id": "r-impf.1.sg",
+            "cell": [
+              "v",
+              "impf.1.sg"
+            ],
+            "stem": "imperfect",
+            "suffix": "ахъ",
+            "evidence": [
+              "e-finite-l-000026"
+            ]
+          },
+          {
+            "id": "r-impf.1.du",
+            "cell": [
+              "v",
+              "impf.1.du"
+            ],
+            "stem": "imperfect",
+            "suffix": "аховѣ",
+            "evidence": [
+              "e-finite-l-000026"
+            ]
+          },
+          {
+            "id": "r-impf.1.pl",
+            "cell": [
+              "v",
+              "impf.1.pl"
+            ],
+            "stem": "imperfect",
+            "suffix": "ахомъ",
+            "evidence": [
+              "e-finite-l-000026"
+            ]
+          },
+          {
+            "id": "r-impf.2.sg",
+            "cell": [
+              "v",
+              "impf.2.sg"
+            ],
+            "stem": "imperfect",
+            "suffix": "ашє",
+            "evidence": [
+              "e-finite-l-000026"
+            ]
+          },
+          {
+            "id": "r-impf.2.du",
+            "cell": [
+              "v",
+              "impf.2.du"
+            ],
+            "stem": "imperfect",
+            "suffix": "ашєта",
+            "evidence": [
+              "e-finite-l-000026"
+            ]
+          },
+          {
+            "id": "r-impf.2.pl",
+            "cell": [
+              "v",
+              "impf.2.pl"
+            ],
+            "stem": "imperfect",
+            "suffix": "ашєтє",
+            "evidence": [
+              "e-finite-l-000026"
+            ]
+          },
+          {
+            "id": "r-impf.3.sg",
+            "cell": [
+              "v",
+              "impf.3.sg"
+            ],
+            "stem": "imperfect",
+            "suffix": "ашє",
+            "evidence": [
+              "e-finite-l-000026"
+            ]
+          },
+          {
+            "id": "r-impf.3.du",
+            "cell": [
+              "v",
+              "impf.3.du"
+            ],
+            "stem": "imperfect",
+            "suffix": "ашєтє",
+            "evidence": [
+              "e-finite-l-000026"
+            ]
+          },
+          {
+            "id": "r-impf.3.pl",
+            "cell": [
+              "v",
+              "impf.3.pl"
+            ],
+            "stem": "imperfect",
+            "suffix": "ахѫ",
+            "evidence": [
+              "e-finite-l-000026"
+            ]
+          },
+          {
+            "id": "r-inf",
+            "cell": [
+              "v",
+              "inf"
+            ],
+            "stem": "infinitive",
+            "suffix": "ти",
+            "evidence": [
+              "e-finite-l-000026"
+            ]
+          }
+        ]
+      }
+    ],
+    "lexemes": [
+      {
+        "id": "l-000025",
+        "displayed_lemma": "глаголати",
+        "categories": [
+          {
+            "category": "Verb",
+            "evidence": [
+              "e-finite-l-000025"
+            ]
+          }
+        ],
+        "paradigm": "p-finite-l-000025",
+        "stems": [
+          {
+            "name": "present",
+            "text": "глагол҄",
+            "evidence": [
+              "e-finite-l-000025"
+            ]
+          },
+          {
+            "name": "imperfect",
+            "text": "глагола",
+            "evidence": [
+              "e-finite-l-000025"
+            ]
+          },
+          {
+            "name": "infinitive",
+            "text": "глагола",
+            "evidence": [
+              "e-finite-l-000025"
+            ]
+          }
+        ],
+        "unavailable": [],
+        "relations": [],
+        "evidence": [
+          "e-finite-l-000025"
+        ]
+      },
+      {
+        "id": "l-000026",
+        "displayed_lemma": "молити",
+        "categories": [
+          {
+            "category": "Verb",
+            "evidence": [
+              "e-finite-l-000026"
+            ]
+          }
+        ],
+        "paradigm": "p-finite-l-000026",
+        "stems": [
+          {
+            "name": "present",
+            "text": "моли",
+            "evidence": [
+              "e-finite-l-000026"
+            ]
+          },
+          {
+            "name": "imperfect",
+            "text": "мол҄ꙗ",
+            "evidence": [
+              "e-finite-l-000026"
+            ]
+          },
+          {
+            "name": "infinitive",
+            "text": "моли",
+            "evidence": [
+              "e-finite-l-000026"
+            ]
+          }
+        ],
+        "unavailable": [],
+        "relations": [],
+        "evidence": [
+          "e-finite-l-000026"
+        ]
+      }
+    ]
+  }
+}

@@ -7,6 +7,7 @@
 pub mod crosscheck;
 pub mod fit;
 pub mod refit;
+pub mod publication;
 pub mod ocs;
 pub mod polyakov;
 
@@ -328,7 +329,15 @@ fn fix_table_marks(o: &Outcome, pos: Pos) -> Result<(), Box<dyn Error>> {
 /// `prefix` is the writing source's provenance tag (`P:`, `K:`, `U:`):
 /// its own earlier tokens are replaced, the other sources' kept.
 fn write_outcome(o: &Outcome, recension: Recension, pos: Pos, prefix: &str) -> Result<(), Box<dyn Error>> {
-    let dir = lexicon_dir();
+    write_outcome_at(&lexicon_dir(), o, recension, pos, prefix)
+}
+
+/// Publish an import to an explicitly supplied local lexicon directory.
+/// Files are individually atomic, not an atomic multi-file transaction.
+pub fn write_outcome_at(dir: &std::path::Path, o: &Outcome, recension: Recension, pos: Pos, prefix: &str) -> Result<(), Box<dyn Error>> {
+    // Validate before the ID-keyed merge can silently collapse duplicates.
+    if o.lexemes.iter().any(|l| l.pos != pos) { return Err("mixed POS in import outcome".into()); }
+    church_slavonic::Lexicon::try_from_lexemes(recension, o.lexemes.clone())?;
     let rec = match recension {
         Recension::Synodal => "syn",
         Recension::OldChurchSlavonic => "ocs",
@@ -380,10 +389,15 @@ fn write_outcome(o: &Outcome, recension: Recension, pos: Pos, prefix: &str) -> R
         }
     }
     let lexemes: Vec<Lexeme> = merged.into_values().collect();
-    std::fs::write(&path, lexicon::format(&lexemes))?;
-    println!("wrote {} lexemes to {} ({kept_hand} hand-edited kept, {kept_other} of other sources kept)", lexemes.len(), path.display());
+    let lexicon_stage = publication::stage_lexicon(&path, &lexemes, pos, recension)?;
     let qpath = dir.join("quarantine.tsv");
     let mut text = String::from("# Source entries judged noise, with the reason. Columns: recension pos lemma source reason detail\n");
+    for q in &o.quarantine {
+        if [&q.lemma, &q.source, &q.detail].iter().any(|v| v.contains(['\t', '\r', '\n']))
+            || q.reason.contains(['\t', '\r', '\n']) {
+            return Err("quarantine field contains a row/column separator".into());
+        }
+    }
     let mut lines: Vec<String> = o
         .quarantine
         .iter()
@@ -403,7 +417,12 @@ fn write_outcome(o: &Outcome, recension: Recension, pos: Pos, prefix: &str) -> R
         })
         .collect();
     // keep other recensions'/parts' lines
-    if let Ok(old) = std::fs::read_to_string(&qpath) {
+    let old_quarantine = match std::fs::read_to_string(&qpath) {
+        Ok(text) => Some(text),
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => None,
+        Err(e) => return Err(e.into()),
+    };
+    if let Some(old) = old_quarantine {
         for line in old.lines() {
             if line.starts_with('#') || line.trim().is_empty() {
                 continue;
@@ -421,6 +440,11 @@ fn write_outcome(o: &Outcome, recension: Recension, pos: Pos, prefix: &str) -> R
         text.push_str(&l);
         text.push('\n');
     }
-    std::fs::write(&qpath, text)?;
+    let quarantine_stage = publication::stage_quarantine(&qpath, &text)?;
+    // Both outputs are validated before either is published. Two renames are
+    // not a transaction: interruption between commits remains a migration gap.
+    lexicon_stage.commit()?;
+    quarantine_stage.commit()?;
+    println!("wrote {} lexemes to {} ({kept_hand} hand-edited kept, {kept_other} of other sources kept)", lexemes.len(), path.display());
     Ok(())
 }

@@ -1,0 +1,31 @@
+{
+  "schema": 2,
+  "id": "synodal-mudr-adjective",
+  "purpose": "Selected source-table reproduction and lexical ambiguity fixture, not held-out generalization.",
+  "source": {
+    "url": "https://www.ponomar.net/files/gama2/p053.htm",
+    "sha256": "68c82d6127d1d56799d5f1b2931ffcba7a1a8174d2d73b5147f5fe2f9277b373",
+    "location": "§53, hard short adjective table"
+  },
+  "forms": [
+    {
+      "pos": "a",
+      "cell": "short.pos.m.sg.nom",
+      "surface": "мꙋ́дръ",
+      "source_display": "мꙋ́др-ъ"
+    },
+    {
+      "pos": "a",
+      "cell": "short.pos.n.sg.nom",
+      "surface": "мꙋ́дро",
+      "source_display": "мꙋ́др-о"
+    },
+    {
+      "pos": "a",
+      "cell": "short.pos.m.sg.loc",
+      "surface": "мꙋ́дрѣ",
+      "source_display": "мꙋ́др-ѣ"
+    }
+  ],
+  "conversion_policy": "Remove only the printed morpheme-boundary hyphen, then NFC; source_display retains that boundary."
+}

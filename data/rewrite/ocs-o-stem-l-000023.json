@@ -1,0 +1,117 @@
+{
+  "schema": 2,
+  "id": "lrc-o-stem-l-000023",
+  "purpose": "Literal teaching-table cells including alternatives; supplied stem and rule application, not blind productivity or independently adjudicated token analysis",
+  "source": {
+    "url": "https://lrc.la.utexas.edu/eieol/ocsol/10",
+    "section": "3.1 мѣсто",
+    "sha256": "e48074ee67e730fcf2df8722605b409b0e5ade5d9a5875538fd0634ed236c9cb"
+  },
+  "forms": [
+    {
+      "pos": "n",
+      "cell": "nom.sg",
+      "surface": "мѣсто"
+    },
+    {
+      "pos": "n",
+      "cell": "nom.du",
+      "surface": "мѣстѣ"
+    },
+    {
+      "pos": "n",
+      "cell": "nom.pl",
+      "surface": "мѣста"
+    },
+    {
+      "pos": "n",
+      "cell": "acc.sg",
+      "surface": "мѣсто"
+    },
+    {
+      "pos": "n",
+      "cell": "acc.du",
+      "surface": "мѣстѣ"
+    },
+    {
+      "pos": "n",
+      "cell": "acc.pl",
+      "surface": "мѣста"
+    },
+    {
+      "pos": "n",
+      "cell": "gen.sg",
+      "surface": "мѣста"
+    },
+    {
+      "pos": "n",
+      "cell": "gen.du",
+      "surface": "мѣстѹ"
+    },
+    {
+      "pos": "n",
+      "cell": "gen.pl",
+      "surface": "мѣстъ"
+    },
+    {
+      "pos": "n",
+      "cell": "loc.sg",
+      "surface": "мѣстѣ"
+    },
+    {
+      "pos": "n",
+      "cell": "loc.du",
+      "surface": "мѣстѹ"
+    },
+    {
+      "pos": "n",
+      "cell": "loc.pl",
+      "surface": "мѣстѣхъ"
+    },
+    {
+      "pos": "n",
+      "cell": "dat.sg",
+      "surface": "мѣстѹ"
+    },
+    {
+      "pos": "n",
+      "cell": "dat.du",
+      "surface": "мѣстома"
+    },
+    {
+      "pos": "n",
+      "cell": "dat.pl",
+      "surface": "мѣстомъ"
+    },
+    {
+      "pos": "n",
+      "cell": "ins.sg",
+      "surface": "мѣстомь"
+    },
+    {
+      "pos": "n",
+      "cell": "ins.du",
+      "surface": "мѣстома"
+    },
+    {
+      "pos": "n",
+      "cell": "ins.pl",
+      "surface": "мѣстꙑ"
+    },
+    {
+      "pos": "n",
+      "cell": "voc.sg",
+      "surface": "мѣсто"
+    },
+    {
+      "pos": "n",
+      "cell": "voc.du",
+      "surface": "мѣстѣ"
+    },
+    {
+      "pos": "n",
+      "cell": "voc.pl",
+      "surface": "мѣста"
+    }
+  ]
+}

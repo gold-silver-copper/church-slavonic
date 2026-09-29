@@ -1,0 +1,145 @@
+{
+  "schema": 2,
+  "id": "alypy-synodal-rab-primary",
+  "purpose": "Independent first-declension fixture: published primary forms and mobile stress for the animate noun рабъ; parenthesized variants remain out of this fixture’s scope.",
+  "source": {
+    "url": "https://www.ponomar.net/files/gama2/p034.htm",
+    "section": "§34, first table, рабъ column",
+    "sha256": "58bd3eb844fe431e2af7e41f0789825b82da20425654a3a195870d0a1a3b5ecd"
+  },
+  "evidence_kind": "pedagogical paradigm, not token attestations",
+  "review": "Source table checked in independently downloaded HTML; no expert review claimed",
+  "profile": "Russian Synodal forms as represented by this Alypy online transcription",
+  "conversion_policy": "Remove only the printed stem/ending boundary hyphen, then NFC for expected whole-word spellings; retain each source_display separately.",
+  "pos": "noun",
+  "lemma": "ра́бъ",
+  "forms": [
+    {
+      "source_display": "ра́б-ъ",
+      "surface": "ра́бъ",
+      "pos": "n",
+      "cell": "nom.sg"
+    },
+    {
+      "source_display": "раб-а̑",
+      "surface": "раба̑",
+      "pos": "n",
+      "cell": "nom.du"
+    },
+    {
+      "source_display": "раб-ѝ",
+      "surface": "рабѝ",
+      "pos": "n",
+      "cell": "nom.pl"
+    },
+    {
+      "source_display": "раб-а̀",
+      "surface": "раба̀",
+      "pos": "n",
+      "cell": "gen.sg"
+    },
+    {
+      "source_display": "раб-ꙋ̑",
+      "surface": "рабꙋ̑",
+      "pos": "n",
+      "cell": "gen.du"
+    },
+    {
+      "source_display": "раб-ѡ́въ",
+      "surface": "рабѡ́въ",
+      "pos": "n",
+      "cell": "gen.pl"
+    },
+    {
+      "source_display": "раб-ꙋ̀",
+      "surface": "рабꙋ̀",
+      "pos": "n",
+      "cell": "dat.sg"
+    },
+    {
+      "source_display": "раб-о́ма",
+      "surface": "рабо́ма",
+      "pos": "n",
+      "cell": "dat.du"
+    },
+    {
+      "source_display": "раб-ѡ́мъ",
+      "surface": "рабѡ́мъ",
+      "pos": "n",
+      "cell": "dat.pl"
+    },
+    {
+      "source_display": "раб-а̀",
+      "surface": "раба̀",
+      "pos": "n",
+      "cell": "acc.sg"
+    },
+    {
+      "source_display": "раб-а̑",
+      "surface": "раба̑",
+      "pos": "n",
+      "cell": "acc.du"
+    },
+    {
+      "source_display": "раб-ы̀",
+      "surface": "рабы̀",
+      "pos": "n",
+      "cell": "acc.pl"
+    },
+    {
+      "source_display": "раб-о́мъ",
+      "surface": "рабо́мъ",
+      "pos": "n",
+      "cell": "ins.sg"
+    },
+    {
+      "source_display": "раб-о́ма",
+      "surface": "рабо́ма",
+      "pos": "n",
+      "cell": "ins.du"
+    },
+    {
+      "source_display": "раб-ы̀",
+      "surface": "рабы̀",
+      "pos": "n",
+      "cell": "ins.pl"
+    },
+    {
+      "source_display": "раб-ѣ̀",
+      "surface": "рабѣ̀",
+      "pos": "n",
+      "cell": "loc.sg"
+    },
+    {
+      "source_display": "раб-ꙋ̑",
+      "surface": "рабꙋ̑",
+      "pos": "n",
+      "cell": "loc.du"
+    },
+    {
+      "source_display": "раб-ѣ́хъ",
+      "surface": "рабѣ́хъ",
+      "pos": "n",
+      "cell": "loc.pl"
+    },
+    {
+      "source_display": "ра́б-е",
+      "surface": "ра́бе",
+      "pos": "n",
+      "cell": "voc.sg"
+    },
+    {
+      "source_display": "раб-а̑",
+      "surface": "раба̑",
+      "pos": "n",
+      "cell": "voc.du"
+    },
+    {
+      "source_display": "раб-ѝ",
+      "surface": "рабѝ",
+      "pos": "n",
+      "cell": "voc.pl"
+    }
+  ],
+  "edition_limit": "The website describes editorial corrections and modernization of the 1991 text. This fixture follows that online transcription; printed-edition comparison remains unverified."
+}

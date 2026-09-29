@@ -1,0 +1,22 @@
+{
+  "schema": 2,
+  "id": "lrc-noun-numeral-l-000018",
+  "purpose": "Supplied-stem execution for selected nominal numerals with lexical feminine assertions; not numeral construction analysis, stem prediction or independent token attestation.",
+  "source": {
+    "url": "https://lrc.la.utexas.edu/eieol/ocsol/90",
+    "section": "44, items 5–10",
+    "sha256": "a6fb3201f1130b3ea74c398baa2c7798f69cd9c4460db64364c72faaa35f6382"
+  },
+  "forms": [
+    {
+      "pos": "n",
+      "cell": "nom.sg",
+      "surface": "дєвѧть"
+    },
+    {
+      "pos": "n",
+      "cell": "gen.sg",
+      "surface": "дєвѧти"
+    }
+  ]
+}

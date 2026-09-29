@@ -1,0 +1,44 @@
+{
+  "ud-heldout": {
+    "definition": "legacy-corpus-cell-mapping-v2",
+    "tokens": 39133,
+    "source_invariable_counts": {
+      "inf": 693,
+      "sup": 25
+    },
+    "mapped_invariable_counts": {
+      "inf": 693,
+      "sup": 25
+    },
+    "no_number_skips": 73,
+    "mapped_slots": 26168
+  },
+  "ud-train": {
+    "definition": "legacy-corpus-cell-mapping-v2",
+    "tokens": 159710,
+    "source_invariable_counts": {
+      "inf": 2673,
+      "sup": 110
+    },
+    "mapped_invariable_counts": {
+      "inf": 2673,
+      "sup": 110
+    },
+    "no_number_skips": 300,
+    "mapped_slots": 106414
+  },
+  "syntacticus": {
+    "definition": "legacy-corpus-cell-mapping-v2",
+    "tokens": 213658,
+    "source_invariable_counts": {
+      "inf": 3632,
+      "sup": 136
+    },
+    "mapped_invariable_counts": {
+      "inf": 3632,
+      "sup": 136
+    },
+    "no_number_skips": 320,
+    "mapped_slots": 151401
+  }
+}

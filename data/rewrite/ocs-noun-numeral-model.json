@@ -1,0 +1,363 @@
+{
+  "version": 4,
+  "input": {
+    "evidence": [
+      {
+        "id": "e-lrc-noun-numerals",
+        "source": "https://lrc.la.utexas.edu/eieol/ocsol/90",
+        "location": "44, items 5–10",
+        "claim": "The source describes five through ten as singular feminine i-stem nouns and lists their head and genitive forms; ten also has a locative from consonant-stem inflection. Supplied stems are implementation segmentations, not predicted lexical facts.",
+        "kind": "LexicalAssertion",
+        "review": "SourceChecked",
+        "source_sha256": "a6fb3201f1130b3ea74c398baa2c7798f69cd9c4460db64364c72faaa35f6382",
+        "method": "Assistant transcription and interpretation of independently downloaded upstream teaching list; head forms interpreted as nominative. No expert review or manuscript attestation claimed."
+      }
+    ],
+    "grammars": [
+      {
+        "id": "g-ocs-lrc-noun-numerals",
+        "description": "Selected listed nominal numeral forms in LRC §44. Grammatical singular is independent of the quantity denoted. No numeral phrase government implemented.",
+        "evidence": [
+          "e-lrc-noun-numerals"
+        ]
+      }
+    ],
+    "orthographies": [
+      {
+        "id": "o-lrc-noun-numerals",
+        "description": "Exact source-list Cyrillic spelling, no accents added or further substitutions.",
+        "compatible_grammars": [
+          "g-ocs-lrc-noun-numerals"
+        ],
+        "rules": [],
+        "evidence": [
+          "e-lrc-noun-numerals"
+        ]
+      }
+    ],
+    "paradigms": [
+      {
+        "id": "p-nominal-numerals",
+        "grammar": "g-ocs-lrc-noun-numerals",
+        "pos": "n",
+        "rules": [
+          {
+            "id": "r-nom",
+            "cell": [
+              "n",
+              "nom.sg"
+            ],
+            "stem": "base",
+            "suffix": "ь",
+            "evidence": [
+              "e-lrc-noun-numerals"
+            ]
+          },
+          {
+            "id": "r-gen",
+            "cell": [
+              "n",
+              "gen.sg"
+            ],
+            "stem": "base",
+            "suffix": "и",
+            "evidence": [
+              "e-lrc-noun-numerals"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "p-ten-listed",
+        "grammar": "g-ocs-lrc-noun-numerals",
+        "pos": "n",
+        "rules": [
+          {
+            "id": "r-nom",
+            "cell": [
+              "n",
+              "nom.sg"
+            ],
+            "stem": "base",
+            "suffix": "ь",
+            "evidence": [
+              "e-lrc-noun-numerals"
+            ]
+          },
+          {
+            "id": "r-gen",
+            "cell": [
+              "n",
+              "gen.sg"
+            ],
+            "stem": "base",
+            "suffix": "и",
+            "evidence": [
+              "e-lrc-noun-numerals"
+            ]
+          },
+          {
+            "id": "r-ten-loc",
+            "cell": [
+              "n",
+              "loc.sg"
+            ],
+            "stem": "base",
+            "suffix": "є",
+            "evidence": [
+              "e-lrc-noun-numerals"
+            ]
+          }
+        ]
+      }
+    ],
+    "lexemes": [
+      {
+        "id": "l-000014",
+        "displayed_lemma": "пѧть",
+        "categories": [
+          {
+            "category": "Numeral",
+            "evidence": [
+              "e-lrc-noun-numerals"
+            ]
+          },
+          {
+            "category": "Noun",
+            "evidence": [
+              "e-lrc-noun-numerals"
+            ]
+          }
+        ],
+        "genders": [
+          {
+            "gender": "f",
+            "evidence": [
+              "e-lrc-noun-numerals"
+            ]
+          }
+        ],
+        "paradigm": "p-nominal-numerals",
+        "stems": [
+          {
+            "name": "base",
+            "text": "пѧт",
+            "evidence": [
+              "e-lrc-noun-numerals"
+            ]
+          }
+        ],
+        "unavailable": [],
+        "relations": [],
+        "evidence": [
+          "e-lrc-noun-numerals"
+        ]
+      },
+      {
+        "id": "l-000015",
+        "displayed_lemma": "шєсть",
+        "categories": [
+          {
+            "category": "Numeral",
+            "evidence": [
+              "e-lrc-noun-numerals"
+            ]
+          },
+          {
+            "category": "Noun",
+            "evidence": [
+              "e-lrc-noun-numerals"
+            ]
+          }
+        ],
+        "genders": [
+          {
+            "gender": "f",
+            "evidence": [
+              "e-lrc-noun-numerals"
+            ]
+          }
+        ],
+        "paradigm": "p-nominal-numerals",
+        "stems": [
+          {
+            "name": "base",
+            "text": "шєст",
+            "evidence": [
+              "e-lrc-noun-numerals"
+            ]
+          }
+        ],
+        "unavailable": [],
+        "relations": [],
+        "evidence": [
+          "e-lrc-noun-numerals"
+        ]
+      },
+      {
+        "id": "l-000016",
+        "displayed_lemma": "сєдмь",
+        "categories": [
+          {
+            "category": "Numeral",
+            "evidence": [
+              "e-lrc-noun-numerals"
+            ]
+          },
+          {
+            "category": "Noun",
+            "evidence": [
+              "e-lrc-noun-numerals"
+            ]
+          }
+        ],
+        "genders": [
+          {
+            "gender": "f",
+            "evidence": [
+              "e-lrc-noun-numerals"
+            ]
+          }
+        ],
+        "paradigm": "p-nominal-numerals",
+        "stems": [
+          {
+            "name": "base",
+            "text": "сєдм",
+            "evidence": [
+              "e-lrc-noun-numerals"
+            ]
+          }
+        ],
+        "unavailable": [],
+        "relations": [],
+        "evidence": [
+          "e-lrc-noun-numerals"
+        ]
+      },
+      {
+        "id": "l-000017",
+        "displayed_lemma": "осмь",
+        "categories": [
+          {
+            "category": "Numeral",
+            "evidence": [
+              "e-lrc-noun-numerals"
+            ]
+          },
+          {
+            "category": "Noun",
+            "evidence": [
+              "e-lrc-noun-numerals"
+            ]
+          }
+        ],
+        "genders": [
+          {
+            "gender": "f",
+            "evidence": [
+              "e-lrc-noun-numerals"
+            ]
+          }
+        ],
+        "paradigm": "p-nominal-numerals",
+        "stems": [
+          {
+            "name": "base",
+            "text": "осм",
+            "evidence": [
+              "e-lrc-noun-numerals"
+            ]
+          }
+        ],
+        "unavailable": [],
+        "relations": [],
+        "evidence": [
+          "e-lrc-noun-numerals"
+        ]
+      },
+      {
+        "id": "l-000018",
+        "displayed_lemma": "дєвѧть",
+        "categories": [
+          {
+            "category": "Numeral",
+            "evidence": [
+              "e-lrc-noun-numerals"
+            ]
+          },
+          {
+            "category": "Noun",
+            "evidence": [
+              "e-lrc-noun-numerals"
+            ]
+          }
+        ],
+        "genders": [
+          {
+            "gender": "f",
+            "evidence": [
+              "e-lrc-noun-numerals"
+            ]
+          }
+        ],
+        "paradigm": "p-nominal-numerals",
+        "stems": [
+          {
+            "name": "base",
+            "text": "дєвѧт",
+            "evidence": [
+              "e-lrc-noun-numerals"
+            ]
+          }
+        ],
+        "unavailable": [],
+        "relations": [],
+        "evidence": [
+          "e-lrc-noun-numerals"
+        ]
+      },
+      {
+        "id": "l-000019",
+        "displayed_lemma": "дєсѧть",
+        "categories": [
+          {
+            "category": "Numeral",
+            "evidence": [
+              "e-lrc-noun-numerals"
+            ]
+          },
+          {
+            "category": "Noun",
+            "evidence": [
+              "e-lrc-noun-numerals"
+            ]
+          }
+        ],
+        "genders": [
+          {
+            "gender": "f",
+            "evidence": [
+              "e-lrc-noun-numerals"
+            ]
+          }
+        ],
+        "paradigm": "p-ten-listed",
+        "stems": [
+          {
+            "name": "base",
+            "text": "дєсѧт",
+            "evidence": [
+              "e-lrc-noun-numerals"
+            ]
+          }
+        ],
+        "unavailable": [],
+        "relations": [],
+        "evidence": [
+          "e-lrc-noun-numerals"
+        ]
+      }
+    ]
+  }
+}

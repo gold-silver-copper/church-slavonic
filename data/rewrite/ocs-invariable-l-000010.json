@@ -1,0 +1,22 @@
+{
+  "schema": 2,
+  "id": "lrc-invariable-l-000010",
+  "purpose": "Reproduce supplied source pairs through separate invariable cells; not a heldout or productive stem prediction test.",
+  "source": {
+    "url": "https://lrc.la.utexas.edu/eieol/ocsol/100",
+    "section": "46.1",
+    "sha256": "382920f3b1ecbf4882755f858479b33c46af39ad582b1d5232b85d634ea30c5b"
+  },
+  "forms": [
+    {
+      "pos": "v",
+      "cell": "inf",
+      "surface": "рєшти"
+    },
+    {
+      "pos": "v",
+      "cell": "sup",
+      "surface": "рєшть"
+    }
+  ]
+}

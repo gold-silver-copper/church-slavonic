@@ -15,3 +15,5 @@ pub mod node;
 pub mod runner;
 pub mod sexpr;
 pub mod titlo;
+
+pub mod overlay_score;

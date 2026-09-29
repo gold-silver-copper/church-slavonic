@@ -152,8 +152,7 @@ impl Lexeme {
         if self.pos == crate::cell::Pos::Closed {
             return self.inflect(Cell::Word).map(|f| vec![(Cell::Word, f)]).unwrap_or_default();
         }
-        let Some(class) = self.class() else { return Vec::new() };
-        class.order.iter().filter_map(|c| self.inflect(*c).ok().map(|f| (*c, f))).collect()
+        self.cells().into_iter().filter_map(|c| self.inflect(c).ok().map(|f| (c, f))).collect()
     }
 
     /// The cells the lexeme declares, in order.
@@ -161,7 +160,13 @@ impl Lexeme {
         if self.pos == crate::cell::Pos::Closed {
             return vec![Cell::Word];
         }
-        self.class().map(|c| c.order.clone()).unwrap_or_default()
+        let mut cells = self.class().map(|c| c.order.clone()).unwrap_or_default();
+        for cell in self.overrides.iter().map(|(c, _)| c).chain(self.variants.iter().map(|(c, _)| c)) {
+            if !cells.contains(cell) {
+                cells.push(*cell);
+            }
+        }
+        cells
     }
 }
 

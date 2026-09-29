@@ -1,0 +1,22 @@
+{
+  "id": "lrc-ocs-6.1-otrok-pair-supplied-development-example",
+  "forms": [
+    {
+      "pos": "n",
+      "cell": "nom.sg",
+      "surface": "отрокъ"
+    },
+    {
+      "pos": "n",
+      "cell": "nom.pl",
+      "surface": "отроци"
+    }
+  ],
+  "schema": 2,
+  "purpose": "Supplied teaching pair and assistant segmentation; rule application, not independent productivity evaluation",
+  "source": {
+    "url": "https://lrc.la.utexas.edu/eieol/ocsol/20",
+    "section": "6.1",
+    "sha256": "f19c61f88ac52c79991faa2a8ea83ddf8a9c0156a01489b01a2d22644d44b6ca"
+  }
+}

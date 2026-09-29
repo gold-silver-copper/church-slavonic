@@ -8,7 +8,7 @@
 use super::fit::{StressSample, stress_column, stress_sample};
 use church_slavonic::lexicon::{self, Lexeme};
 use church_slavonic::paradigm::Subject;
-use church_slavonic::{Lexicon, Pos, Recension};
+use church_slavonic::{Pos, Recension};
 use std::collections::BTreeMap;
 use std::error::Error;
 
@@ -44,10 +44,14 @@ pub fn refit(lexeme: &Lexeme) -> Option<String> {
 }
 
 pub fn run(pos: Pos, write: bool) -> Result<(), Box<dyn Error>> {
-    let recension = Recension::Synodal;
     let path = super::lexicon_dir().join("syn").join(super::lexicon_file(pos));
-    let mut lexemes = lexicon::parse_in(&std::fs::read_to_string(&path)?, pos, recension)?;
-    let _ = Lexicon::synodal();
+    run_file(&path, pos, write)
+}
+
+/// The same refit/write path with an explicitly supplied local input file.
+pub fn run_file(path: &std::path::Path, pos: Pos, write: bool) -> Result<(), Box<dyn Error>> {
+    let recension = Recension::Synodal;
+    let mut lexemes = lexicon::parse_in(&std::fs::read_to_string(path)?, pos, recension)?;
     let mut changed = 0;
     let mut refused = 0;
     let mut samples: Vec<String> = Vec::new();
@@ -75,7 +79,7 @@ pub fn run(pos: Pos, write: bool) -> Result<(), Box<dyn Error>> {
         println!("  {s}");
     }
     if write {
-        std::fs::write(&path, lexicon::format(&lexemes))?;
+        super::publication::stage_lexicon(path, &lexemes, pos, recension)?.commit()?;
         println!("wrote {}", path.display());
     }
     Ok(())
