@@ -179,13 +179,13 @@ impl Lexicon {
         // the Synodal noun rule was measured (94% of classes); every other
         // part of speech and the OCS lexicon read the class off the
         // lexicon's own lemma endings
-        let (class, gender) = match (self.recension, pos) {
+        let (class, gender) = match (self.recension(), pos) {
             (Recension::Synodal, Pos::Noun) => noun_class(&form.letters),
             (_, Pos::Closed) => ("0", Gender::Masculine),
             _ => (self.class_by_ending_excluding(&form.letters, pos, excluded), Gender::Masculine),
         };
         let stems = Vec::new();
-        let stress = match self.recension {
+        let stress = match self.recension() {
             Recension::OldChurchSlavonic => String::new(),
             Recension::Synodal => match form.stress {
                 None => String::new(),
@@ -214,7 +214,7 @@ impl Lexicon {
             note: String::new(),
             variant_weights: Vec::new(),
             provenance: Provenance::Guessed,
-            recension: self.recension,
+            recension: self.recension(),
         }
     }
 }

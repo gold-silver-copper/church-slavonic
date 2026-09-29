@@ -1,0 +1,29 @@
+{
+  "archive": "references/downloads/ud-ocs-proiel-r2.18/UD_Old_Church_Slavonic-PROIEL-64eddf87abfaa51e7f5acf0bef1bebcdaca1559f.tar.gz",
+  "sha256": "579b20edb50366e66168bb4d9f74bee0ce782f8e5b282bad8ebb2d8d870bd65c",
+  "files": [
+    {
+      "path": "target/sources/treebanks/ud-ocs-proiel-r2.18/UD_Old_Church_Slavonic-PROIEL-64eddf87abfaa51e7f5acf0bef1bebcdaca1559f/cu_proiel-ud-dev.conllu",
+      "sha256": "1e84663c501e29ff27c89854052d2d9b678b8625597e15a81108af46de48f53c",
+      "bytes": 2071103,
+      "integer_word_rows": 18984,
+      "sentence_ids": 2205
+    },
+    {
+      "path": "target/sources/treebanks/ud-ocs-proiel-r2.18/UD_Old_Church_Slavonic-PROIEL-64eddf87abfaa51e7f5acf0bef1bebcdaca1559f/cu_proiel-ud-test.conllu",
+      "sha256": "1f2c2e078a498594b1d1efb4816390ebb543c46d8b97f0d4694c8399f8b45828",
+      "bytes": 2174954,
+      "integer_word_rows": 20149,
+      "sentence_ids": 2096
+    },
+    {
+      "path": "target/sources/treebanks/ud-ocs-proiel-r2.18/UD_Old_Church_Slavonic-PROIEL-64eddf87abfaa51e7f5acf0bef1bebcdaca1559f/cu_proiel-ud-train.conllu",
+      "sha256": "c9d9a65074bd95bf51617b27515b735d4de13dcc94392ced763d63aa1dc68510",
+      "bytes": 17489327,
+      "integer_word_rows": 159710,
+      "sentence_ids": 18327
+    }
+  ],
+  "status": "Local archive and extracted CoNLL-U bytes agree; upstream authenticity, annotation quality and split independence not established by this check.",
+  "heldout_integer_word_rows": 39133
+}

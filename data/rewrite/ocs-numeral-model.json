@@ -1,0 +1,703 @@
+{
+  "version": 4,
+  "input": {
+    "evidence": [
+      {
+        "id": "e-lrc-numerals",
+        "source": "https://lrc.la.utexas.edu/eieol/ocsol/90",
+        "location": "44, items 2–4",
+        "claim": "Listed inflected numeral forms and case/gender/number agreement. Supplied stems are an implementation segmentation. Unlabelled head forms are read as nominative; common listed oblique forms are applied to the three agreeing genders. This is a bounded teaching-list interpretation, not manuscript token attestation.",
+        "kind": "DescriptiveRule",
+        "review": "SourceChecked",
+        "source_sha256": "a6fb3201f1130b3ea74c398baa2c7798f69cd9c4460db64364c72faaa35f6382",
+        "method": "Assistant transcription checked against independently downloaded upstream HTML. No expert review or productive stem prediction claimed."
+      }
+    ],
+    "grammars": [
+      {
+        "id": "g-ocs-lrc-numerals",
+        "description": "LRC §44 selected forms of two, three and four; listed cells only, not a full numeral syntax or cross-recension grammar.",
+        "evidence": [
+          "e-lrc-numerals"
+        ]
+      }
+    ],
+    "orthographies": [
+      {
+        "id": "o-lrc-numerals",
+        "description": "Exact displayed Cyrillic spellings from §44; no accent prediction, editorial substitutions or added source variants.",
+        "compatible_grammars": [
+          "g-ocs-lrc-numerals"
+        ],
+        "rules": [],
+        "evidence": [
+          "e-lrc-numerals"
+        ]
+      }
+    ],
+    "paradigms": [
+      {
+        "id": "p-numeral-l-000011",
+        "grammar": "g-ocs-lrc-numerals",
+        "pos": "pron",
+        "rules": [
+          {
+            "id": "r-l-000011-m.du.nom",
+            "cell": [
+              "pron",
+              "m.du.nom"
+            ],
+            "stem": "base",
+            "suffix": "а",
+            "evidence": [
+              "e-lrc-numerals"
+            ]
+          },
+          {
+            "id": "r-l-000011-n.du.nom",
+            "cell": [
+              "pron",
+              "n.du.nom"
+            ],
+            "stem": "base",
+            "suffix": "ѣ",
+            "evidence": [
+              "e-lrc-numerals"
+            ]
+          },
+          {
+            "id": "r-l-000011-f.du.nom",
+            "cell": [
+              "pron",
+              "f.du.nom"
+            ],
+            "stem": "base",
+            "suffix": "ѣ",
+            "evidence": [
+              "e-lrc-numerals"
+            ]
+          },
+          {
+            "id": "r-l-000011-m.du.gen",
+            "cell": [
+              "pron",
+              "m.du.gen"
+            ],
+            "stem": "base",
+            "suffix": "оѭ",
+            "evidence": [
+              "e-lrc-numerals"
+            ]
+          },
+          {
+            "id": "r-l-000011-n.du.gen",
+            "cell": [
+              "pron",
+              "n.du.gen"
+            ],
+            "stem": "base",
+            "suffix": "оѭ",
+            "evidence": [
+              "e-lrc-numerals"
+            ]
+          },
+          {
+            "id": "r-l-000011-f.du.gen",
+            "cell": [
+              "pron",
+              "f.du.gen"
+            ],
+            "stem": "base",
+            "suffix": "оѭ",
+            "evidence": [
+              "e-lrc-numerals"
+            ]
+          },
+          {
+            "id": "r-l-000011-m.du.loc",
+            "cell": [
+              "pron",
+              "m.du.loc"
+            ],
+            "stem": "base",
+            "suffix": "оѭ",
+            "evidence": [
+              "e-lrc-numerals"
+            ]
+          },
+          {
+            "id": "r-l-000011-n.du.loc",
+            "cell": [
+              "pron",
+              "n.du.loc"
+            ],
+            "stem": "base",
+            "suffix": "оѭ",
+            "evidence": [
+              "e-lrc-numerals"
+            ]
+          },
+          {
+            "id": "r-l-000011-f.du.loc",
+            "cell": [
+              "pron",
+              "f.du.loc"
+            ],
+            "stem": "base",
+            "suffix": "оѭ",
+            "evidence": [
+              "e-lrc-numerals"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "p-numeral-l-000012",
+        "grammar": "g-ocs-lrc-numerals",
+        "pos": "pron",
+        "rules": [
+          {
+            "id": "r-l-000012-m.pl.nom",
+            "cell": [
+              "pron",
+              "m.pl.nom"
+            ],
+            "stem": "base",
+            "suffix": "ьѥ",
+            "evidence": [
+              "e-lrc-numerals"
+            ]
+          },
+          {
+            "id": "r-l-000012-n.pl.nom",
+            "cell": [
+              "pron",
+              "n.pl.nom"
+            ],
+            "stem": "base",
+            "suffix": "и",
+            "evidence": [
+              "e-lrc-numerals"
+            ]
+          },
+          {
+            "id": "r-l-000012-f.pl.nom",
+            "cell": [
+              "pron",
+              "f.pl.nom"
+            ],
+            "stem": "base",
+            "suffix": "и",
+            "evidence": [
+              "e-lrc-numerals"
+            ]
+          },
+          {
+            "id": "r-l-000012-m.pl.acc",
+            "cell": [
+              "pron",
+              "m.pl.acc"
+            ],
+            "stem": "base",
+            "suffix": "и",
+            "evidence": [
+              "e-lrc-numerals"
+            ]
+          },
+          {
+            "id": "r-l-000012-n.pl.acc",
+            "cell": [
+              "pron",
+              "n.pl.acc"
+            ],
+            "stem": "base",
+            "suffix": "и",
+            "evidence": [
+              "e-lrc-numerals"
+            ]
+          },
+          {
+            "id": "r-l-000012-f.pl.acc",
+            "cell": [
+              "pron",
+              "f.pl.acc"
+            ],
+            "stem": "base",
+            "suffix": "и",
+            "evidence": [
+              "e-lrc-numerals"
+            ]
+          },
+          {
+            "id": "r-l-000012-m.pl.gen",
+            "cell": [
+              "pron",
+              "m.pl.gen"
+            ],
+            "stem": "base",
+            "suffix": "ии",
+            "evidence": [
+              "e-lrc-numerals"
+            ]
+          },
+          {
+            "id": "r-l-000012-n.pl.gen",
+            "cell": [
+              "pron",
+              "n.pl.gen"
+            ],
+            "stem": "base",
+            "suffix": "ии",
+            "evidence": [
+              "e-lrc-numerals"
+            ]
+          },
+          {
+            "id": "r-l-000012-f.pl.gen",
+            "cell": [
+              "pron",
+              "f.pl.gen"
+            ],
+            "stem": "base",
+            "suffix": "ии",
+            "evidence": [
+              "e-lrc-numerals"
+            ]
+          },
+          {
+            "id": "r-l-000012-m.pl.loc",
+            "cell": [
+              "pron",
+              "m.pl.loc"
+            ],
+            "stem": "base",
+            "suffix": "ьхъ",
+            "evidence": [
+              "e-lrc-numerals"
+            ]
+          },
+          {
+            "id": "r-l-000012-n.pl.loc",
+            "cell": [
+              "pron",
+              "n.pl.loc"
+            ],
+            "stem": "base",
+            "suffix": "ьхъ",
+            "evidence": [
+              "e-lrc-numerals"
+            ]
+          },
+          {
+            "id": "r-l-000012-f.pl.loc",
+            "cell": [
+              "pron",
+              "f.pl.loc"
+            ],
+            "stem": "base",
+            "suffix": "ьхъ",
+            "evidence": [
+              "e-lrc-numerals"
+            ]
+          },
+          {
+            "id": "r-l-000012-m.pl.dat",
+            "cell": [
+              "pron",
+              "m.pl.dat"
+            ],
+            "stem": "base",
+            "suffix": "ьмъ",
+            "evidence": [
+              "e-lrc-numerals"
+            ]
+          },
+          {
+            "id": "r-l-000012-n.pl.dat",
+            "cell": [
+              "pron",
+              "n.pl.dat"
+            ],
+            "stem": "base",
+            "suffix": "ьмъ",
+            "evidence": [
+              "e-lrc-numerals"
+            ]
+          },
+          {
+            "id": "r-l-000012-f.pl.dat",
+            "cell": [
+              "pron",
+              "f.pl.dat"
+            ],
+            "stem": "base",
+            "suffix": "ьмъ",
+            "evidence": [
+              "e-lrc-numerals"
+            ]
+          },
+          {
+            "id": "r-l-000012-m.pl.ins",
+            "cell": [
+              "pron",
+              "m.pl.ins"
+            ],
+            "stem": "base",
+            "suffix": "ьми",
+            "evidence": [
+              "e-lrc-numerals"
+            ]
+          },
+          {
+            "id": "r-l-000012-n.pl.ins",
+            "cell": [
+              "pron",
+              "n.pl.ins"
+            ],
+            "stem": "base",
+            "suffix": "ьми",
+            "evidence": [
+              "e-lrc-numerals"
+            ]
+          },
+          {
+            "id": "r-l-000012-f.pl.ins",
+            "cell": [
+              "pron",
+              "f.pl.ins"
+            ],
+            "stem": "base",
+            "suffix": "ьми",
+            "evidence": [
+              "e-lrc-numerals"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "p-numeral-l-000013",
+        "grammar": "g-ocs-lrc-numerals",
+        "pos": "pron",
+        "rules": [
+          {
+            "id": "r-l-000013-m.pl.nom",
+            "cell": [
+              "pron",
+              "m.pl.nom"
+            ],
+            "stem": "base",
+            "suffix": "є",
+            "evidence": [
+              "e-lrc-numerals"
+            ]
+          },
+          {
+            "id": "r-l-000013-n.pl.nom",
+            "cell": [
+              "pron",
+              "n.pl.nom"
+            ],
+            "stem": "base",
+            "suffix": "и",
+            "evidence": [
+              "e-lrc-numerals"
+            ]
+          },
+          {
+            "id": "r-l-000013-f.pl.nom",
+            "cell": [
+              "pron",
+              "f.pl.nom"
+            ],
+            "stem": "base",
+            "suffix": "и",
+            "evidence": [
+              "e-lrc-numerals"
+            ]
+          },
+          {
+            "id": "r-l-000013-m.pl.acc",
+            "cell": [
+              "pron",
+              "m.pl.acc"
+            ],
+            "stem": "base",
+            "suffix": "и",
+            "evidence": [
+              "e-lrc-numerals"
+            ]
+          },
+          {
+            "id": "r-l-000013-n.pl.acc",
+            "cell": [
+              "pron",
+              "n.pl.acc"
+            ],
+            "stem": "base",
+            "suffix": "и",
+            "evidence": [
+              "e-lrc-numerals"
+            ]
+          },
+          {
+            "id": "r-l-000013-f.pl.acc",
+            "cell": [
+              "pron",
+              "f.pl.acc"
+            ],
+            "stem": "base",
+            "suffix": "и",
+            "evidence": [
+              "e-lrc-numerals"
+            ]
+          },
+          {
+            "id": "r-l-000013-m.pl.gen",
+            "cell": [
+              "pron",
+              "m.pl.gen"
+            ],
+            "stem": "base",
+            "suffix": "ь",
+            "evidence": [
+              "e-lrc-numerals"
+            ]
+          },
+          {
+            "id": "r-l-000013-n.pl.gen",
+            "cell": [
+              "pron",
+              "n.pl.gen"
+            ],
+            "stem": "base",
+            "suffix": "ь",
+            "evidence": [
+              "e-lrc-numerals"
+            ]
+          },
+          {
+            "id": "r-l-000013-f.pl.gen",
+            "cell": [
+              "pron",
+              "f.pl.gen"
+            ],
+            "stem": "base",
+            "suffix": "ь",
+            "evidence": [
+              "e-lrc-numerals"
+            ]
+          },
+          {
+            "id": "r-l-000013-m.pl.loc",
+            "cell": [
+              "pron",
+              "m.pl.loc"
+            ],
+            "stem": "base",
+            "suffix": "ьхъ",
+            "evidence": [
+              "e-lrc-numerals"
+            ]
+          },
+          {
+            "id": "r-l-000013-n.pl.loc",
+            "cell": [
+              "pron",
+              "n.pl.loc"
+            ],
+            "stem": "base",
+            "suffix": "ьхъ",
+            "evidence": [
+              "e-lrc-numerals"
+            ]
+          },
+          {
+            "id": "r-l-000013-f.pl.loc",
+            "cell": [
+              "pron",
+              "f.pl.loc"
+            ],
+            "stem": "base",
+            "suffix": "ьхъ",
+            "evidence": [
+              "e-lrc-numerals"
+            ]
+          },
+          {
+            "id": "r-l-000013-m.pl.dat",
+            "cell": [
+              "pron",
+              "m.pl.dat"
+            ],
+            "stem": "base",
+            "suffix": "ємъ",
+            "evidence": [
+              "e-lrc-numerals"
+            ]
+          },
+          {
+            "id": "r-l-000013-n.pl.dat",
+            "cell": [
+              "pron",
+              "n.pl.dat"
+            ],
+            "stem": "base",
+            "suffix": "ємъ",
+            "evidence": [
+              "e-lrc-numerals"
+            ]
+          },
+          {
+            "id": "r-l-000013-f.pl.dat",
+            "cell": [
+              "pron",
+              "f.pl.dat"
+            ],
+            "stem": "base",
+            "suffix": "ємъ",
+            "evidence": [
+              "e-lrc-numerals"
+            ]
+          },
+          {
+            "id": "r-l-000013-m.pl.ins",
+            "cell": [
+              "pron",
+              "m.pl.ins"
+            ],
+            "stem": "base",
+            "suffix": "ьми",
+            "evidence": [
+              "e-lrc-numerals"
+            ]
+          },
+          {
+            "id": "r-l-000013-n.pl.ins",
+            "cell": [
+              "pron",
+              "n.pl.ins"
+            ],
+            "stem": "base",
+            "suffix": "ьми",
+            "evidence": [
+              "e-lrc-numerals"
+            ]
+          },
+          {
+            "id": "r-l-000013-f.pl.ins",
+            "cell": [
+              "pron",
+              "f.pl.ins"
+            ],
+            "stem": "base",
+            "suffix": "ьми",
+            "evidence": [
+              "e-lrc-numerals"
+            ]
+          }
+        ]
+      }
+    ],
+    "lexemes": [
+      {
+        "id": "l-000011",
+        "displayed_lemma": "дъва",
+        "categories": [
+          {
+            "category": "Numeral",
+            "evidence": [
+              "e-lrc-numerals"
+            ]
+          },
+          {
+            "category": "Adjective",
+            "evidence": [
+              "e-lrc-numerals"
+            ]
+          }
+        ],
+        "paradigm": "p-numeral-l-000011",
+        "stems": [
+          {
+            "name": "base",
+            "text": "дъв",
+            "evidence": [
+              "e-lrc-numerals"
+            ]
+          }
+        ],
+        "unavailable": [],
+        "relations": [],
+        "evidence": [
+          "e-lrc-numerals"
+        ]
+      },
+      {
+        "id": "l-000012",
+        "displayed_lemma": "трьѥ",
+        "categories": [
+          {
+            "category": "Numeral",
+            "evidence": [
+              "e-lrc-numerals"
+            ]
+          },
+          {
+            "category": "Adjective",
+            "evidence": [
+              "e-lrc-numerals"
+            ]
+          }
+        ],
+        "paradigm": "p-numeral-l-000012",
+        "stems": [
+          {
+            "name": "base",
+            "text": "тр",
+            "evidence": [
+              "e-lrc-numerals"
+            ]
+          }
+        ],
+        "unavailable": [],
+        "relations": [],
+        "evidence": [
+          "e-lrc-numerals"
+        ]
+      },
+      {
+        "id": "l-000013",
+        "displayed_lemma": "чєтꙑрє",
+        "categories": [
+          {
+            "category": "Numeral",
+            "evidence": [
+              "e-lrc-numerals"
+            ]
+          },
+          {
+            "category": "Adjective",
+            "evidence": [
+              "e-lrc-numerals"
+            ]
+          }
+        ],
+        "paradigm": "p-numeral-l-000013",
+        "stems": [
+          {
+            "name": "base",
+            "text": "чєтꙑр",
+            "evidence": [
+              "e-lrc-numerals"
+            ]
+          }
+        ],
+        "unavailable": [],
+        "relations": [],
+        "evidence": [
+          "e-lrc-numerals"
+        ]
+      }
+    ]
+  }
+}

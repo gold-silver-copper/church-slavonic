@@ -1,0 +1,19 @@
+{
+  "schema": 2,
+  "id": "synodal-titlo-idol",
+  "purpose": "Selected spelling distinction under a named source prescription; not corpus-token attestation or held-out generalization.",
+  "source": {
+    "url": "https://www.ponomar.net/files/gama2/p003.htm",
+    "sha256": "3ed721f48ddb854c5ebcb98b00245fec7712cb289aec3bf2f0ab3e5d20cd573d",
+    "location": "§3 в), note"
+  },
+  "annotation_status": "Nominal cell identification and analytical expansion are unverified annotations.",
+  "forms": [
+    {
+      "pos": "n",
+      "cell": "nom.sg",
+      "surface": "бо́гъ",
+      "source_display": "бо́гъ"
+    }
+  ]
+}

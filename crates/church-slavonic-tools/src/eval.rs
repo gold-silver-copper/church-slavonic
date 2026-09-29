@@ -1,7 +1,7 @@
-//! `cargo xtask eval`: the three numbers, each of which can go down —
-//! held-out recall (UD PROIEL dev+test, Syntacticus), Bible coverage
-//! through the analyzer, and guesser accuracy (leave-one-out over the
-//! lexicon). Part 1 fills the guesser number; Part 2 the other two.
+//! Generation diagnostics, surface coverage, and given-lemma guesser checks.
+//! These measures do not establish independently adjudicated analysis accuracy.
+
+pub mod generation;
 
 use church_slavonic::cell::Pos;
 use church_slavonic::lexicon::Lexicon;
@@ -24,10 +24,10 @@ pub fn run(args: Vec<String>) -> Result<(), Box<dyn Error>> {
         return Ok(());
     }
     for corpus in held_out_corpora()? {
-        let r = recall(Lexicon::ocs(), &corpus);
-        println!("held-out recall, {} ({} tokens, {} slots; {} skipped by the loader):", corpus.label, corpus.tokens, corpus.slots.len(), corpus.skipped_total());
-        for (pos, hit, total) in &r {
-            println!("  {pos:<10} {:.2}% ({hit}/{total})", 100.0 * *hit as f64 / (*total).max(1) as f64);
+        let report = generation::evaluate(Lexicon::ocs(), &corpus)?;
+        println!("{}", serde_json::to_string_pretty(&report)?);
+        if report.status == "unavailable" {
+            return Err("no mapped evaluation targets".into());
         }
     }
     match bible_coverage()? {
@@ -49,7 +49,7 @@ pub fn run(args: Vec<String>) -> Result<(), Box<dyn Error>> {
     }
     let g = guesser(Lexicon::synodal(), Pos::Noun);
     println!(
-        "guesser accuracy, Synodal nouns (leave-one-out over {} lexemes): class {:.2}%, cells {:.2}% ({}/{})",
+        "given-lemma hand-rule diagnostic, Synodal nouns ({} lexemes; lexicon targets, not independent gold): class {:.2}%, cells {:.2}% ({}/{})",
         g.lexemes,
         100.0 * g.class_right as f64 / g.lexemes.max(1) as f64,
         100.0 * g.cells_right as f64 / g.cells.max(1) as f64,
@@ -68,10 +68,12 @@ fn held_out_corpora() -> Result<Vec<crate::sources::ud::Corpus>, Box<dyn Error>>
     let mut out = Vec::new();
     match crate::sources::ud::load_ud_proiel_heldout(&sources, &artifacts)? {
         Some(c) => out.push(c),
-        None => println!("held-out recall (UD PROIEL dev+test): source absent under references/downloads (scripts/fetch-sources.sh)"),
+        None => return Err("UD PROIEL evaluation source absent".into()),
     }
     if let Some(c) = crate::sources::ud::load_syntacticus(&sources, &artifacts)? {
         out.push(c);
+    } else {
+        return Err("Syntacticus evaluation source absent".into());
     }
     Ok(out)
 }
@@ -151,13 +153,15 @@ pub fn corpus_matches(surface: &str, produced: &str, pos: Pos) -> bool {
     crate::sources::ud::is_abbreviated(surface) && s.chars().count() < p.chars().count() && s.chars().next() == p.chars().next() && is_subsequence(&s, &p)
 }
 
-/// Held-out recall per part of speech: the share of annotated slots whose
+/// Legacy relaxed given-lemma diagnostic, not used by `eval`.
+/// Includes guessed lemmas, extra target cells, and broad spelling matches.
+/// Conditional generation per part of speech: the share of annotated slots whose
 /// surface the lexicon produces for the annotated lemma and cell — any
 /// lexeme with the lemma's letters, any form of the cell (the primary, an
 /// alternative or a variant), compared by the accent-blind key. The
 /// personal pronoun (the treebank's lemma `personal`) is reported apart
 /// from the other pronouns, as the 1.2 baselines were.
-pub fn recall(lexicon: &Lexicon, corpus: &crate::sources::ud::Corpus) -> Vec<(&'static str, u64, u64)> {
+pub fn legacy_relaxed_generation(lexicon: &Lexicon, corpus: &crate::sources::ud::Corpus) -> Vec<(&'static str, u64, u64)> {
     use church_slavonic::cell::Cell;
     use church_slavonic::orthography::comparison_key;
     use std::collections::HashMap;
@@ -214,7 +218,7 @@ pub fn recall(lexicon: &Lexicon, corpus: &crate::sources::ud::Corpus) -> Vec<(&'
         }
         let hit = candidates.iter().any(|l| {
             cells.iter().any(|cell| {
-                let prints = cache.entry((l.id.clone(), *cell)).or_insert_with(|| l.forms(*cell).iter().map(|f| f.print(lexicon.recension)).collect());
+                let prints = cache.entry((l.id.clone(), *cell)).or_insert_with(|| l.forms(*cell).iter().map(|f| f.print(lexicon.recension())).collect());
                 prints.iter().any(|p| corpus_matches(&surface, p, slot.pos))
             })
         });
@@ -234,7 +238,7 @@ pub fn recall(lexicon: &Lexicon, corpus: &crate::sources::ud::Corpus) -> Vec<(&'
             && sampled[row] < n
         {
             sampled[row] += 1;
-            let have: Vec<String> = candidates.iter().map(|l| format!("{}[{}{}]: {}", l.id, l.class, if l.provenance == church_slavonic::lexicon::Provenance::Guessed { " guessed" } else { "" }, l.forms(slot.cell).iter().map(|f| f.print(lexicon.recension)).collect::<Vec<_>>().join("|"))).collect();
+            let have: Vec<String> = candidates.iter().map(|l| format!("{}[{}{}]: {}", l.id, l.class, if l.provenance == church_slavonic::lexicon::Provenance::Guessed { " guessed" } else { "" }, l.forms(slot.cell).iter().map(|f| f.print(lexicon.recension())).collect::<Vec<_>>().join("|"))).collect();
             println!("  miss {:<10} {} {} = {} ; lexicon: {}", counts[row].0, slot.lemma, slot.cell.name(), slot.surface, if have.is_empty() { "(no lexeme)".to_string() } else { have.join(" ; ") });
         }
     }
@@ -270,7 +274,7 @@ pub fn guessed_present(lexicon: &Lexicon) -> GuessReport {
         for cell in cells {
             let Ok(want) = lexeme.inflect(cell) else { continue };
             r.cells += 1;
-            if guessed.inflect(cell).ok().map(|f| f.print(lexicon.recension)) == Some(want.print(lexicon.recension)) {
+            if guessed.inflect(cell).ok().map(|f| f.print(lexicon.recension())) == Some(want.print(lexicon.recension())) {
                 r.cells_right += 1;
             }
         }
@@ -301,7 +305,7 @@ pub fn guesser(lexicon: &Lexicon, pos: Pos) -> GuessReport {
         }
         for (cell, form) in lexeme.paradigm() {
             r.cells += 1;
-            if guessed.inflect(cell).ok().map(|f| f.print(lexicon.recension)) == Some(form.print(lexicon.recension)) {
+            if guessed.inflect(cell).ok().map(|f| f.print(lexicon.recension())) == Some(form.print(lexicon.recension())) {
                 r.cells_right += 1;
             }
         }

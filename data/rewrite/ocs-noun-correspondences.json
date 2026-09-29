@@ -1,0 +1,27 @@
+{
+  "source_sha256": "960cf6c5d7ec6768d25f431fad1fd700559ea14da75c322218cd49dacbbb36c1",
+  "orthography": "o-lrc-o-stems",
+  "entries": [
+    {
+      "legacy_id": "чловѣкъ.n",
+      "targets": [
+        "l-000022"
+      ],
+      "rationale": "Proposed correspondence based on displayed lemma and the bounded OCS table model; legacy source lineage and lexical identity are unreviewed. No grammatical rule is imported."
+    },
+    {
+      "legacy_id": "мѣсто.n",
+      "targets": [
+        "l-000023"
+      ],
+      "rationale": "Proposed correspondence based on displayed lemma and the bounded OCS table model; legacy source lineage and lexical identity are unreviewed. No grammatical rule is imported."
+    },
+    {
+      "legacy_id": "вѣко.n",
+      "targets": [
+        "l-000024"
+      ],
+      "rationale": "Proposed correspondence based on displayed lemma and the bounded OCS table model; legacy source lineage and lexical identity are unreviewed. No grammatical rule is imported."
+    }
+  ]
+}

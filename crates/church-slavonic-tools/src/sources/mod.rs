@@ -8,3 +8,9 @@ pub mod kaikki;
 pub mod polyakov;
 pub mod ruwiktionary;
 pub mod ud;
+
+pub mod archive;
+
+pub mod observations;
+
+pub mod proiel;

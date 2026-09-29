@@ -1,0 +1,61 @@
+{
+  "scope": "Independent JSONL reconstruction against verified local source bytes and exhaustive unique mapped-slot reference check; linguistic mappings remain legacy and unadjudicated.",
+  "splits": {
+    "heldout": {
+      "command": "xtask corpus-observations ud-heldout",
+      "exit_code": 0,
+      "records": {
+        "comment": 12903,
+        "word": 39133,
+        "separator": 4301
+      },
+      "mapping_issues": {
+        "part of speech outside the lexicon": 13233,
+        "no number": 791,
+        "verb: subjunctive": 20,
+        "pronoun: reciprocal": 14,
+        "ambiguous case": 1
+      },
+      "mapped_slots": 25450,
+      "documents": [
+        {
+          "path": "UD_Old_Church_Slavonic-PROIEL-64eddf87abfaa51e7f5acf0bef1bebcdaca1559f/cu_proiel-ud-dev.conllu",
+          "bytes": 2071103,
+          "sha256": "1e84663c501e29ff27c89854052d2d9b678b8625597e15a81108af46de48f53c"
+        },
+        {
+          "path": "UD_Old_Church_Slavonic-PROIEL-64eddf87abfaa51e7f5acf0bef1bebcdaca1559f/cu_proiel-ud-test.conllu",
+          "bytes": 2174954,
+          "sha256": "1f2c2e078a498594b1d1efb4816390ebb543c46d8b97f0d4694c8399f8b45828"
+        }
+      ],
+      "export_sha256": "6de45742c1b95bd4375c7bd78b9f61ffb9dce22beea8485877b19363972ecd3e"
+    },
+    "train": {
+      "command": "xtask corpus-observations ud-train",
+      "exit_code": 0,
+      "records": {
+        "comment": 54981,
+        "word": 159710,
+        "separator": 18327
+      },
+      "mapping_issues": {
+        "part of speech outside the lexicon": 53838,
+        "no number": 3083,
+        "verb: subjunctive": 118,
+        "pronoun: reciprocal": 95,
+        "ambiguous case": 10,
+        "verb: participle without a tense": 14
+      },
+      "mapped_slots": 103631,
+      "documents": [
+        {
+          "path": "UD_Old_Church_Slavonic-PROIEL-64eddf87abfaa51e7f5acf0bef1bebcdaca1559f/cu_proiel-ud-train.conllu",
+          "bytes": 17489327,
+          "sha256": "c9d9a65074bd95bf51617b27515b735d4de13dcc94392ced763d63aa1dc68510"
+        }
+      ],
+      "export_sha256": "ee251b2211c6638395ca4a1dc4c0d3ca2c9d637879a077b39f1729a2774090c5"
+    }
+  }
+}

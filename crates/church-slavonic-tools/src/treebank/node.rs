@@ -210,6 +210,7 @@ pub fn from_sexpr(v: &Value) -> Result<Node, TreeError> {
                         }
                     }
                     Some("inf") => product.push(Cell::Verb(VerbCell::Infinitive)),
+                    Some("sup") => product.push(Cell::Verb(VerbCell::Supine)),
                     Some(other) => return err(format!("unknown form: {other}")),
                 }
             }
@@ -413,7 +414,7 @@ fn product_items(id: &str, all: &[Cell]) -> Option<Vec<Value>> {
             feats.push(("num", joined(all, |c| c.number(), |n| number_name(*n))));
             "v"
         }
-        Cell::Verb(VerbCell::Infinitive) => return None,
+        Cell::Verb(VerbCell::Infinitive | VerbCell::Supine) => return None,
         Cell::Verb(VerbCell::LPart { .. }) => {
             feats.push(("g", joined(all, |c| c.gender(), |g| gender_name(*g))));
             feats.push(("num", joined(all, |c| c.number(), |n| number_name(*n))));
@@ -505,6 +506,7 @@ fn leaf_items(id: &str, cell: &Cell) -> Vec<Value> {
         ],
         Cell::Verb(VerbCell::Imperative { person: p, number: n }) => vec![atom("v"), atom(id), key("form"), atom("imp"), key("p"), person(p), key("num"), num(n)],
         Cell::Verb(VerbCell::Infinitive) => vec![atom("v"), atom(id), key("form"), atom("inf")],
+        Cell::Verb(VerbCell::Supine) => vec![atom("v"), atom(id), key("form"), atom("sup")],
         Cell::Verb(VerbCell::LPart { gender: g, number: n }) => vec![atom("lp"), atom(id), key("g"), gender(g), key("num"), num(n)],
         Cell::Verb(VerbCell::Participle { tense, voice, series: s, gender: g, number: n, case: c }) => vec![
             atom("part"), atom(id),

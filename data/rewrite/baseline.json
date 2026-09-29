@@ -1,0 +1,789 @@
+{
+  "schema": 1,
+  "revision": "09d14f3efc41d20503dd46d9391ca17a15a791c3",
+  "initial_worktree": "Only V5-PROMPT.md untracked; tracked files clean.",
+  "prompt_sha256": "19fbf9a49861daf8e2692b0d639474be477c0292b607a63206793fa27a56b9b6",
+  "files": [
+    {
+      "path": ".cargo/config.toml",
+      "sha256": "4624ca8a2a46dd467453c2f5d6de8eb38b28725e481198305387d4188081b48b",
+      "bytes": 67
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "sha256": "ca065efa45cf5c8db13c2b75d33d9aa45b3decd5c7aef81295bd675be8307721",
+      "bytes": 1329
+    },
+    {
+      "path": ".gitignore",
+      "sha256": "d48a2880e0ce6174184b6e575337535b26f72728f9bf88129c9c220cf5f25d8d",
+      "bytes": 297
+    },
+    {
+      "path": "CHANGELOG.md",
+      "sha256": "7fd894079fea16bf3199928f8dedd190028f5fa8899330a3857eec835fd7b849",
+      "bytes": 109429
+    },
+    {
+      "path": "Cargo.lock",
+      "sha256": "7d6c9a338bd6b1ff34e50f2c052bef93a54a07144d9dc5b37ca26810fa45fa61",
+      "bytes": 3619
+    },
+    {
+      "path": "Cargo.toml",
+      "sha256": "f8071ec57ef488cdde20c20ffb0179a02dfca5aef6e51801d34fb368fff64626",
+      "bytes": 1108
+    },
+    {
+      "path": "HANDOFF-PROMPT.md",
+      "sha256": "4f9c046f9ef44ea593bc7d412b190261cefef771a657fa9b4846976388c7699f",
+      "bytes": 15094
+    },
+    {
+      "path": "LICENSE-APACHE",
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+      "bytes": 11357
+    },
+    {
+      "path": "LICENSE-MIT",
+      "sha256": "4eb0aaee851c34ac0830305114687c1701df3618a38231ee7ad71d22394d5cff",
+      "bytes": 1075
+    },
+    {
+      "path": "NOTES.md",
+      "sha256": "c3a77f391708a000643ed78454e7f6dcc6ae98ad9867da5dd1431c02e6af708d",
+      "bytes": 168608
+    },
+    {
+      "path": "README.md",
+      "sha256": "8e668bd9ea2b77db4caa87b4b731f984deaea4aa544b18654f2293c221bc52ab",
+      "bytes": 25970
+    },
+    {
+      "path": "V2-PROMPT.md",
+      "sha256": "6e463ac1a6345d714b1fa188b3ca0bcfc5e22c1bf1fdd3ea116a8a2186644eab",
+      "bytes": 24048
+    },
+    {
+      "path": "V2.1-PROMPT.md",
+      "sha256": "117566e8ea61eb35c38d431fc8315b5ae278aa3a2606bdf9716539fa98ed882d",
+      "bytes": 11768
+    },
+    {
+      "path": "V2.2-PROMPT.md",
+      "sha256": "83840e9de62d70d68f06673c3d44085aff79b0ff9b7eb40bdec902cac330ec03",
+      "bytes": 26342
+    },
+    {
+      "path": "V3.0-CONTINUE-PROMPT.md",
+      "sha256": "3893a7497c76d1cf3890bfaf248f924b0985164acf5a8fb60f6b2acb957af449",
+      "bytes": 11105
+    },
+    {
+      "path": "V3.0-PROMPT.md",
+      "sha256": "1ad20db30e387c2d7ca3dc7094788e6d0f11845f771f44319a6c3ccd64e0101c",
+      "bytes": 26603
+    },
+    {
+      "path": "V3.3-PROMPT.md",
+      "sha256": "ed840b0814fc19bc35e6c1d75a620e34e3aa7ff97bf932ad66481e859e8a2890",
+      "bytes": 19864
+    },
+    {
+      "path": "V4-PROMPT.md",
+      "sha256": "df60712001a7ebc9391f496d959bc41f0519edd08c52efab33c4131cd8dbc525",
+      "bytes": 29118
+    },
+    {
+      "path": "crates/church-slavonic-tagger/Cargo.toml",
+      "sha256": "475db3d2448f8aad9543a36af615caa283d0367de160ce4ab4ab0cf23f1acc4a",
+      "bytes": 415
+    },
+    {
+      "path": "crates/church-slavonic-tagger/src/lib.rs",
+      "sha256": "abae4ad7294c55de32f01fc707829742dc6bf47cabcb3a9d4280461ba45f953d",
+      "bytes": 12624
+    },
+    {
+      "path": "crates/church-slavonic-tools/Cargo.toml",
+      "sha256": "d3c314294bb925c2fde5166b78082249842571f71cf3462aaa515a86be96bc86",
+      "bytes": 610
+    },
+    {
+      "path": "crates/church-slavonic-tools/src/census/clitics.rs",
+      "sha256": "747fa86ff71497deef57320029efc68bd3a280cfa1b5b851fc570ab1f6e2ce89",
+      "bytes": 3880
+    },
+    {
+      "path": "crates/church-slavonic-tools/src/census/closed.rs",
+      "sha256": "0f94ca519644ff9509af1a39bf8e75fd8f15aaf0b78428b706a68ac169a39322",
+      "bytes": 6831
+    },
+    {
+      "path": "crates/church-slavonic-tools/src/census/forms.rs",
+      "sha256": "cf4f74e4641e112f1001df2ac74c050964fbcbaa2a6e31e3aa4c20004e8f84bf",
+      "bytes": 6529
+    },
+    {
+      "path": "crates/church-slavonic-tools/src/census/homonymy.rs",
+      "sha256": "8c1a3f71df329a73829c6278901385783b83be57b72270756afa2d6e4f3bc620",
+      "bytes": 7294
+    },
+    {
+      "path": "crates/church-slavonic-tools/src/census/mod.rs",
+      "sha256": "58d8a09b515745d283727c217193495e10e66e0ca9d5d809403a9a57f84ee5a9",
+      "bytes": 2687
+    },
+    {
+      "path": "crates/church-slavonic-tools/src/census/stems.rs",
+      "sha256": "cf04df89e4ce53b3c6a88821d66c95191e7f4138c87560f7465afc4637e79c18",
+      "bytes": 4313
+    },
+    {
+      "path": "crates/church-slavonic-tools/src/census/stress.rs",
+      "sha256": "7f7a94f632bd2e4403b547963fb93e57e324a8aa3a970aad7f62c45969a5993d",
+      "bytes": 13119
+    },
+    {
+      "path": "crates/church-slavonic-tools/src/census/verb_cells.rs",
+      "sha256": "54d0d9db5a447a2c32854ac2de6311b7854ff3a8a5f71f4a2cab6dfc19f99425",
+      "bytes": 9725
+    },
+    {
+      "path": "crates/church-slavonic-tools/src/census/verbatim.rs",
+      "sha256": "78642e48bdccb89ad34fe22f8c0419d7e08b3d54bbb3b31c98285b7302511142",
+      "bytes": 11270
+    },
+    {
+      "path": "crates/church-slavonic-tools/src/eval.rs",
+      "sha256": "66ed7fb982b1987de31b2e241dd997b7c1c127a84936825e953a23c19fce9ed7",
+      "bytes": 17004
+    },
+    {
+      "path": "crates/church-slavonic-tools/src/import/crosscheck.rs",
+      "sha256": "434194ac13a2a6d2732f6f67eef1323d3402da9da7aec14238b606c56a490ab8",
+      "bytes": 22995
+    },
+    {
+      "path": "crates/church-slavonic-tools/src/import/fit.rs",
+      "sha256": "7d903dfe1a2938b653a41cdff4c70168df6bb10a97d7c255d48abbeb30f01591",
+      "bytes": 18695
+    },
+    {
+      "path": "crates/church-slavonic-tools/src/import/mod.rs",
+      "sha256": "c80bc453025da6cdcfa9ba54beb3b719fa517b397c82e7a3678eb55a0c6c7234",
+      "bytes": 17836
+    },
+    {
+      "path": "crates/church-slavonic-tools/src/import/ocs.rs",
+      "sha256": "18dfa9a685978cd87c1bc01868e1b49f44ee739a2777b6e28fb1eeff118918b1",
+      "bytes": 20403
+    },
+    {
+      "path": "crates/church-slavonic-tools/src/import/polyakov.rs",
+      "sha256": "2f501a94497b22b3f3545317fc6a9feb2a7a7bec917e39269be8dcf601b00d8d",
+      "bytes": 75606
+    },
+    {
+      "path": "crates/church-slavonic-tools/src/import/refit.rs",
+      "sha256": "d8dc735e7b8d4b8276e117902e038af6a1a2c83b4ea4d3ea4434c8f57c4bd472",
+      "bytes": 3407
+    },
+    {
+      "path": "crates/church-slavonic-tools/src/lib.rs",
+      "sha256": "2d70c1ab8d8accfb13cda1a202dc2ea5724fb5053e04813ae8fa5505c9f79a55",
+      "bytes": 566
+    },
+    {
+      "path": "crates/church-slavonic-tools/src/main.rs",
+      "sha256": "65b0a840fcbd2a70f4a3510512b83d6232179be25d15a5761b92b3bb6cb355f2",
+      "bytes": 5134
+    },
+    {
+      "path": "crates/church-slavonic-tools/src/sources/alypy.rs",
+      "sha256": "38f407c83f1bba52960d7f5b7b4fe304af10f402b4006a95e6d03c510360c626",
+      "bytes": 34331
+    },
+    {
+      "path": "crates/church-slavonic-tools/src/sources/kaikki.rs",
+      "sha256": "988fa7f61caff92ffef0343d181662bac951e31dba7e291866a898e6d8c3dee9",
+      "bytes": 10811
+    },
+    {
+      "path": "crates/church-slavonic-tools/src/sources/mod.rs",
+      "sha256": "e683d6a4fcaba615f0ff6698b60ca6ac7b42c8c888bee1c59e6798e85749de49",
+      "bytes": 359
+    },
+    {
+      "path": "crates/church-slavonic-tools/src/sources/polyakov.rs",
+      "sha256": "a610e04073c704d8506b1988ea38d457b0843a7904da0daf675bd73cf9573770",
+      "bytes": 16953
+    },
+    {
+      "path": "crates/church-slavonic-tools/src/sources/ruwiktionary.rs",
+      "sha256": "a46342071fabe622ba06832a5979e35bd115b40de607f1a55cae13e7c68540a9",
+      "bytes": 3852
+    },
+    {
+      "path": "crates/church-slavonic-tools/src/sources/ud.rs",
+      "sha256": "20cb3e396d0880c83a4d894c8487efd089ebe6e7d264e7c91bfb1b10ca5c1f9b",
+      "bytes": 30878
+    },
+    {
+      "path": "crates/church-slavonic-tools/src/tagger.rs",
+      "sha256": "fb10b29d91dc43ef5ee7d54f29ca0f259610bd258721491a20aee78fd01e37a8",
+      "bytes": 31820
+    },
+    {
+      "path": "crates/church-slavonic-tools/src/treebank/bible.rs",
+      "sha256": "f6ec8af3abc2ad4b439f88b5b91f47b3f64efc445da4beb42dfaee5526c590da",
+      "bytes": 4319
+    },
+    {
+      "path": "crates/church-slavonic-tools/src/treebank/closed.rs",
+      "sha256": "e9f571e07dc7b66951dddb0aef9b43899009cdbe1f4c3d192740e710909a1552",
+      "bytes": 134
+    },
+    {
+      "path": "crates/church-slavonic-tools/src/treebank/corpus.rs",
+      "sha256": "1c9898750730d650b38c75dfd7e73a4b0c2a0a8cc40adc9a013bffe4c314c5b2",
+      "bytes": 8139
+    },
+    {
+      "path": "crates/church-slavonic-tools/src/treebank/disambiguate.rs",
+      "sha256": "0a37af87ede98703f8fdb72985c1ca89017bc82077a345c06b6506e03cb57f9b",
+      "bytes": 130
+    },
+    {
+      "path": "crates/church-slavonic-tools/src/treebank/export.rs",
+      "sha256": "5b6a6672dbd8779dc272b115bf9f0cd1f275c742cca3d7896f13eebf471e522f",
+      "bytes": 6212
+    },
+    {
+      "path": "crates/church-slavonic-tools/src/treebank/lift.rs",
+      "sha256": "fc7c11cca0cd0e805b596119df10e52b7414dfb7784d938f32c306a4fc7ab24e",
+      "bytes": 3347
+    },
+    {
+      "path": "crates/church-slavonic-tools/src/treebank/lint.rs",
+      "sha256": "033c5de7e950cdcaeb4bbf0d56dfa20d235d66a92dd48534385cbc4d7463dd55",
+      "bytes": 13531
+    },
+    {
+      "path": "crates/church-slavonic-tools/src/treebank/mod.rs",
+      "sha256": "952429315e2cc1b3c7ec822cf0ffdb6e4f91316a6572301c688fcc8aea070c07",
+      "bytes": 488
+    },
+    {
+      "path": "crates/church-slavonic-tools/src/treebank/node.rs",
+      "sha256": "e20ba9a7ac7b307f6f3d2a28ed47fbdc09071597a0a53acb0f5c165fd0859d87",
+      "bytes": 32984
+    },
+    {
+      "path": "crates/church-slavonic-tools/src/treebank/runner.rs",
+      "sha256": "08e3f87cb8360d88f5d0342c55e8ad3594fd6bdc7bcc3aa15ae8bff6cb4743c9",
+      "bytes": 48301
+    },
+    {
+      "path": "crates/church-slavonic-tools/src/treebank/sexpr.rs",
+      "sha256": "002e56ad4dbf8b6811977add57cfdc4f059dafbf01516c1398fa19ebab605a12",
+      "bytes": 7073
+    },
+    {
+      "path": "crates/church-slavonic-tools/src/treebank/tag.rs",
+      "sha256": "8f0813b1726ff1e33327351b1c7588e5f05cce3a1eb9d9f574bcd652b3be0675",
+      "bytes": 7669
+    },
+    {
+      "path": "crates/church-slavonic-tools/src/treebank/titlo.rs",
+      "sha256": "809ccfd8b335c8954334ad89ec8ea9060d6d833791adce69a55b0ff554204780",
+      "bytes": 260
+    },
+    {
+      "path": "crates/church-slavonic-tools/tests/polyakov_nouns.rs",
+      "sha256": "a5e4ab87d71a79c91db43bcf603f2d56ae6d77b3572bf09f849a78d07bc1f570",
+      "bytes": 1203
+    },
+    {
+      "path": "crates/church-slavonic/Cargo.toml",
+      "sha256": "cc5b283df8127e45a445812d05942d4b37b3345a78fc35f71ac1dacf754acd62",
+      "bytes": 795
+    },
+    {
+      "path": "crates/church-slavonic/examples/startup.rs",
+      "sha256": "3276b52d234c6b79f21d7cef14cbd3cdbd2262052d1060e162dfbe3c4ae4ab2c",
+      "bytes": 1357
+    },
+    {
+      "path": "crates/church-slavonic/lexicon/classes/adj.tsv",
+      "sha256": "d97b19d8976bbb94f22b2f04ad20af42a9b5953561f79888dabe3d212caa70ea",
+      "bytes": 28303
+    },
+    {
+      "path": "crates/church-slavonic/lexicon/classes/closed.tsv",
+      "sha256": "5a0233ea0de0532e94c82f810568913797a643b96d69cedf6c7809a364c49fcd",
+      "bytes": 631
+    },
+    {
+      "path": "crates/church-slavonic/lexicon/classes/noun.tsv",
+      "sha256": "f2303176d311351f9c8c2df2e76243fd010a1ee8f94eb3c71d62708c97959164",
+      "bytes": 11549
+    },
+    {
+      "path": "crates/church-slavonic/lexicon/classes/ocs/adj.tsv",
+      "sha256": "1cbd5fe97936e65d111cfe5b4a9771342e9bfef6eaf3d3ba6a4fd9c360097714",
+      "bytes": 8849
+    },
+    {
+      "path": "crates/church-slavonic/lexicon/classes/ocs/noun.tsv",
+      "sha256": "a64272a950498c39e259e03f8b8dbf1f8ca9a15307b7224601e51eb1b854e8de",
+      "bytes": 8484
+    },
+    {
+      "path": "crates/church-slavonic/lexicon/classes/ocs/pronoun.tsv",
+      "sha256": "c31d65462fc08b32a495d9a6573d7b5f6bb0345d3b5c9c5cb63837d663697d08",
+      "bytes": 14108
+    },
+    {
+      "path": "crates/church-slavonic/lexicon/classes/ocs/verb.tsv",
+      "sha256": "06151a9d46fee5e164f9a0d88279574939162d32af0decf3a701bec446c13090",
+      "bytes": 88940
+    },
+    {
+      "path": "crates/church-slavonic/lexicon/classes/pronoun.tsv",
+      "sha256": "c786cdb6072a5978f72b73c97f8557606a1982971834ab358aa554e2c41f8cb0",
+      "bytes": 22411
+    },
+    {
+      "path": "crates/church-slavonic/lexicon/classes/verb.tsv",
+      "sha256": "673fdaaa5721a5a9733dbdad92df579f4fef9b48a25ba5613bfcd90934fda00d",
+      "bytes": 70423
+    },
+    {
+      "path": "crates/church-slavonic/lexicon/ocs/adjectives.tsv",
+      "sha256": "cb66f9c0f52f399f3358559578ce4760f72dcb83e5c1f96f820a40d5536570ac",
+      "bytes": 274938
+    },
+    {
+      "path": "crates/church-slavonic/lexicon/ocs/nouns.tsv",
+      "sha256": "960cf6c5d7ec6768d25f431fad1fd700559ea14da75c322218cd49dacbbb36c1",
+      "bytes": 404729
+    },
+    {
+      "path": "crates/church-slavonic/lexicon/ocs/pronouns.tsv",
+      "sha256": "d36e9cf60fe5d8609af9450f102159eb704139135f4ae0d3e8cb841500a9d4c7",
+      "bytes": 16238
+    },
+    {
+      "path": "crates/church-slavonic/lexicon/ocs/verbs.tsv",
+      "sha256": "ce85a7953e5f71c5604b38b465acf121a0328d1beee09c5674762f237c1be52d",
+      "bytes": 1812805
+    },
+    {
+      "path": "crates/church-slavonic/lexicon/quarantine.tsv",
+      "sha256": "7731bec368363c2817668ffb4408ba8e30b3d63d93937c4b9f7f3a77414f71cf",
+      "bytes": 66442
+    },
+    {
+      "path": "crates/church-slavonic/lexicon/stress.toml",
+      "sha256": "3c0a2e340d6aad3c617e7e6665e86ec62507c71081341de7ce3033a38c8e53a4",
+      "bytes": 60
+    },
+    {
+      "path": "crates/church-slavonic/lexicon/stress.tsv",
+      "sha256": "d69552c3bf62d7aece49adaf9933047e714d755c9ceefaaf5eb1b67c32128229",
+      "bytes": 5686
+    },
+    {
+      "path": "crates/church-slavonic/lexicon/syn/adjectives.tsv",
+      "sha256": "f74fcd2553a15714980fad674339333d8a84cbb6f83098537f81199e73f8dafc",
+      "bytes": 1238693
+    },
+    {
+      "path": "crates/church-slavonic/lexicon/syn/closed.tsv",
+      "sha256": "29cc24efe72212574c9840ac466dade7e8755f08cb749b8d69e37934a5789738",
+      "bytes": 106158
+    },
+    {
+      "path": "crates/church-slavonic/lexicon/syn/nouns.tsv",
+      "sha256": "3a9996adac936558ca72415c925bc5e574015396c2e3982f947b8af1d9a44d40",
+      "bytes": 1139206
+    },
+    {
+      "path": "crates/church-slavonic/lexicon/syn/pronouns.tsv",
+      "sha256": "b330ec64032fab70876fa81a31c363c9aea9842388c14a46f9817315b9a5ac48",
+      "bytes": 35729
+    },
+    {
+      "path": "crates/church-slavonic/lexicon/syn/verbs.tsv",
+      "sha256": "88582e4e83a31ac30e122903384c6d8cf97dfc784b81d2ba78f89dd44d24d25c",
+      "bytes": 1780451
+    },
+    {
+      "path": "crates/church-slavonic/lexicon/titlo.tsv",
+      "sha256": "03027436c49b16fd1bbc4fd7099d9da3506767a2dbfbe9f4d56cb3123e35f99a",
+      "bytes": 54614
+    },
+    {
+      "path": "crates/church-slavonic/src/analyze.rs",
+      "sha256": "a210d14a7b5669e64eb9509e783a97a2f6e80572f98386d14d0a22c05e7d462e",
+      "bytes": 10612
+    },
+    {
+      "path": "crates/church-slavonic/src/cell.rs",
+      "sha256": "d8c62906c229014c826078c0a1fcc86c740adadc5e95667f916e22c8ec0901a5",
+      "bytes": 31907
+    },
+    {
+      "path": "crates/church-slavonic/src/error.rs",
+      "sha256": "b361906965efb6a4f974a4361c602e3b9911ba471d2ad65cc501ad56a22c2c6b",
+      "bytes": 2181
+    },
+    {
+      "path": "crates/church-slavonic/src/form.rs",
+      "sha256": "c38c897bb40ea8aab18adbc737da8c6d6c8d5fc458813317c7c703db553cb0a7",
+      "bytes": 17367
+    },
+    {
+      "path": "crates/church-slavonic/src/grammar.rs",
+      "sha256": "d184d1e9809a0248c5c4845832e2ec5a7318184c9c9e12658c1757c486c4a027",
+      "bytes": 4269
+    },
+    {
+      "path": "crates/church-slavonic/src/guess.rs",
+      "sha256": "e34613376a1a9628d6ab773df8fb0fd471b790c39ada49e7b391b9390bba0c1a",
+      "bytes": 11286
+    },
+    {
+      "path": "crates/church-slavonic/src/inflect.rs",
+      "sha256": "4495dd078b6dc94d7c2283e33b5e96b3773739cadc045e5b1a17b5453c000cc4",
+      "bytes": 14892
+    },
+    {
+      "path": "crates/church-slavonic/src/lexicon.rs",
+      "sha256": "b499a723eff6e66b8a58311fee949ebead04e06c1555ba0b069eec96e64f288f",
+      "bytes": 19059
+    },
+    {
+      "path": "crates/church-slavonic/src/lib.rs",
+      "sha256": "cd5c79c8d9a1bfdba844797ab3799d7bde03a56a0399e90513f145a9fca12bbe",
+      "bytes": 1018
+    },
+    {
+      "path": "crates/church-slavonic/src/orthography.rs",
+      "sha256": "a3a53374c8395f472e9613326e2b9f83faa52b03cea1f55628385c86ebf59468",
+      "bytes": 25396
+    },
+    {
+      "path": "crates/church-slavonic/src/paradigm/adj.rs",
+      "sha256": "b981c72e05625390e87c07df3a23c64503062696d1e0f717d4f6259e1f0fcd69",
+      "bytes": 195
+    },
+    {
+      "path": "crates/church-slavonic/src/paradigm/closed.rs",
+      "sha256": "518cf4cb58ea879b94625305dc2128292007ddd3cb23edcac9f12767bacb4d9b",
+      "bytes": 188
+    },
+    {
+      "path": "crates/church-slavonic/src/paradigm/mod.rs",
+      "sha256": "7f0152fbeea90bddbf83dfc92ca213dd4e7bcbea233468330716138019f1dcd2",
+      "bytes": 38639
+    },
+    {
+      "path": "crates/church-slavonic/src/paradigm/noun.rs",
+      "sha256": "e89380eb120708ae4f9b02267b150945046247b160d310714bc2651a06db2cf1",
+      "bytes": 279
+    },
+    {
+      "path": "crates/church-slavonic/src/paradigm/ocs.rs",
+      "sha256": "70bfb7e8dc95e25afca28c2e0b4ff30ce10847181bb516b4a78a0f9463358881",
+      "bytes": 566
+    },
+    {
+      "path": "crates/church-slavonic/src/paradigm/pronoun.rs",
+      "sha256": "9b825f791ca1c3c34f266750a13c31809de51993660a4e52387ee2818a0c969e",
+      "bytes": 207
+    },
+    {
+      "path": "crates/church-slavonic/src/paradigm/verb.rs",
+      "sha256": "6e03b55b3b23cbe5d8b34bf0b06ae9b353227b430b0aa494a3a63ef106ccf520",
+      "bytes": 198
+    },
+    {
+      "path": "crates/church-slavonic/src/prosody.rs",
+      "sha256": "4a2ff80bf8b8ca4a4ffe6418c1c7ee79edffc5ce1edf7a995976ca789c53801e",
+      "bytes": 3631
+    },
+    {
+      "path": "crates/church-slavonic/src/sentence/closed.rs",
+      "sha256": "c8337fa47eb55168dc6a644a3d290dcd16cc9b25ac2ad82788be9c93ef1beda1",
+      "bytes": 2920
+    },
+    {
+      "path": "crates/church-slavonic/src/sentence/lift.rs",
+      "sha256": "d05482e8026322a506bf18f72a9be848e9692dd36378d31f5924ad432f66869c",
+      "bytes": 23659
+    },
+    {
+      "path": "crates/church-slavonic/src/sentence/mod.rs",
+      "sha256": "d560dc65b7cf04e713513e53ede23ab2eae13eb74f450412ff122bf027dbca82",
+      "bytes": 5522
+    },
+    {
+      "path": "crates/church-slavonic/src/sentence/node.rs",
+      "sha256": "e74c701a9551d6071f744a8d37f95e73003718abe7f82b971b0e25796d1dae02",
+      "bytes": 14887
+    },
+    {
+      "path": "crates/church-slavonic/src/sentence/rules.rs",
+      "sha256": "aaf086a1e7526e167c7a9fd7a4a5b19f6c01c8e1f267bce1e762def8b21cde40",
+      "bytes": 25761
+    },
+    {
+      "path": "crates/church-slavonic/src/stress.rs",
+      "sha256": "251ae4c2c36d273cb43a3306bd1bfe89c5cadf0cc0a7802b4a819dac8c545f0a",
+      "bytes": 16021
+    },
+    {
+      "path": "crates/church-slavonic/src/titlo.rs",
+      "sha256": "5618dc17bb8c2e6baa414d20976b0ea80411d04f097860f23764579daa1a710e",
+      "bytes": 7545
+    },
+    {
+      "path": "crates/church-slavonic/tests/class_exemplars.rs",
+      "sha256": "6abc996c8041297246a1bc79b1094d0605cf76477272edb103c9d0bb909831df",
+      "bytes": 20689
+    },
+    {
+      "path": "crates/church-slavonic/tests/lexicon_consistency.rs",
+      "sha256": "3e5d4859efd58126a51fcb21cf50d2c4a474e36fa97bc4dcfda175a4fc6760a1",
+      "bytes": 5959
+    },
+    {
+      "path": "crates/church-slavonic/tests/readme.rs",
+      "sha256": "5bfa41b661fde59eecd519ebe938db1a8b680176146339ca1eba18a3061776d9",
+      "bytes": 1610
+    },
+    {
+      "path": "data/corpus/ponomar/LICENSE.md",
+      "sha256": "4b1540ef7e20ded8e6da946d85f616c74c27688885473db22cb0a24e6ffcd100",
+      "bytes": 517
+    },
+    {
+      "path": "data/corpus/ponomar/MANIFEST.tsv",
+      "sha256": "9be7ba4863dc64ca9baf3b0af8436fe606f743d52af20696e3818f942ae1cf84",
+      "bytes": 139567
+    },
+    {
+      "path": "data/loanword-iota.tsv",
+      "sha256": "622bf2a1399b2ad43922fd2952c312c2d132bcf7cad28c4a56378127c29414be",
+      "bytes": 75612
+    },
+    {
+      "path": "data/models/tagger.bin",
+      "sha256": "2f784bbbd014b1c6fe113cf550837a7283a545270d7c3353b45b265f67832a26",
+      "bytes": 2646896
+    },
+    {
+      "path": "data/models/tagger.md",
+      "sha256": "8b9ad803a30685a7bc89833a41efa50cf8cbe73a3273774596f745471bfc5623",
+      "bytes": 1099
+    },
+    {
+      "path": "data/models/tagger.sha256",
+      "sha256": "a952482797009e375b1061bc3a232fb3b016ce22f2afb05fa4f9ea4038486388",
+      "bytes": 497
+    },
+    {
+      "path": "data/prep-frames.tsv",
+      "sha256": "12c13da8bf52f24d4e2b67fcdf41bb493787ccecd8927c2e6deec12dcd9f56b5",
+      "bytes": 4768
+    },
+    {
+      "path": "data/treebank-forms.tsv",
+      "sha256": "9135c5b6eb2c8e12f5c9e37236273104ab75f1712a9f5ada45b7a312ac644a70",
+      "bytes": 1909036
+    },
+    {
+      "path": "data/treebank-hand/b00.sexp",
+      "sha256": "1a34dc1010047057111822f515c9e935636a198008b321aacef100e228ded304",
+      "bytes": 57100
+    },
+    {
+      "path": "data/treebank-hand/b01.sexp",
+      "sha256": "0ed84ae8adbd02792e81aff58021442f33c29ed21585be336cd797e627fd06e0",
+      "bytes": 12365
+    },
+    {
+      "path": "data/treebank-hand/b02.sexp",
+      "sha256": "ab5732f872f5d6afcfa291e594097c378410d5368d63bec9fb78aaab82fa3613",
+      "bytes": 11211
+    },
+    {
+      "path": "data/treebank-hand/b22.sexp",
+      "sha256": "e123a3548979dba5490eef077d96c2d35db7286733a67e6489d0deeb5e4404ec",
+      "bytes": 16065
+    },
+    {
+      "path": "data/treebank-hand/b27.sexp",
+      "sha256": "484f282984f6eee89c134a162ac104fedc6b4c36d8971c7cd9e5a87c03f04ee7",
+      "bytes": 10311
+    },
+    {
+      "path": "data/treebank-hand/b50.sexp",
+      "sha256": "df50af181ff8c25e4445b1262ffac1c1f58617802adb6dbc1762149edd667e70",
+      "bytes": 14994
+    },
+    {
+      "path": "data/treebank-hand/b52.sexp",
+      "sha256": "8de08eaf2a2913658238d5feb7763032db08a51810f064bfbf81302217a9bcd9",
+      "bytes": 31775
+    },
+    {
+      "path": "data/treebank-hand/b53.sexp",
+      "sha256": "fb6252abb6aa6f669a53774848f4b3584ae0e7eb1c52fa7b7e8480dac05bf3fd",
+      "bytes": 29663
+    },
+    {
+      "path": "data/treebank-hand/b62.sexp",
+      "sha256": "04e77d5554484cf285cef3122b243d5611d8406a63427199fc9aea247ed67bff",
+      "bytes": 20423
+    },
+    {
+      "path": "data/treebank-hand/b63.sexp",
+      "sha256": "6fada2e16940583872f072870e98f1d5793c67b9e2304dfa73e2c7cb926f911f",
+      "bytes": 6958
+    },
+    {
+      "path": "data/treebank-hand/ponomar/MineyaAprel1996/b00.sexp",
+      "sha256": "acea0075bc24bcc628705782fcc71ce447e62afe60b05d04f0b56672aeab4898",
+      "bytes": 53690
+    },
+    {
+      "path": "data/treebank-hand/ponomar/Oktoih1981/b00.sexp",
+      "sha256": "3ab99b4e435e302947105e977bf84c2ae75a7931b83ef304413d494ba52bbd73",
+      "bytes": 29111
+    },
+    {
+      "path": "data/twins.tsv",
+      "sha256": "2626696f7b8aaa1bcf0690db6c4772fb7664242fa98397abf0ca70567d163a72",
+      "bytes": 7696
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "sha256": "0776870b475b27adb12ef806bae1af1a51f185a79fb57964b238dda0d2530b38",
+      "bytes": 45028
+    },
+    {
+      "path": "docs/OPEN-DESIGNS.md",
+      "sha256": "a594df1aa642034cad92fb013113cca75a902f8af82c490f98429b438cbe8278",
+      "bytes": 22185
+    },
+    {
+      "path": "references/README.md",
+      "sha256": "4cf5e96d0593ec2d61d4480d2856519d77913adca8cfff466bccf1ba7c398bb9",
+      "bytes": 871
+    },
+    {
+      "path": "references/SHA256SUMS",
+      "sha256": "4f3086c656d0bf6941dbaca7a8d35be3925ba41ff3b01f79034170299a7e8c48",
+      "bytes": 24373
+    },
+    {
+      "path": "references/SOURCES.toml",
+      "sha256": "b335cb4dc1a158c37e3297a2c0a79b0fbde754ca04d79f17bcf29221e9865953",
+      "bytes": 5579
+    },
+    {
+      "path": "references/SOURCE_LOCK.tsv",
+      "sha256": "79dbdf86f9c31311f462ee798d8f2922dcc0d700f4f4ba3dc973907683e2ad40",
+      "bytes": 61907
+    },
+    {
+      "path": "references/TERMS.md",
+      "sha256": "bffa83bfa2bed27005914f7db578a7a51364ecae70ed6d92210b45b936aea773",
+      "bytes": 1802
+    },
+    {
+      "path": "roguelike-assets/OFL.txt",
+      "sha256": "035cfdf121a1273c830407d63d63f48a548a7adf128b434c4c1c9e014fcd3ec9",
+      "bytes": 4397
+    },
+    {
+      "path": "roguelike-assets/PonomarUnicode.otf",
+      "sha256": "e1e824ba1d797bbe87770eb5a3cb9de65d9e5e9b419c76d87a49617975f78584",
+      "bytes": 213536
+    },
+    {
+      "path": "scripts/download-alypy.sh",
+      "sha256": "ec4d7eb6afadfcc0e10c476c59d7a219da67df5a264b2aacf87c74417cef36cd",
+      "bytes": 569
+    },
+    {
+      "path": "scripts/download-kaikki-ocs.sh",
+      "sha256": "2df7fcb2bf00adf35919169709c612c68a7f22d235b4c1c05d629bad6d4996ce",
+      "bytes": 532
+    },
+    {
+      "path": "scripts/download-polyakov.sh",
+      "sha256": "5c7e7624cdae3899738e7f2a986b6ae62f6a0715c5f9e8865b36cab415734c49",
+      "bytes": 1221
+    },
+    {
+      "path": "scripts/download-ruwiktionary-cu.sh",
+      "sha256": "7a63bb4a79a5b3c627909e434090f947c9b4524423b4162810489df3a4852ac5",
+      "bytes": 863
+    },
+    {
+      "path": "scripts/fetch-bible.sh",
+      "sha256": "e7fe6ce8283293692e3b4b8793ae534033470412051112318a39a24a0c8ced48",
+      "bytes": 1059
+    },
+    {
+      "path": "scripts/fetch-ponomar.sh",
+      "sha256": "7734e113ac01ea605bceb0bc7f40c3e0b0c6531a82d7dde284614c9ee0734185",
+      "bytes": 1765
+    },
+    {
+      "path": "scripts/fetch-sources.sh",
+      "sha256": "89acd70f2023df6cef16b0cb85988aa66a6079c234c4651c3c5397a875c80ec1",
+      "bytes": 813
+    },
+    {
+      "path": "scripts/hand-apply.py",
+      "sha256": "678da9d2f68795cbd8addc7374cad2b96047a9ac26109f33987ba0371979f5de",
+      "bytes": 5316
+    },
+    {
+      "path": "scripts/kaikki-to-classes.py",
+      "sha256": "db8c4e4d14b8d56f53cf2eedeb244a316ee25555e91baf4357cd903e067a0fb5",
+      "bytes": 45532
+    },
+    {
+      "path": "scripts/legend-adj-verb-pron.py",
+      "sha256": "b0b60d99323d0763858d5f2f8dc44b00a27d32fc4f0d5f79439097555704963b",
+      "bytes": 73203
+    },
+    {
+      "path": "scripts/pin-polyakov.sh",
+      "sha256": "35a850692a23ae683d1250438e931c690356382ca6fed7e85805d3ff96de4652",
+      "bytes": 983
+    },
+    {
+      "path": "scripts/polyakov-legend-to-classes.py",
+      "sha256": "03494a8477a843f514249b4b66bebcac1e5c00c353b87be6276af9c688402298",
+      "bytes": 17541
+    },
+    {
+      "path": "scripts/verify-sources.sh",
+      "sha256": "665ac2a8ec080386ea53bf440dd27b8cec14c7dce7767f8fc6ac66212af27516",
+      "bytes": 225
+    }
+  ],
+  "verification": {
+    "isolated_tests": "pending",
+    "clippy": "pending",
+    "audit_probes": "pending"
+  },
+  "validation": "Hashes record byte identity only. No linguistic authority or source permission is implied."
+}

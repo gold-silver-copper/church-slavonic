@@ -1,0 +1,2118 @@
+{
+  "schema": 1,
+  "objective": "execute V5-PROMPT.md",
+  "status": "in_progress",
+  "prompt_sha256": "0b614aa45c7f52349a0c7e83731f94ff4e0d399f4556207dec57ac3b1221facf",
+  "previous_goal_turn": {
+    "classification": "progress",
+    "reason": "Previous turn wrote a handoff. Resumed implementation validated and exercised the selected legacy noun adapter, preserving source claims without importing grammar."
+  },
+  "baseline": {
+    "revision": "09d14f3efc41d20503dd46d9391ca17a15a791c3",
+    "workspace_tests": "passed",
+    "clippy": "passed",
+    "logs": [
+      "target/rewrite/baseline-tests.log",
+      "target/rewrite/baseline-clippy.log"
+    ]
+  },
+  "checks": [
+    {
+      "command": "RUSTC_WRAPPER= cargo test --offline --release -p church-slavonic-tools --test noun_migration --test o_stem_paradigms --test compiled_witness_cli --test source_observations --test compiled_index",
+      "status": "passed",
+      "exit_code": 0,
+      "log": "target/rewrite/noun-migration-tests.log",
+      "tests_passed": 24,
+      "scope_note": "Before final repeated-weight parsing correction; affected migration tests rerun afterward.",
+      "log_sha256": "7164ccb8ecac750417eb01e3b869f491fb53f014aaa403c3b205398416da0404"
+    },
+    {
+      "command": "RUSTC_WRAPPER= cargo test --offline --release -p church-slavonic-tools --test noun_migration",
+      "status": "passed",
+      "exit_code": 0,
+      "log": "target/rewrite/noun-migration-final-targeted.log",
+      "tests_passed": 5,
+      "log_sha256": "524546773998033e8cdb912d188df07db980b82b7a01f4f0c65e90b5b4322810"
+    },
+    {
+      "command": "RUSTC_WRAPPER= cargo clippy --offline --workspace --all-targets --all-features -- -D warnings",
+      "status": "passed",
+      "exit_code": 0,
+      "log": "target/rewrite/noun-migration-final-clippy.log",
+      "log_sha256": "b76ac62be15e8c6e572c0fa237051c3f6716e4b4cf553be13601ed2651285cfa"
+    },
+    {
+      "command": "RUSTC_WRAPPER= cargo test --offline --release --workspace --all-features",
+      "status": "passed",
+      "exit_code": 0,
+      "log": "target/rewrite/noun-migration-workspace.log",
+      "log_sha256": "9dc73ca1d39cf291c5a4b2a61f33b9e2efb58abaee53e0aa332646c22575d531",
+      "tests_passed": 239,
+      "tests_ignored": 1,
+      "scope_note": "Workspace run started before final parser correction; final affected migration tests and clippy rerun after correction."
+    }
+  ],
+  "linguistic_validation": "229 accumulated selected form/cell rows: previous191 plus38rows for глаголати/молити (each9present,9imperfect,1infinitive). All38 pass actual CLI generation/joint retention;36finite rows independently compared with HTML tables. Same teaching work previously consulted, supplied stems and source-based development tests, not blind productivity or independent gold.",
+  "open_work": [
+    "Migrate preserved UD/PROIEL observations into new-model linguistic assertions and source addresses; other corpus structures and semantic segmentation remain incomplete",
+    "Expand inflection feature inventory beyond inherited Cell schema and retain original source annotation labels; lexical classification is now separately represented",
+    "Integrate verified claim/attachment registries into the source-migration pipeline; reported review labels are never authority",
+    "Migrate corpus and legacy consumers to model-backed documents and artifacts with explicit source/identity maps",
+    "Redesign contextual rules around validated premises and preserve uncertain attachments",
+    "Migrate overlay projection metrics to source spans and full candidate sets; repair broad recall matching, preserve original labels, audit artifact contamination and implement joint lexical evaluation",
+    "Complete atomic artifact migration, full dependency hashes, cached corpus abstractions and invalidation tests",
+    "Broaden linguistic validation, performance measurement, documentation and final requirement-by-requirement review"
+  ],
+  "previous_verification": {
+    "checks": [
+      {
+        "command": "RUSTC_WRAPPER= cargo test --offline --release -p church-slavonic-tools --test compiled_index --test model_index --test modeled_document",
+        "status": "passed",
+        "exit_code": 0,
+        "log": "target/rewrite/compiled-targeted-final.log",
+        "log_sha256": "252acf357908b809dfc8f815e809454fde277c1d24c1dc1facb019fdb3ea97b4",
+        "tests_passed": 20,
+        "tests_failed": 0,
+        "tests_ignored": 0
+      },
+      {
+        "command": "RUSTC_WRAPPER= cargo test --offline --release --workspace --all-features --target-dir target/rewrite-compiled-audit",
+        "status": "passed",
+        "exit_code": 0,
+        "log": "target/rewrite/compiled-workspace-final.log",
+        "log_sha256": "02e481bd38fb4b5ed62641aaf9502a856a896913719bbfedc55bff30a1fb2a30",
+        "tests_passed": 231,
+        "tests_failed": 0,
+        "tests_ignored": 1
+      },
+      {
+        "command": "RUSTC_WRAPPER= cargo clippy --offline --workspace --all-targets --all-features -- -D warnings",
+        "status": "passed",
+        "exit_code": 0,
+        "log": "target/rewrite/compiled-clippy-final.log",
+        "log_sha256": "a04f6f7cc59f555e9d3d0e85c0c0f432dd93f9d1e12e6e442c7b174ef87d8fd9"
+      }
+    ],
+    "increment_review": {
+      "scope": "This increment: compiled persistence module; private index serde/stats integration; Model error/export/hash wiring; tools compile/load/publication and CLI options; compiled_index7tests; compiled_runtime example; contract and evidence metadata. Existing unrelated work preserved.",
+      "method": "Separate full static review of new codec/CLI/publication and tests; no subagent. Reviewed digest trust, bounded parsing, references/order, atomic installation, output publication and review-policy binding.",
+      "fixed": "Large transport enum changed to Box. Accepted derivation content is requalified on restore so copied accepted labels cannot survive changed content even under a newly trusted transport digest; test passes and failure leaves cache empty.",
+      "verification": "20targeted tests and final Clippy passed; actual CLI cold/restored documents byte-identical; final full workspace231passed,1ignored,exit0. Formatting of new files and git diff whitespace checks passed."
+    }
+  },
+  "linguistic_checks": [
+    {
+      "command": "xtask check-linguistic-slice data/rewrite/ocs-hard-noun-model.json data/rewrite/ocs-hard-noun.json l-000001 o-lrc-cyrillic",
+      "exit_code": 0,
+      "result": {
+        "fixture": "lrc-ocs-hard-noun-city",
+        "expected_forms": 21,
+        "exact_generated": 21,
+        "joint_analysis_retained": 21,
+        "inventory_issues": [],
+        "failures": []
+      },
+      "result_sha256": "4f74dbb10042b4e10b36323c96000017924343b89150ff416595f279ceaa32a8"
+    },
+    {
+      "command": "xtask check-linguistic-slice data/rewrite/synodal-rab-model.json data/rewrite/synodal-rab.json l-000002 o-synodal-alypy-table",
+      "exit_code": 0,
+      "result": {
+        "fixture": "alypy-synodal-rab-primary",
+        "expected_forms": 21,
+        "exact_generated": 21,
+        "joint_analysis_retained": 21,
+        "inventory_issues": [],
+        "failures": []
+      },
+      "result_sha256": "07691a8e4e1f6b8c9b7709db25bd5cb6993fa1ae6ea298efc6b044b3147df3a8"
+    },
+    {
+      "command": "xtask check-linguistic-slice data/rewrite/synodal-byti-model.json data/rewrite/synodal-byti.json l-000003 o-syn-byti-table",
+      "exit_code": 0,
+      "result": {
+        "fixture": "alypy-byti-present-primary",
+        "expected_forms": 10,
+        "exact_generated": 10,
+        "joint_analysis_retained": 10,
+        "inventory_issues": [],
+        "failures": []
+      },
+      "result_sha256": "70be481a06ca16c205a4522e3f13c5f7ca47a330ba6a0098986382e02748c85a"
+    },
+    {
+      "command": "xtask check-linguistic-slice data/rewrite/synodal-mudr-model.json data/rewrite/synodal-mudr-adjective.json l-000004 o-syn-mudr",
+      "exit_code": 0,
+      "result": {
+        "fixture": "synodal-mudr-adjective",
+        "expected_forms": 3,
+        "exact_generated": 3,
+        "joint_analysis_retained": 3,
+        "inventory_issues": [],
+        "failures": []
+      },
+      "result_sha256": "418c5f26e3a315a27659c403a6d0c354d491ece3a8bf11a5ac613143d697cb73"
+    },
+    {
+      "command": "xtask check-linguistic-slice data/rewrite/synodal-mudr-model.json data/rewrite/synodal-mudr-adverb.json l-000005 o-syn-mudr",
+      "exit_code": 0,
+      "result": {
+        "fixture": "synodal-mudr-adverb",
+        "expected_forms": 2,
+        "exact_generated": 2,
+        "joint_analysis_retained": 2,
+        "inventory_issues": [],
+        "failures": []
+      },
+      "result_sha256": "794829e55911cd77b8cd909a51a445b6013b764356264aef3ad6549e0b5a1877"
+    },
+    {
+      "command": "xtask check-linguistic-slice data/rewrite/synodal-titlo-model.json data/rewrite/synodal-titlo-divine.json l-000006 o-alypy-titlo-examples",
+      "exit_code": 0,
+      "result": {
+        "fixture": "synodal-titlo-divine",
+        "expected_forms": 1,
+        "exact_generated": 1,
+        "joint_analysis_retained": 1,
+        "inventory_issues": [],
+        "failures": []
+      },
+      "result_sha256": "d1224971de0d13ce4cd77c579d5afc58969855383a3e7f9d8f5ac236b4a978c5"
+    },
+    {
+      "command": "xtask check-linguistic-slice data/rewrite/synodal-titlo-model.json data/rewrite/synodal-titlo-idol.json l-000007 o-alypy-titlo-examples",
+      "exit_code": 0,
+      "result": {
+        "fixture": "synodal-titlo-idol",
+        "expected_forms": 1,
+        "exact_generated": 1,
+        "joint_analysis_retained": 1,
+        "inventory_issues": [],
+        "failures": []
+      },
+      "result_sha256": "8bfa645df85ed51e6fa571759a8715ca6fe5f24b20734f781953a51150608fa1"
+    }
+  ],
+  "checked_source_sha256": {
+    "crates/church-slavonic/examples/startup.rs": "3276b52d234c6b79f21d7cef14cbd3cdbd2262052d1060e162dfbe3c4ae4ab2c",
+    "crates/church-slavonic/src/analyze.rs": "575e210f167a030042b3661ff97fdca43d41e5216fca9c7795fe94e45fc4415a",
+    "crates/church-slavonic/src/cell.rs": "c341dee6948f34fc9f24ef11b90aab18ae44151930f3abc5556c6a139e588cee",
+    "crates/church-slavonic/src/document.rs": "39056dd4548ffc086da94366edec3d25394d55510268daf543877ba0d4b2aed1",
+    "crates/church-slavonic/src/error.rs": "213946b638b0ab631dd8977b520f7de5b155574e551fa11ccc35db70b5352953",
+    "crates/church-slavonic/src/form.rs": "c38c897bb40ea8aab18adbc737da8c6d6c8d5fc458813317c7c703db553cb0a7",
+    "crates/church-slavonic/src/grammar.rs": "d184d1e9809a0248c5c4845832e2ec5a7318184c9c9e12658c1757c486c4a027",
+    "crates/church-slavonic/src/guess.rs": "78be8464a1281cdf5eb13616fdfc6e63f4b5045f61fccec908ee3d3658561ecc",
+    "crates/church-slavonic/src/inflect.rs": "22dd7eda6b00b325ef18c3cb1ddd4b6d76f5ea624af9fa72a22a211cab40d37d",
+    "crates/church-slavonic/src/lexicon.rs": "5c757c148fa85b2c847ded6cb8dc1ad5abe594e3faf0d37234378962c463ba14",
+    "crates/church-slavonic/src/lib.rs": "747814474d8731ccea171149e071959123eabc8ea5f2cd5ea64feaf9d7459a8c",
+    "crates/church-slavonic/src/matching.rs": "5d2f9feaee0eaf823858327080f3d55f53913213de161182f274921ced50f4de",
+    "crates/church-slavonic/src/morphology/abbreviation.rs": "5cb08b5b19fa16ebb37292603f35706137896e9598c055ead7bb77400cbb00c9",
+    "crates/church-slavonic/src/morphology/accent.rs": "49c9a64ac9e6912d43ec81831380786f5ce03b65e46c3fdc435228b3b6bf3eeb",
+    "crates/church-slavonic/src/morphology/observations.rs": "267a8941f87fbae3538e85a5e48fd6e199c60c07993576b72d4b5734ad65bb74",
+    "crates/church-slavonic/src/morphology.rs": "266317d3eba2c0203bde70cb91b2d449614bb9cf642b2ab20678bcd69dbeccb1",
+    "crates/church-slavonic/src/orthography.rs": "a3a53374c8395f472e9613326e2b9f83faa52b03cea1f55628385c86ebf59468",
+    "crates/church-slavonic/src/paradigm/adj.rs": "b981c72e05625390e87c07df3a23c64503062696d1e0f717d4f6259e1f0fcd69",
+    "crates/church-slavonic/src/paradigm/closed.rs": "518cf4cb58ea879b94625305dc2128292007ddd3cb23edcac9f12767bacb4d9b",
+    "crates/church-slavonic/src/paradigm/mod.rs": "7f0152fbeea90bddbf83dfc92ca213dd4e7bcbea233468330716138019f1dcd2",
+    "crates/church-slavonic/src/paradigm/noun.rs": "e89380eb120708ae4f9b02267b150945046247b160d310714bc2651a06db2cf1",
+    "crates/church-slavonic/src/paradigm/ocs.rs": "70bfb7e8dc95e25afca28c2e0b4ff30ce10847181bb516b4a78a0f9463358881",
+    "crates/church-slavonic/src/paradigm/pronoun.rs": "9b825f791ca1c3c34f266750a13c31809de51993660a4e52387ee2818a0c969e",
+    "crates/church-slavonic/src/paradigm/verb.rs": "6e03b55b3b23cbe5d8b34bf0b06ae9b353227b430b0aa494a3a63ef106ccf520",
+    "crates/church-slavonic/src/prosody.rs": "4a2ff80bf8b8ca4a4ffe6418c1c7ee79edffc5ce1edf7a995976ca789c53801e",
+    "crates/church-slavonic/src/sentence/closed.rs": "c8337fa47eb55168dc6a644a3d290dcd16cc9b25ac2ad82788be9c93ef1beda1",
+    "crates/church-slavonic/src/sentence/lift.rs": "7284d61eebda1ee8ed89268c9d9005dc9f005c40eaa2a0c40f16aa4607cdc1a6",
+    "crates/church-slavonic/src/sentence/mod.rs": "eb71a3b7d97ad4bbf214206ee448a0527eba27facbf22355fd8e8441973a1718",
+    "crates/church-slavonic/src/sentence/node.rs": "2c2d20362b5a969fee6dcbaa4483bb8bd238d39d3d6cde3034c4939d1a1c5c32",
+    "crates/church-slavonic/src/sentence/rules.rs": "92f3b8c3858c0b4951ef37344bdfb7b53ed4db848ccfeac42ad38db0f0f4fbab",
+    "crates/church-slavonic/src/stress.rs": "251ae4c2c36d273cb43a3306bd1bfe89c5cadf0cc0a7802b4a819dac8c545f0a",
+    "crates/church-slavonic/src/titlo.rs": "5618dc17bb8c2e6baa414d20976b0ea80411d04f097860f23764579daa1a710e",
+    "crates/church-slavonic/src/witness.rs": "e6465678f887adfe2c91911eb0851b290d9372607a72ba235df0c158ef40e47c",
+    "crates/church-slavonic/tests/class_exemplars.rs": "6abc996c8041297246a1bc79b1094d0605cf76477272edb103c9d0bb909831df",
+    "crates/church-slavonic/tests/lexicon_consistency.rs": "3e5d4859efd58126a51fcb21cf50d2c4a474e36fa97bc4dcfda175a4fc6760a1",
+    "crates/church-slavonic/tests/readme.rs": "5bfa41b661fde59eecd519ebe938db1a8b680176146339ca1eba18a3061776d9",
+    "crates/church-slavonic/tests/rewrite_invariants.rs": "afc864ab926e2e32556a16219d52a3385c423b7150d102f6ee7d382b9edcfa6c",
+    "crates/church-slavonic-tagger/src/lib.rs": "064f4389252452e4429ea0c03c9c81f106faa63828ac5d96adf604d2c9cb9f46",
+    "crates/church-slavonic-tagger/tests/model_input.rs": "d1d263394820f3c029c00b9dbf9d585f133277bf8fbb6eaf6389fecd678127a0",
+    "crates/church-slavonic-tools/src/analysis_document.rs": "0bd975e13fccdfde8d9ac95b72f97ebaf2dc2e3a4a2541dac09c13d94b833766",
+    "crates/church-slavonic-tools/src/census/clitics.rs": "747fa86ff71497deef57320029efc68bd3a280cfa1b5b851fc570ab1f6e2ce89",
+    "crates/church-slavonic-tools/src/census/closed.rs": "0f94ca519644ff9509af1a39bf8e75fd8f15aaf0b78428b706a68ac169a39322",
+    "crates/church-slavonic-tools/src/census/forms.rs": "cf4f74e4641e112f1001df2ac74c050964fbcbaa2a6e31e3aa4c20004e8f84bf",
+    "crates/church-slavonic-tools/src/census/homonymy.rs": "8c1a3f71df329a73829c6278901385783b83be57b72270756afa2d6e4f3bc620",
+    "crates/church-slavonic-tools/src/census/mod.rs": "58d8a09b515745d283727c217193495e10e66e0ca9d5d809403a9a57f84ee5a9",
+    "crates/church-slavonic-tools/src/census/stems.rs": "b0b173a528dc294080db6cb6331b068fb86f3c8cc262d6f2c56c5981640d338c",
+    "crates/church-slavonic-tools/src/census/stress.rs": "7f7a94f632bd2e4403b547963fb93e57e324a8aa3a970aad7f62c45969a5993d",
+    "crates/church-slavonic-tools/src/census/verb_cells.rs": "54d0d9db5a447a2c32854ac2de6311b7854ff3a8a5f71f4a2cab6dfc19f99425",
+    "crates/church-slavonic-tools/src/census/verbatim.rs": "78642e48bdccb89ad34fe22f8c0419d7e08b3d54bbb3b31c98285b7302511142",
+    "crates/church-slavonic-tools/src/eval.rs": "30af6673ae73e51c1ce9bd921bb4d389a19a79b7331e077d6bf811a634bf5f15",
+    "crates/church-slavonic-tools/src/import/crosscheck.rs": "d2d828143adf1ae3b32e5a9f9d46e25968f8af22c1df1924e7ed94e2c67eed83",
+    "crates/church-slavonic-tools/src/import/fit.rs": "d571c494631aecdc9827d4247e001f67c09258436245525f0fae0013668a3918",
+    "crates/church-slavonic-tools/src/import/mod.rs": "2c90d236d9f7f2ee9a539ba774b2274f62d16d4d7ff4df7991fa12275c837362",
+    "crates/church-slavonic-tools/src/import/ocs.rs": "18dfa9a685978cd87c1bc01868e1b49f44ee739a2777b6e28fb1eeff118918b1",
+    "crates/church-slavonic-tools/src/import/polyakov.rs": "18311faeb74fffddf72a236a6aac4641fbd7638402c8cf511ba96c2d0535f8fa",
+    "crates/church-slavonic-tools/src/import/refit.rs": "a13880b98636896e32e4f95a09cac246693e63f3cd08d5f8bce653b664f5485d",
+    "crates/church-slavonic-tools/src/lib.rs": "e77d84ad418fa52d672dc8fe80309ff0f5be158c75c45d86de4b3cd3f7ccd7ef",
+    "crates/church-slavonic-tools/src/main.rs": "236079fa9276090fd001dc6489d9c5feb49bb42a7e5b7e06db104fc5e6f20c60",
+    "crates/church-slavonic-tools/src/model_artifact.rs": "978c65ac2074343d4729061c12e8f0a28a6a211023ac6182b457ad27db67496b",
+    "crates/church-slavonic-tools/src/sources/alypy.rs": "38f407c83f1bba52960d7f5b7b4fe304af10f402b4006a95e6d03c510360c626",
+    "crates/church-slavonic-tools/src/sources/kaikki.rs": "988fa7f61caff92ffef0343d181662bac951e31dba7e291866a898e6d8c3dee9",
+    "crates/church-slavonic-tools/src/sources/mod.rs": "3c017bf9652051b6ce49ec55b5a63b8e21e673b44b2510826a4950785a69e447",
+    "crates/church-slavonic-tools/src/sources/polyakov.rs": "a610e04073c704d8506b1988ea38d457b0843a7904da0daf675bd73cf9573770",
+    "crates/church-slavonic-tools/src/sources/ruwiktionary.rs": "a46342071fabe622ba06832a5979e35bd115b40de607f1a55cae13e7c68540a9",
+    "crates/church-slavonic-tools/src/sources/ud.rs": "6a52712cecf338d243e6210f8c303ca2468bfa9e0247698dd47dd59b9fce903a",
+    "crates/church-slavonic-tools/src/tagger.rs": "cfcc62b470af31102414387c5a3225723fee6e353e41db8fda8554777168b71e",
+    "crates/church-slavonic-tools/src/treebank/bible.rs": "f6ec8af3abc2ad4b439f88b5b91f47b3f64efc445da4beb42dfaee5526c590da",
+    "crates/church-slavonic-tools/src/treebank/closed.rs": "e9f571e07dc7b66951dddb0aef9b43899009cdbe1f4c3d192740e710909a1552",
+    "crates/church-slavonic-tools/src/treebank/corpus.rs": "1c9898750730d650b38c75dfd7e73a4b0c2a0a8cc40adc9a013bffe4c314c5b2",
+    "crates/church-slavonic-tools/src/treebank/disambiguate.rs": "0a37af87ede98703f8fdb72985c1ca89017bc82077a345c06b6506e03cb57f9b",
+    "crates/church-slavonic-tools/src/treebank/export.rs": "a7d9560608506034da92bc597c68a320600da5235a85529bf966631ae2c233f3",
+    "crates/church-slavonic-tools/src/treebank/lift.rs": "fc7c11cca0cd0e805b596119df10e52b7414dfb7784d938f32c306a4fc7ab24e",
+    "crates/church-slavonic-tools/src/treebank/lint.rs": "033c5de7e950cdcaeb4bbf0d56dfa20d235d66a92dd48534385cbc4d7463dd55",
+    "crates/church-slavonic-tools/src/treebank/mod.rs": "59d857ebdfea0a8c633dcd38510481824f67523aa542cfe2666b1e864b7d7e0d",
+    "crates/church-slavonic-tools/src/treebank/node.rs": "36f3d39448bfb32855119e88e0bcd02c17b7602bb815aac85f8e2238270a239b",
+    "crates/church-slavonic-tools/src/treebank/runner.rs": "7f5a63f733f9245547999962e6d5ab8344115b429c71378180a8f4a776ba3dc4",
+    "crates/church-slavonic-tools/src/treebank/sexpr.rs": "002e56ad4dbf8b6811977add57cfdc4f059dafbf01516c1398fa19ebab605a12",
+    "crates/church-slavonic-tools/src/treebank/tag.rs": "7ca58c17ffb4e7e6fa10c0b255e489c05162c63e9139111f9623e7622863d909",
+    "crates/church-slavonic-tools/src/treebank/titlo.rs": "809ccfd8b335c8954334ad89ec8ea9060d6d833791adce69a55b0ff554204780",
+    "crates/church-slavonic-tools/tests/abbreviation_model.rs": "8bc5be3261c9f615cf9485385129ac88b57a228222aac684d2d23920a3b7cf98",
+    "crates/church-slavonic-tools/tests/analysis_document.rs": "2a366f66b5ad75270f6377fb6e26df8fb1353cfb7c0727b8085f20a64319ebaa",
+    "crates/church-slavonic-tools/tests/lexical_categories.rs": "1800887ef0a706a9fe80a6ffa8d3a1f10cd9f4a2ca225394e52aa0cab6afe5d5",
+    "crates/church-slavonic-tools/tests/modeled_document.rs": "262ce15f60c9f8a9abc3590c5b8057bbccde8c575edc0f41c3467a2185637916",
+    "crates/church-slavonic-tools/tests/morphology_model.rs": "85eb6aed0a506bb412bcae55579d576729a7cb959661cbbc45f2f9cb2c690c2f",
+    "crates/church-slavonic-tools/tests/polyakov_nouns.rs": "a5e4ab87d71a79c91db43bcf603f2d56ae6d77b3572bf09f849a78d07bc1f570",
+    "crates/church-slavonic-tools/tests/source_observations.rs": "6aeffad153e405a83206b9568cf61b3dea140ab66f11563e5111fa6856835b2b",
+    "crates/church-slavonic-tools/src/tagger/deployment.rs": "d0c0b42a9bf73520a23a40e25742637332841e3102e78467244843ce346c132b",
+    "crates/church-slavonic-tools/tests/deployment_evaluation.rs": "d0216af4c37471c4d5559bb4c2e23c37b664e530f71bdc20bcebe0282e4e05aa",
+    "crates/church-slavonic-tools/src/treebank/overlay_score.rs": "ec33995ad1d32c61d22a1e73d523868a992b0c4ffeca0e58d7a5afe0f766dd99",
+    "crates/church-slavonic-tools/tests/overlay_evaluation.rs": "845deafbf58a7eac6d7ad4812745962d9240618c85a91f389517c151ed33a9fd",
+    "crates/church-slavonic-tools/src/sources/archive.rs": "9d44d3a6aeb07a57620245e0925143f2d403c5fbc5e8209e56c38fcdbc3f8428",
+    "crates/church-slavonic-tools/tests/source_archive.rs": "a3fb8db4abb7551ea2b898f442f2054dcc3c00daf4ca645b842cd3b9863a8eba",
+    "crates/church-slavonic-tools/src/sources/observations.rs": "21e078b524c98bf88f341d8813dc431da005de1a67468d660cee9693a5f775ea",
+    "crates/church-slavonic-tools/tests/corpus_observations.rs": "e2bd013dfa4275c1ced17672110fd12805f7922cb1c614cd13f08d07fe137fd4",
+    "crates/church-slavonic-tools/src/sources/proiel.rs": "17abf8d1287b79a71083923f8ced9c0aeb6fa9d2a5634a27a058955646af7c42",
+    "crates/church-slavonic-tools/tests/proiel_observations.rs": "22fd62fd09c69bfb235356a56022b4f13af2601e4049b841029bf9c9242cba87",
+    "crates/church-slavonic-tools/tests/invariable_verbs.rs": "cf81f41de358351170799f7107af3bf85aef459026defde2431eca64bbdb8889",
+    "crates/church-slavonic-tools/src/eval/generation.rs": "44824aa38901ea39148b5408520bc59f6e38eec5e1cd0a2eb8d5b4292d2903c1",
+    "crates/church-slavonic-tools/tests/generation_evaluation.rs": "5672b0099362d21ba1f80cd0b4ec23b237cc1e47935641ea39bc6d9e3dd3a4cf",
+    "crates/church-slavonic-tools/tests/vocative_retention.rs": "f8dbcd06a2b754e3f09532928516539c6d2075137ec5ea0d57300060d968eba8",
+    "crates/church-slavonic/src/sentence/trace.rs": "d2390f650648358646278f498f7dff720cd4c263747c0c34ef5a71cc0344a60c",
+    "crates/church-slavonic-tools/src/context_trace.rs": "c9a4fa32b96f1a47b3bc12b02d9f2774c8f32546dfe65fc9e2b1485f8abce9b2",
+    "crates/church-slavonic-tools/tests/context_trace.rs": "4a182477171db8b005ac4a8f3fdef4df34245be1628713215d4e107ce49ffe35",
+    "crates/church-slavonic-tools/tests/numeral_model.rs": "85f19efe992f420166b9e931d48d3479042a8e5a88b997e927e1bb4812cf8663",
+    "crates/church-slavonic-tools/tests/lexical_gender.rs": "a522169528ca30bb9de85ffa4538d48f5b7d24e85b897b002e0b6db1a746b8a6",
+    "crates/church-slavonic-tools/tests/locative_retention.rs": "36c656c0433ecb583f574ce1313ead1e2e116d1a791c2a62555a69439c440696",
+    "crates/church-slavonic/src/morphology/stem.rs": "b5c0f8ffce7f738fa08308b26eedb93198bf76868223c18728eee8646435dc04",
+    "crates/church-slavonic-tools/tests/stem_replacement.rs": "f82323da655f32063f014a0603b894e5b69ffb2266fe8f7c062f060e709556d2",
+    "crates/church-slavonic-tools/src/import/publication.rs": "2cde122b2ac3ee5e248c40577d8d51df097bc3886028bf16e9e2576cb8c5026d",
+    "crates/church-slavonic-tools/tests/import_publication.rs": "b938204f80751331820b4c0264d3c72aa4cfe9bf7860b165b4b4ed527b728a26",
+    "crates/church-slavonic/src/morphology/acceptance.rs": "cd15c2ea5019ca1b005e771f6c47d1037570f2a7d456c0942fd2c2b814d37e63",
+    "crates/church-slavonic-tools/tests/generation_acceptance.rs": "03dbbba3e85d4fde8f4fc6d0259beca30496b98b03d293205416d08a6fa79d50",
+    "crates/church-slavonic/src/morphology/lexical_acceptance.rs": "9e97790f79850fc22fa63a5417e5b10df9915b08d30254848291fb84417c8dd2",
+    "crates/church-slavonic-tools/tests/lexical_acceptance.rs": "24c4b2166fc783d59af801b01b8512823723f4b66a2909c16a3e9a6458a6ecbc",
+    "crates/church-slavonic-tools/tests/o_stem_paradigms.rs": "3a5af90ef4c7888df903a889d5e296ddc768cd0643ead271af17db609f7d14e7",
+    "crates/church-slavonic-tools/tests/finite_paradigms.rs": "ec1a0c0c8ca52a0ea2b720d9e1377a9569a330d144d575885ab9465e45e7b28c",
+    "crates/church-slavonic-tools/tests/subject_retention.rs": "c7449f062e4ac8be493cc0218fcbd46fbca6d528b832a54b51e5957be8f584b1",
+    "crates/church-slavonic/src/morphology/index.rs": "4886509dbd9251c13dad0b2ab3ea99581f4548a8db806045439c285f77bfa804",
+    "crates/church-slavonic-tools/tests/model_index.rs": "a1b00a79df2a868d42a3ff4ba4c8084c317c2576cea3aeb2f52a73ce64b704b4",
+    "crates/church-slavonic-tools/examples/model_runtime.rs": "483cdea17c14baff14fe71c87b4b4669b5c46383f70f8a97bc201337322ebef1",
+    "crates/church-slavonic/src/morphology/index/persistence.rs": "9ac9a35c20b8944833e5ceb7f489ace79c0cf17e528d86e744a2498bbf9dd265",
+    "crates/church-slavonic-tools/src/compiled_index.rs": "8c52d439e9ade302dbe58f6bd91086ce0a436211de31e015c7a61c1c75fbad33",
+    "crates/church-slavonic-tools/tests/compiled_index.rs": "3e276f427db0025228d8e4ccc85cf2719a3061bf5c0184cf1276c03fdc1df671",
+    "crates/church-slavonic-tools/examples/compiled_runtime.rs": "abfa8b4cc2eec45f39a8dde03d0bba85b3480203becf26955579ca3b6399f5d5",
+    "crates/church-slavonic-tools/tests/compiled_witness_cli.rs": "03bcbf56c401ca87d1582dd5c725ce511847642a5350338dd5532c1b13917f86"
+  },
+  "consumer_probe": {
+    "command": "xtask analyze-witness data/rewrite/synodal-titlo-observed-model.json o-alypy-titlo-examples w-titlo-divine target/rewrite/upstream/alypy-p003.html",
+    "exit_code": 0,
+    "record_version": 5,
+    "model_data_sha256": "f7f335e2a27d4b2009ddea1ae5b615efce3a1045999318cfadd7f274bcad1866",
+    "engine_sha256": "128f3ac06608919a497a6dba0e4cfb6fd2d1aaa2a4650650bbba2c7eb1024a67",
+    "source_sha256": "9c67874eec1a7a41420c9abbd17a0ab2b61ff4e122da800c1939c993590efb9b",
+    "record_sha256": "418c647ee34cc3e8c524e1e56be0dcb2bcb065a32515cce472820a97089d8e71",
+    "scope": "Original source digest, absolute witness span, relative observation span, candidate annotation link and missing-source refusal checked. Contradictory/unmapped annotations and reload tampering covered by tests."
+  },
+  "checked_input_sha256": {
+    "Cargo.lock": "343200505723a3713281606e49b57b4ced171aa6efa114e73b5bb09264aa9277",
+    "Cargo.toml": "f8071ec57ef488cdde20c20ffb0179a02dfca5aef6e51801d34fb368fff64626",
+    "crates/church-slavonic/Cargo.toml": "2f07fe2c7240afd6ad761cce7a1b9d14ec438a77f92619f2950b4890850f1c35",
+    "crates/church-slavonic-tagger/Cargo.toml": "475db3d2448f8aad9543a36af615caa283d0367de160ce4ab4ab0cf23f1acc4a",
+    "crates/church-slavonic-tools/Cargo.toml": "1a07e1593d6e816b52c3b183872d1274a5fe7e5c326ae044a4a4e25c48ffa960",
+    "data/rewrite/ocs-hard-noun-model.json": "5db02c6f65d4fb461677627208356c893954226b9283ef11d055d32e77ce8162",
+    "data/rewrite/synodal-byti-model.json": "55f87c872f2c0a55ea0bb10759adde4fbaefe96003f603f673df9ed260587c9a",
+    "data/rewrite/synodal-mudr-model.json": "32e15b7d2d40609f23e8dd0abb0a5443ac8cc02af9b74f7ad2ab153fdeed67f1",
+    "data/rewrite/synodal-rab-model.json": "3d015fd90c47324428efe66a8a0ca94f6978ed450d5379224ea082430790d963",
+    "data/rewrite/synodal-titlo-model.json": "0eea19375eba910e09ba09db85ca9ed6eabd23814c805410ff2f6d4308513370",
+    "data/rewrite/synodal-titlo-observed-model.json": "224c9bd8b182fe6858feb37875765468d3c941e9982856ef732f2068858ca71b",
+    "data/rewrite/ocs-hard-noun.json": "1a573e66f1af3be2b19b5029d5d06c0daf7fcfcdf021e89ba69d3599f91ad85e",
+    "data/rewrite/synodal-rab.json": "79419eedcacff366e32de721590c4875c5f0f683feea7cb8f8d7a2c48a6fae5e",
+    "data/rewrite/synodal-byti.json": "d88f2ec07bd3547933b0230b5189517dc45c01777f81beb230b9dcdbebf89107",
+    "data/rewrite/synodal-mudr-adjective.json": "6273d02c86003e91f543b7286ffe2651f272f7f4a4b3a835ba389a90bf3c45b4",
+    "data/rewrite/synodal-mudr-adverb.json": "ff901361e7d5fe7807591d6dbd23457f3906a60c37953294df63d0ae4926f501",
+    "data/rewrite/synodal-titlo-divine.json": "0ca4e99f85061cc74f6fc030156d59681924a18aeb663241cb53a72db7db5385",
+    "data/rewrite/synodal-titlo-idol.json": "8ff37f963ed6a3c67b9efb4e2a245a6ce60795962d149025f1b4d9c44225b1a0",
+    "data/rewrite/ocs-invariable-model.json": "86764e768a0f89faddad1137fbaf86918dcf00ac139d6dd8e2121f8288e01060",
+    "data/rewrite/ocs-invariable-l-000008.json": "e68b11bf84593e87dcbcbba1d5dbfe165df0fae59c8d63716037aa1c30dfdd96",
+    "data/rewrite/ocs-invariable-l-000009.json": "fe566efe80c1a5a8d22d553f361a80055f59eff5e889b77cdb19a130fd22518a",
+    "data/rewrite/ocs-invariable-l-000010.json": "cc9b620b75e83843923e795a0ba98edc9561940c3585beafca69aa677b8a8410",
+    "data/rewrite/ocs-numeral-model.json": "cf99e216ac9fa9bd0f9d277af868db9eccf783160f9c41a9c30ddda4989eff0b",
+    "data/rewrite/ocs-numeral-l-000013.json": "39b644c48657322c9e7bfd3a26204113a93551c61edc13d398b80e7251dcadc8",
+    "data/rewrite/ocs-numeral-l-000012.json": "1075f139e30c35a42e0ec99e7bf244caf1b86307fe2db78eef9d4a6a7199e13c",
+    "data/rewrite/ocs-numeral-l-000011.json": "e976b577b87d9f8652d597a163e4474397d99cb310255aecc1756e2e87a71eb5",
+    "data/rewrite/ocs-noun-numeral-model.json": "be10810077ec93ce7d7283b8fe40611c2298fb666f747ba0aa34876d7c270aa7",
+    "data/rewrite/ocs-noun-numeral-l-000019.json": "88385526e832f445506f47e40e11b51a8321b3f33193716b827386973baeb11c",
+    "data/rewrite/ocs-noun-numeral-l-000015.json": "af4f2f077eb972f54fafbc5ffd6d6f3aa924b523bc781e3712c892045a8ffff7",
+    "data/rewrite/ocs-noun-numeral-l-000014.json": "3f82e41ee8663ac7bf620744ccbfb18cde86873ddc5f433683d155c9974de88d",
+    "data/rewrite/ocs-noun-numeral-l-000018.json": "e81f749548d5b2b1d890dc403031471635278cac8702ce6408e7c294f736a468",
+    "data/rewrite/ocs-noun-numeral-l-000017.json": "fed908ca39848a5c8bdae44eadb38a82b89cc5718cdb6d4ff293378502713d6c",
+    "data/rewrite/ocs-noun-numeral-l-000016.json": "adba8c605468f5cd86faf1bd7763d111d061dcddd412ba504f3f8f3f6e1f8f6a"
+  },
+  "increment_review": {
+    "method": "Separate local review of importer, tests, CLI integration and actual migration outputs; no independent reviewer claimed",
+    "finding": "Repeated weight delimiter accepted as spelling; fixed and regression tested.",
+    "limits": "Not a full working-tree review or linguistic certification."
+  },
+  "source_observation_checks": {
+    "raw_source_sha256": "3ed721f48ddb854c5ebcb98b00245fec7712cb289aec3bf2f0ab3e5d20cd573d",
+    "witness_records": [
+      {
+        "path": "target/rewrite/observed-divine-cli.json",
+        "sha256": "418c647ee34cc3e8c524e1e56be0dcb2bcb065a32515cce472820a97089d8e71",
+        "exit_code": 0
+      },
+      {
+        "path": "target/rewrite/observed-idol-cli.json",
+        "sha256": "b327f2e3d7035d54b4e9f1249aaaadd6bc0728651ed55d4853ca23a11db1da0f",
+        "exit_code": 0
+      }
+    ],
+    "missing_source_control": {
+      "expected_exit": "nonzero",
+      "observed_exit": 1,
+      "error": "MissingSource",
+      "log_sha256": "e3762d8defdf849e4b04adb6683bda45b6d609319205b79fc9668545574da386"
+    },
+    "generation_gate": {
+      "command": "xtask check-linguistic-slice data/rewrite/synodal-titlo-observed-model.json data/rewrite/synodal-titlo-divine.json l-000006 o-alypy-titlo-examples target/rewrite/upstream/alypy-p003.html",
+      "exit_code": 0,
+      "result": {
+        "fixture": "synodal-titlo-divine",
+        "expected_forms": 1,
+        "exact_generated": 1,
+        "joint_analysis_retained": 1,
+        "inventory_issues": [],
+        "failures": []
+      }
+    }
+  },
+  "deployment_evaluation": {
+    "command": "RUSTC_WRAPPER= cargo run --offline --release -p church-slavonic-tools --bin xtask -- tagger-curve",
+    "exit_code": 0,
+    "report": {
+      "definition": "raw-lookup-sequential-feature-tagger-v1",
+      "annotation_basis": "existing CorpusSlot mappings; no additional gold-cell tolerances; not independently validated gold",
+      "lemma_match_policy": "Unicode-equivalent displayed lemma plus exact POS/cell; not opaque lexeme identification",
+      "matching_policy": "legacy-orthographic",
+      "corpus_label": "OCS (UD PROIEL r2.18 dev+test)",
+      "declared_tokens": 39133,
+      "input_tokens": 39133,
+      "tokens_without_mapped_gold": 14059,
+      "mapped_gold_tokens": 25074,
+      "feature_gold_retained": 19655,
+      "lemma_cell_retained": 18924,
+      "no_candidates": 8657,
+      "selected_features": 20431,
+      "correct_selected_features": 17512,
+      "abstained": 4643,
+      "adapter_skips": {
+        "ambiguous case": 1,
+        "no number": 791,
+        "part of speech outside the lexicon": 13233,
+        "pronoun: reciprocal": 14,
+        "verb: subjunctive": 20
+      },
+      "confidence_bins": [
+        {
+          "lower_tenth": 0,
+          "selected_ambiguous_tokens": 0,
+          "correct_features": 0
+        },
+        {
+          "lower_tenth": 1,
+          "selected_ambiguous_tokens": 0,
+          "correct_features": 0
+        },
+        {
+          "lower_tenth": 2,
+          "selected_ambiguous_tokens": 1,
+          "correct_features": 0
+        },
+        {
+          "lower_tenth": 3,
+          "selected_ambiguous_tokens": 2,
+          "correct_features": 0
+        },
+        {
+          "lower_tenth": 4,
+          "selected_ambiguous_tokens": 24,
+          "correct_features": 4
+        },
+        {
+          "lower_tenth": 5,
+          "selected_ambiguous_tokens": 198,
+          "correct_features": 75
+        },
+        {
+          "lower_tenth": 6,
+          "selected_ambiguous_tokens": 206,
+          "correct_features": 98
+        },
+        {
+          "lower_tenth": 7,
+          "selected_ambiguous_tokens": 253,
+          "correct_features": 121
+        },
+        {
+          "lower_tenth": 8,
+          "selected_ambiguous_tokens": 394,
+          "correct_features": 187
+        },
+        {
+          "lower_tenth": 9,
+          "selected_ambiguous_tokens": 13846,
+          "correct_features": 11837
+        }
+      ],
+      "oracle_context_diagnostic": {
+        "selected_features": 20429,
+        "correct_selected_features": 17852,
+        "abstained": 4645
+      }
+    },
+    "report_sha256": "d3436afab3200dbc0180093fd3e481588d3a070a688971c2151538077273a064",
+    "source_audit": "data/rewrite/tagger-source-audit.json",
+    "source_audit_sha256": "4c3f9e0b5106832721104d29c549802111c912c9790f5cedd9bef02b826002a9",
+    "source_identity_check": "All three cached CoNLL-U files match their local archive bytes. Independently counted dev/test integer word rows equal report input_tokens.",
+    "scope": "Existing UD regression population and bundled feature model. Original adapter mappings, lexicon contamination and source-to-opaque-lexeme adjudication unresolved; not blind accuracy.",
+    "consumer_probe": {
+      "command": "target/release/xtask tag-sequence --ocs градъ града",
+      "exit_code": 0,
+      "tokens": 2,
+      "report_sha256": "15cee6532096d11e8786678e9efd155d10e26d92cea25fb48df1de957683f2af",
+      "scope": "Surface preservation, lexical alternatives and feature selection JSON via shared predictor; no correctness claim for these illustrative choices."
+    },
+    "recorded_inference_assets": {
+      "data/models/tagger.bin": "2f784bbbd014b1c6fe113cf550837a7283a545270d7c3353b45b265f67832a26",
+      "crates/church-slavonic/lexicon/stress.toml": "3c0a2e340d6aad3c617e7e6665e86ec62507c71081341de7ce3033a38c8e53a4",
+      "crates/church-slavonic/lexicon/quarantine.tsv": "7731bec368363c2817668ffb4408ba8e30b3d63d93937c4b9f7f3a77414f71cf",
+      "crates/church-slavonic/lexicon/titlo.tsv": "03027436c49b16fd1bbc4fd7099d9da3506767a2dbfbe9f4d56cb3123e35f99a",
+      "crates/church-slavonic/lexicon/stress.tsv": "d69552c3bf62d7aece49adaf9933047e714d755c9ceefaaf5eb1b67c32128229",
+      "crates/church-slavonic/lexicon/classes/pronoun.tsv": "c786cdb6072a5978f72b73c97f8557606a1982971834ab358aa554e2c41f8cb0",
+      "crates/church-slavonic/lexicon/classes/closed.tsv": "5a0233ea0de0532e94c82f810568913797a643b96d69cedf6c7809a364c49fcd",
+      "crates/church-slavonic/lexicon/classes/verb.tsv": "673fdaaa5721a5a9733dbdad92df579f4fef9b48a25ba5613bfcd90934fda00d",
+      "crates/church-slavonic/lexicon/classes/adj.tsv": "d97b19d8976bbb94f22b2f04ad20af42a9b5953561f79888dabe3d212caa70ea",
+      "crates/church-slavonic/lexicon/classes/noun.tsv": "f2303176d311351f9c8c2df2e76243fd010a1ee8f94eb3c71d62708c97959164",
+      "crates/church-slavonic/lexicon/ocs/nouns.tsv": "960cf6c5d7ec6768d25f431fad1fd700559ea14da75c322218cd49dacbbb36c1",
+      "crates/church-slavonic/lexicon/ocs/verbs.tsv": "ce85a7953e5f71c5604b38b465acf121a0328d1beee09c5674762f237c1be52d",
+      "crates/church-slavonic/lexicon/ocs/pronouns.tsv": "d36e9cf60fe5d8609af9450f102159eb704139135f4ae0d3e8cb841500a9d4c7",
+      "crates/church-slavonic/lexicon/ocs/adjectives.tsv": "cb66f9c0f52f399f3358559578ce4760f72dcb83e5c1f96f820a40d5536570ac",
+      "crates/church-slavonic/lexicon/syn/closed.tsv": "29cc24efe72212574c9840ac466dade7e8755f08cb749b8d69e37934a5789738",
+      "crates/church-slavonic/lexicon/syn/nouns.tsv": "3a9996adac936558ca72415c925bc5e574015396c2e3982f947b8af1d9a44d40",
+      "crates/church-slavonic/lexicon/syn/verbs.tsv": "88582e4e83a31ac30e122903384c6d8cf97dfc784b81d2ba78f89dd44d24d25c",
+      "crates/church-slavonic/lexicon/syn/pronouns.tsv": "b330ec64032fab70876fa81a31c363c9aea9842388c14a46f9817315b9a5ac48",
+      "crates/church-slavonic/lexicon/syn/adjectives.tsv": "f74fcd2553a15714980fad674339333d8a84cbb6f83098537f81199e73f8dafc",
+      "crates/church-slavonic/lexicon/classes/ocs/pronoun.tsv": "c31d65462fc08b32a495d9a6573d7b5f6bb0345d3b5c9c5cb63837d663697d08",
+      "crates/church-slavonic/lexicon/classes/ocs/verb.tsv": "06151a9d46fee5e164f9a0d88279574939162d32af0decf3a701bec446c13090",
+      "crates/church-slavonic/lexicon/classes/ocs/adj.tsv": "1cbd5fe97936e65d111cfe5b4a9771342e9bfef6eaf3d3ba6a4fd9c360097714",
+      "crates/church-slavonic/lexicon/classes/ocs/noun.tsv": "a64272a950498c39e259e03f8b8dbf1f8ca9a15307b7224601e51eb1b854e8de"
+    },
+    "asset_hash_scope": "Model binary and all core lexicon-directory files, alongside checked source/manifests. This is a recorded byte snapshot, not a complete compiler/dependency closure or contamination audit.",
+    "currentness": "Historical measurement with mapping v1; not recomputed with mapping v2 invariable populations."
+  },
+  "overlay_evaluation": {
+    "command": "target/rewrite-subject-audit/release/xtask score-disambiguation",
+    "exit_code": 0,
+    "artifact": "target/rewrite/subject-overlay.json",
+    "sha256": "eb7b32b8097fc775c45e982522ae2d12496751280b4d21166794d6e61696f395",
+    "report": {
+      "absent_overlay_books": [
+        "Кни́га четве́ртаѧ мѡѷсе́ова чи́сла",
+        "Кни́га пѧ́таѧ мѡѷсе́ова второзако́нїе",
+        "Кни́га і҆исꙋ́са наѵи́на",
+        "Кни́га сꙋді́й і҆и҃левыхъ",
+        "Кни́га рꙋ́ѳь",
+        "Кни́га пе́рваѧ ца́рствъ",
+        "Кни́га втора́ѧ ца́рствъ",
+        "Кни́га тре́тїѧ ца́рствъ",
+        "Кни́га четве́ртаѧ ца́рствъ",
+        "Кни́га пе́рваѧ паралїпоме́нѡнъ",
+        "Кни́га втора́ѧ паралїпоме́нѡнъ",
+        "Кни́га пе́рваѧ є҆́здры",
+        "Кни́га неемі́и",
+        "Кни́га втора́ѧ є҆́здры",
+        "Кни́га тѡві́та",
+        "Кни́га і҆ꙋді́ѳъ",
+        "Кни́га є҆сѳи́рь",
+        "Кни́га і҆́ѡва",
+        "Ѱалти́рь",
+        "Кни́га є҆кклесїа́ста си́рѣчь проповѣ́дника",
+        "Кни́га пѣ́снь пѣ́сней царѧ̀ соломѡ́на",
+        "Кни́га премⷣрости соломѡ́ни",
+        "Кни́га премⷣрости і҆исꙋ́са сы́на сїра́хова",
+        "Кни́га прⷪ҇ро́ка і҆еремі́и",
+        "Кни́га пла́чь і҆еремі́евъ",
+        "Кни́га посла́нїе і҆еремі́ино",
+        "Кни́га прⷪ҇ро́ка варꙋ́ха",
+        "Кни́га прⷪ҇ро́ка і҆езекі́илѧ",
+        "Кни́га прⷪ҇ро́ка данїи́ла",
+        "Кни́га прⷪ҇ро́ка ѡ҆сі́и",
+        "Кни́га прⷪ҇ро́ка і҆ѡи́лѧ",
+        "Кни́га прⷪ҇ро́ка а҆мѡ́са",
+        "Кни́га прⷪ҇ро́ка а҆вді́а",
+        "Кни́га прⷪ҇ро́ка і҆ѡ́ны",
+        "Кни́га прⷪ҇ро́ка мїхе́а",
+        "Кни́га прⷪ҇ро́ка наꙋ́ма",
+        "Кни́га прⷪ҇ро́ка а҆ввакꙋ́ма",
+        "Кни́га прⷪ҇ро́ка софо́нїи",
+        "Кни́га прⷪ҇ро́ка а҆гге́а",
+        "Кни́га прⷪ҇ро́ка заха́рїи",
+        "Кни́га прⷪ҇ро́ка малахі́и",
+        "Кни́га пе́рваѧ маккаве́йскаѧ",
+        "Кни́га втора́ѧ маккаве́йскаѧ",
+        "Кни́га тре́тїѧ маккаве́йскаѧ",
+        "Кни́га тре́тїѧ є҆́здры",
+        "Ѿ ма́рка ст҃о́е бл҃говѣствова́нїе",
+        "Дѣѧ̑нїѧ ст҃ы́хъ а҆пⷭ҇лъ",
+        "Собо́рное посла́нїе і҆а́кѡвле",
+        "Собо́рное посла́нїе пе́рвое ст҃а́гѡ а҆пⷭ҇ла петра̀",
+        "Собо́рное посла́нїе второ́е ст҃а́гѡ а҆пⷭ҇ла петра̀",
+        "Собо́рное посла́нїе пе́рвое ст҃а́гѡ а҆пⷭ҇ла і҆ѡа́нна бг҃осло́ва",
+        "Собо́рное посла́нїе второ́е ст҃а́гѡ а҆пⷭ҇ла і҆ѡа́нна бг҃осло́ва",
+        "Собо́рное посла́нїе тре́тїе ст҃а́гѡ а҆пⷭ҇ла і҆ѡа́нна бг҃осло́ва",
+        "Собо́рное посла́нїе і҆ꙋ́дино",
+        "Посла́нїе второ́е къ корі́нѳѧнѡмъ ст҃а́гѡ а҆пⷭ҇ла па́ѵла",
+        "Посла́нїе къ гала́тѡмъ ст҃а́гѡ а҆пⷭ҇ла па́ѵла",
+        "Посла́нїе ко є҆фесе́ємъ ст҃а́гѡ а҆пⷭ҇ла па́ѵла",
+        "Посла́нїе къ фїлїпписі́ємъ ст҃а́гѡ а҆пⷭ҇ла па́ѵла",
+        "Посла́нїе къ колосса́ємъ ст҃а́гѡ а҆пⷭ҇ла па́ѵла",
+        "Посла́нїе пе́рвое къ солꙋ́нѧнѡмъ ст҃а́гѡ а҆пⷭ҇ла па́ѵла",
+        "Посла́нїе второ́е къ солꙋ́нѧнѡмъ ст҃а́гѡ а҆пⷭ҇ла па́ѵла",
+        "Посла́нїе пе́рвое къ тїмоѳе́ю ст҃а́гѡ а҆пⷭ҇ла па́ѵла",
+        "Посла́нїе второ́е къ тїмоѳе́ю ст҃а́гѡ а҆пⷭ҇ла па́ѵла",
+        "Посла́нїе къ ті́тꙋ ст҃а́гѡ а҆пⷭ҇ла па́ѵла",
+        "Посла́нїе къ фїлимо́нꙋ ст҃а́гѡ а҆пⷭ҇ла па́ѵла",
+        "Посла́нїе ко є҆вре́ємъ ст҃а́гѡ а҆пⷭ҇ла па́ѵла",
+        "А҆пока́лѷѱїсъ ст҃а́гѡ і҆ѡа́нна бг҃осло́ва"
+      ],
+      "alignment": "Exact whole-tree source rendering plus equal ordered projected-word renderings; failures remain in lexical_gold.",
+      "definition": "legacy-overlay-stage-compatibility-v1",
+      "gold_status": "Existing hand annotations, not independently adjudicated gold. Lexeme IDs compared literally; any accepted gold cell establishes compatibility, not candidate precision.",
+      "population": "All entries in present overlay book files; absent overlay books listed separately. Legacy word_nodes projection drops punctuation and attached clitics; not a source-token census.",
+      "raw": {
+        "alignment_failed_lexical": 1386,
+        "alignment_failed_units": 80,
+        "ambiguous_gold": 208,
+        "compatible": 3471,
+        "compatible_singleton": 1945,
+        "disjoint_cells": 0,
+        "extra_cell_candidates": 3748,
+        "lexical_gold": 5042,
+        "missing_source_lexical": 0,
+        "missing_source_units": 0,
+        "no_lexical_prediction": 185,
+        "nonlexical_gold": 386,
+        "projected_words": 5428,
+        "units": 337,
+        "wrong_lexeme": 0
+      },
+      "rules_only": {
+        "alignment_failed_lexical": 1386,
+        "alignment_failed_units": 80,
+        "ambiguous_gold": 208,
+        "compatible": 3490,
+        "compatible_singleton": 2220,
+        "disjoint_cells": 1,
+        "extra_cell_candidates": 2845,
+        "lexical_gold": 5042,
+        "missing_source_lexical": 0,
+        "missing_source_units": 0,
+        "no_lexical_prediction": 165,
+        "nonlexical_gold": 386,
+        "projected_words": 5428,
+        "units": 337,
+        "wrong_lexeme": 0
+      },
+      "rules_then_tagger": {
+        "alignment_failed_lexical": 1263,
+        "alignment_failed_units": 72,
+        "ambiguous_gold": 208,
+        "compatible": 3418,
+        "compatible_singleton": 3413,
+        "disjoint_cells": 310,
+        "extra_cell_candidates": 8,
+        "lexical_gold": 5042,
+        "missing_source_lexical": 0,
+        "missing_source_units": 0,
+        "no_lexical_prediction": 35,
+        "nonlexical_gold": 386,
+        "projected_words": 5428,
+        "units": 337,
+        "wrong_lexeme": 16
+      },
+      "tagger_only": {
+        "alignment_failed_lexical": 1263,
+        "alignment_failed_units": 72,
+        "ambiguous_gold": 208,
+        "compatible": 3365,
+        "compatible_singleton": 3359,
+        "disjoint_cells": 363,
+        "extra_cell_candidates": 16,
+        "lexical_gold": 5042,
+        "missing_source_lexical": 0,
+        "missing_source_units": 0,
+        "no_lexical_prediction": 35,
+        "nonlexical_gold": 386,
+        "projected_words": 5428,
+        "units": 337,
+        "wrong_lexeme": 16
+      }
+    }
+  },
+  "archive_validation": {
+    "consumer": "sources::ud::{load_ud_proiel_heldout,load_syntacticus}; train loader shares unpacked",
+    "ud_heldout_tokens": 39133,
+    "syntacticus_tokens": 213658,
+    "independent_byte_check": "data/rewrite/archive-source-audit.json",
+    "independent_byte_check_sha256": "1bf4b44b054f380f992dbd3c9de1e2e8d78d4cc161e49b55684f27696572ba6a",
+    "files_compared": 186,
+    "scope": "Local archive/cache identity and loader integration. Not source authenticity, independent gold, general corpus migration or full cache dependency closure.",
+    "review": "Bounded private source snapshot; regular files/relative paths only; explicit duplicate path and directory-growth limits; gzip integrity/trailing-data checks; atomic directory publication; existing cache verified against reparsed archive. Actual Git global comment headers were found during corpus validation, then supported narrowly with a regression control. Empty extra cache directories are permitted; hostile concurrent filesystem mutation and power-loss durability are not guaranteed."
+  },
+  "ud_observations": {
+    "consumer": "xtask corpus-observations ud-heldout / ud-train",
+    "audit": "data/rewrite/ud-observation-audit.json",
+    "audit_sha256": "a7cdbb5607879055512fb185cc3431bf5093a1c000b498514c0f663680d29017",
+    "documents": 3,
+    "word_rows": 198843,
+    "scope": "Every original byte and line in the selected CoNLL-U files plus links to mapped legacy cells. XML records, adjudication and inflection ontology remain incomplete.",
+    "validation": "Independent JSONL reconstruction equals local source bytes/digests. Every mapped slot has exactly one original-record link. Four observation controls plus deployment and extraction controls pass.",
+    "mapping_currentness": "Original byte/record audit remains valid; mapped-slot counts recorded here precede invariable mapping v2. Current mapping counts are in invariable-mapping-audit.json."
+  },
+  "xml_observations": {
+    "command": "RUSTC_WRAPPER= cargo run --offline --release -p church-slavonic-tools --bin xtask -- corpus-observations syntacticus",
+    "exit_code": 0,
+    "audit": "data/rewrite/xml-observation-audit.json",
+    "audit_sha256": "f4f6c0cc7a75ce81de21e25d8a5e5ff073e913414a25588d34c39e489094a2ed",
+    "source_documents": 9,
+    "excluded_documents": 77,
+    "xml_token_records": 224990,
+    "surface_bearing_tokens": 213658,
+    "without_source_surface": 11332,
+    "scope": "All source bytes in selected OCS files and all XML input file exclusions accounted. XML attributes/labels preserved; cell mappings and linguistic annotations remain unadjudicated.",
+    "validation": "Independent ElementTree language/token counts, exact source reconstruction, source digests, unique/exhaustive mapped-slot links. Final guarded implementation reproduced the same export hash.",
+    "mapping_currentness": "Original byte/record audit remains valid; mapped-slot counts recorded here precede invariable mapping v2. Current mapping counts are in invariable-mapping-audit.json."
+  },
+  "invariable_verbs": {
+    "mapping_definition": "legacy-corpus-cell-mapping-v2",
+    "fixture_forms": 6,
+    "source": "https://lrc.la.utexas.edu/eieol/ocsol/100",
+    "section": "46.1",
+    "source_sha256": "382920f3b1ecbf4882755f858479b33c46af39ad582b1d5232b85d634ea30c5b",
+    "source_method": "Independently downloaded and read teaching source; exact selected forms checked in HTML. Assistant supplied segmentation and fixture transcription, no expert review claimed.",
+    "mapping_audit": "data/rewrite/invariable-mapping-audit.json",
+    "mapping_audit_sha256": "58eb463aae6dcf7dc676c32e74272e97a57ed2200bd74869d99d84b84f826b16",
+    "consumer": {
+      "command": "xtask check-linguistic-slice data/rewrite/ocs-invariable-model.json data/rewrite/ocs-invariable-l-000010.json l-000010 o-lrc-invariable",
+      "exit_code": 0,
+      "result": {
+        "fixture": "lrc-invariable-l-000010",
+        "expected_forms": 2,
+        "exact_generated": 2,
+        "joint_analysis_retained": 2,
+        "inventory_issues": [],
+        "failures": []
+      }
+    },
+    "limitations": [
+      "Source voice/tense/case distinctions remain in raw annotations but are not represented in these invariable cells.",
+      "Other profiles do not automatically license supines.",
+      "No broad lexicon migration, tagger retraining or hard contextual supine rule performed.",
+      "Earlier mapping-v1 scores are historical and use different annotated populations."
+    ]
+  },
+  "generation_evaluation": {
+    "definition": "given-lemma-generation-mapped-cells-v1",
+    "consumers": [
+      "eval default corpus section",
+      "eval-generation ud-heldout",
+      "eval-generation syntacticus"
+    ],
+    "limitations": "Conditional generation against mapped labels/cleaned surfaces using NFC displayed-lemma correspondence. No gold-independent analysis or lexical identity claim. Legacy adapter categories and source/lexicon contamination remain unresolved. Old relaxed diagnostic retained by explicit API name, not used by default eval.",
+    "results": {
+      "ud-heldout": {
+        "command": "target/release/xtask eval-generation ud-heldout",
+        "exit_code": 0,
+        "artifact": "target/rewrite/generation-ud-heldout.json",
+        "sha256": "928a141b42c3240e22450b2e7d0f2639d4de53145594ba5326962db88fcb2371",
+        "report": {
+          "definition": "given-lemma-generation-mapped-cells-v1",
+          "corpus": "OCS (UD PROIEL r2.18 dev+test)",
+          "status": "available",
+          "lemma_policy": "same POS and NFC-equivalent displayed lemma; all matching lexemes; no guessing",
+          "limitations": "Regression diagnostic conditional on annotated mapped lemmas and cells, not analysis accuracy or adjudicated lexical identity. Adapter-cleaned surfaces and labels, not original witness bytes. No extra cells, spelling tolerances, or accent removal. Source/lexicon independence unestablished. Token hits accept any mapped alternative; slot counts report alternatives separately.",
+          "input_tokens": 39133,
+          "unmapped_tokens": 13341,
+          "tokens": {
+            "total": 25792,
+            "lemma_present": 24071,
+            "cell_has_forms": 23950,
+            "exact_surface": 12707,
+            "unicode_equivalent_surface": 12707
+          },
+          "slots": {
+            "total": 26168,
+            "lemma_present": 24436,
+            "cell_has_forms": 24310,
+            "exact_surface": 12856,
+            "unicode_equivalent_surface": 12856
+          },
+          "adapter_skips": {
+            "ambiguous case": 1,
+            "no number": 73,
+            "part of speech outside the lexicon": 13233,
+            "pronoun: reciprocal": 14,
+            "verb: subjunctive": 20
+          }
+        }
+      },
+      "syntacticus": {
+        "command": "target/release/xtask eval-generation syntacticus",
+        "exit_code": 0,
+        "artifact": "target/rewrite/generation-syntacticus.json",
+        "sha256": "fc293775b261433b2c6778892f3ca4bcdc6b64c3f0220c5fdea304d9f23ccac6",
+        "report": {
+          "definition": "given-lemma-generation-mapped-cells-v1",
+          "corpus": "OCS (Syntacticus 2023-04-28)",
+          "status": "available",
+          "lemma_policy": "same POS and NFC-equivalent displayed lemma; all matching lexemes; no guessing",
+          "limitations": "Regression diagnostic conditional on annotated mapped lemmas and cells, not analysis accuracy or adjudicated lexical identity. Adapter-cleaned surfaces and labels, not original witness bytes. No extra cells, spelling tolerances, or accent removal. Source/lexicon independence unestablished. Token hits accept any mapped alternative; slot counts report alternatives separately.",
+          "input_tokens": 213658,
+          "unmapped_tokens": 65573,
+          "tokens": {
+            "total": 148085,
+            "lemma_present": 139403,
+            "cell_has_forms": 139110,
+            "exact_surface": 78369,
+            "unicode_equivalent_surface": 78369
+          },
+          "slots": {
+            "total": 151401,
+            "lemma_present": 142696,
+            "cell_has_forms": 142398,
+            "exact_surface": 80463,
+            "unicode_equivalent_surface": 80463
+          },
+          "adapter_skips": {
+            "adjective: strength unspecified": 334,
+            "ambiguous case": 11,
+            "no number": 320,
+            "part of speech outside the lexicon": 63632,
+            "pronoun: reciprocal": 113,
+            "verb: participle strength unspecified": 13,
+            "verb: participle without a tense": 1004,
+            "verb: subjunctive": 145,
+            "verb: tense outside the schema": 1
+          }
+        }
+      }
+    },
+    "population_crosscheck": "Independent streaming count of prior mapping-v2 JSONL exports matches both reports: UD 39133 source tokens/26168 mapped slots; Syntacticus 213658/151401. Token-level hits remain union over alternatives; no source independence claim."
+  },
+  "vocative_retention": {
+    "retired_rules": [
+      "voc-drop",
+      "bare-voc"
+    ],
+    "source": {
+      "url": "https://lrc.la.utexas.edu/eieol/ocsol/100",
+      "authors": "Todd B. Krause and Jonathan Slocum",
+      "location": "Life of Constantine reading, sentence beginning Събравъ; филосѡѳє and вѣмь annotations",
+      "method": "Independently consulted upstream teaching edition and token annotations. Address followed by present indicative challenges the imperative/interjection adjacency premise. Not manuscript or independent expert adjudication."
+    },
+    "before_probe": {
+      "log": "target/rewrite/vocative-before.log",
+      "exit_code": 101,
+      "expected_failures": 2,
+      "meaning": "Constructed single-lexeme nom/voc set was reduced to nominative; constructed competing-lexeme token selected nonvocative lexeme. Initial probe used supplied филосѡѳє forms in Synodal legacy test dictionary. Final cross-profile controls use neutral рабъ spelling to avoid separate legacy OCS rendering differences; none of these constructed paradigms is historical gold."
+    },
+    "consumer_scope": "Sentence::disambiguate and tools treebank reexport use the same rule function. Source document codec preserves actual lexical alternatives; legacy W tree codec still stores only ambiguity marker. Other local rules and tagger can still exclude candidates and remain subject to audit.",
+    "overlay_comparison": {
+      "previous_report": {
+        "absent_overlay_books": [
+          "Кни́га четве́ртаѧ мѡѷсе́ова чи́сла",
+          "Кни́га пѧ́таѧ мѡѷсе́ова второзако́нїе",
+          "Кни́га і҆исꙋ́са наѵи́на",
+          "Кни́га сꙋді́й і҆и҃левыхъ",
+          "Кни́га рꙋ́ѳь",
+          "Кни́га пе́рваѧ ца́рствъ",
+          "Кни́га втора́ѧ ца́рствъ",
+          "Кни́га тре́тїѧ ца́рствъ",
+          "Кни́га четве́ртаѧ ца́рствъ",
+          "Кни́га пе́рваѧ паралїпоме́нѡнъ",
+          "Кни́га втора́ѧ паралїпоме́нѡнъ",
+          "Кни́га пе́рваѧ є҆́здры",
+          "Кни́га неемі́и",
+          "Кни́га втора́ѧ є҆́здры",
+          "Кни́га тѡві́та",
+          "Кни́га і҆ꙋді́ѳъ",
+          "Кни́га є҆сѳи́рь",
+          "Кни́га і҆́ѡва",
+          "Ѱалти́рь",
+          "Кни́га є҆кклесїа́ста си́рѣчь проповѣ́дника",
+          "Кни́га пѣ́снь пѣ́сней царѧ̀ соломѡ́на",
+          "Кни́га премⷣрости соломѡ́ни",
+          "Кни́га премⷣрости і҆исꙋ́са сы́на сїра́хова",
+          "Кни́га прⷪ҇ро́ка і҆еремі́и",
+          "Кни́га пла́чь і҆еремі́евъ",
+          "Кни́га посла́нїе і҆еремі́ино",
+          "Кни́га прⷪ҇ро́ка варꙋ́ха",
+          "Кни́га прⷪ҇ро́ка і҆езекі́илѧ",
+          "Кни́га прⷪ҇ро́ка данїи́ла",
+          "Кни́га прⷪ҇ро́ка ѡ҆сі́и",
+          "Кни́га прⷪ҇ро́ка і҆ѡи́лѧ",
+          "Кни́га прⷪ҇ро́ка а҆мѡ́са",
+          "Кни́га прⷪ҇ро́ка а҆вді́а",
+          "Кни́га прⷪ҇ро́ка і҆ѡ́ны",
+          "Кни́га прⷪ҇ро́ка мїхе́а",
+          "Кни́га прⷪ҇ро́ка наꙋ́ма",
+          "Кни́га прⷪ҇ро́ка а҆ввакꙋ́ма",
+          "Кни́га прⷪ҇ро́ка софо́нїи",
+          "Кни́га прⷪ҇ро́ка а҆гге́а",
+          "Кни́га прⷪ҇ро́ка заха́рїи",
+          "Кни́га прⷪ҇ро́ка малахі́и",
+          "Кни́га пе́рваѧ маккаве́йскаѧ",
+          "Кни́га втора́ѧ маккаве́йскаѧ",
+          "Кни́га тре́тїѧ маккаве́йскаѧ",
+          "Кни́га тре́тїѧ є҆́здры",
+          "Ѿ ма́рка ст҃о́е бл҃говѣствова́нїе",
+          "Дѣѧ̑нїѧ ст҃ы́хъ а҆пⷭ҇лъ",
+          "Собо́рное посла́нїе і҆а́кѡвле",
+          "Собо́рное посла́нїе пе́рвое ст҃а́гѡ а҆пⷭ҇ла петра̀",
+          "Собо́рное посла́нїе второ́е ст҃а́гѡ а҆пⷭ҇ла петра̀",
+          "Собо́рное посла́нїе пе́рвое ст҃а́гѡ а҆пⷭ҇ла і҆ѡа́нна бг҃осло́ва",
+          "Собо́рное посла́нїе второ́е ст҃а́гѡ а҆пⷭ҇ла і҆ѡа́нна бг҃осло́ва",
+          "Собо́рное посла́нїе тре́тїе ст҃а́гѡ а҆пⷭ҇ла і҆ѡа́нна бг҃осло́ва",
+          "Собо́рное посла́нїе і҆ꙋ́дино",
+          "Посла́нїе второ́е къ корі́нѳѧнѡмъ ст҃а́гѡ а҆пⷭ҇ла па́ѵла",
+          "Посла́нїе къ гала́тѡмъ ст҃а́гѡ а҆пⷭ҇ла па́ѵла",
+          "Посла́нїе ко є҆фесе́ємъ ст҃а́гѡ а҆пⷭ҇ла па́ѵла",
+          "Посла́нїе къ фїлїпписі́ємъ ст҃а́гѡ а҆пⷭ҇ла па́ѵла",
+          "Посла́нїе къ колосса́ємъ ст҃а́гѡ а҆пⷭ҇ла па́ѵла",
+          "Посла́нїе пе́рвое къ солꙋ́нѧнѡмъ ст҃а́гѡ а҆пⷭ҇ла па́ѵла",
+          "Посла́нїе второ́е къ солꙋ́нѧнѡмъ ст҃а́гѡ а҆пⷭ҇ла па́ѵла",
+          "Посла́нїе пе́рвое къ тїмоѳе́ю ст҃а́гѡ а҆пⷭ҇ла па́ѵла",
+          "Посла́нїе второ́е къ тїмоѳе́ю ст҃а́гѡ а҆пⷭ҇ла па́ѵла",
+          "Посла́нїе къ ті́тꙋ ст҃а́гѡ а҆пⷭ҇ла па́ѵла",
+          "Посла́нїе къ фїлимо́нꙋ ст҃а́гѡ а҆пⷭ҇ла па́ѵла",
+          "Посла́нїе ко є҆вре́ємъ ст҃а́гѡ а҆пⷭ҇ла па́ѵла",
+          "А҆пока́лѷѱїсъ ст҃а́гѡ і҆ѡа́нна бг҃осло́ва"
+        ],
+        "alignment": "Exact whole-tree source rendering plus equal ordered projected-word renderings; failures remain in lexical_gold.",
+        "definition": "legacy-overlay-stage-compatibility-v1",
+        "gold_status": "Existing hand annotations, not independently adjudicated gold. Lexeme IDs compared literally; any accepted gold cell establishes compatibility, not candidate precision.",
+        "population": "All entries in present overlay book files; absent overlay books listed separately. Legacy word_nodes projection drops punctuation and attached clitics; not a source-token census.",
+        "raw": {
+          "alignment_failed_lexical": 1386,
+          "alignment_failed_units": 80,
+          "ambiguous_gold": 208,
+          "compatible": 3471,
+          "compatible_singleton": 1945,
+          "disjoint_cells": 0,
+          "extra_cell_candidates": 3748,
+          "lexical_gold": 5042,
+          "missing_source_lexical": 0,
+          "missing_source_units": 0,
+          "no_lexical_prediction": 185,
+          "nonlexical_gold": 386,
+          "projected_words": 5428,
+          "units": 337,
+          "wrong_lexeme": 0
+        },
+        "rules_only": {
+          "alignment_failed_lexical": 1386,
+          "alignment_failed_units": 80,
+          "ambiguous_gold": 208,
+          "compatible": 3505,
+          "compatible_singleton": 2322,
+          "disjoint_cells": 1,
+          "extra_cell_candidates": 2028,
+          "lexical_gold": 5042,
+          "missing_source_lexical": 0,
+          "missing_source_units": 0,
+          "no_lexical_prediction": 150,
+          "nonlexical_gold": 386,
+          "projected_words": 5428,
+          "units": 337,
+          "wrong_lexeme": 0
+        },
+        "rules_then_tagger": {
+          "alignment_failed_lexical": 1263,
+          "alignment_failed_units": 72,
+          "ambiguous_gold": 208,
+          "compatible": 3421,
+          "compatible_singleton": 3416,
+          "disjoint_cells": 306,
+          "extra_cell_candidates": 8,
+          "lexical_gold": 5042,
+          "missing_source_lexical": 0,
+          "missing_source_units": 0,
+          "no_lexical_prediction": 35,
+          "nonlexical_gold": 386,
+          "projected_words": 5428,
+          "units": 337,
+          "wrong_lexeme": 17
+        },
+        "tagger_only": {
+          "alignment_failed_lexical": 1263,
+          "alignment_failed_units": 72,
+          "ambiguous_gold": 208,
+          "compatible": 3365,
+          "compatible_singleton": 3359,
+          "disjoint_cells": 363,
+          "extra_cell_candidates": 16,
+          "lexical_gold": 5042,
+          "missing_source_lexical": 0,
+          "missing_source_units": 0,
+          "no_lexical_prediction": 35,
+          "nonlexical_gold": 386,
+          "projected_words": 5428,
+          "units": 337,
+          "wrong_lexeme": 16
+        }
+      },
+      "delta": {
+        "raw": {},
+        "rules_only": {
+          "compatible": {
+            "before": 3505,
+            "after": 3502
+          },
+          "compatible_singleton": {
+            "before": 2322,
+            "after": 2269
+          },
+          "extra_cell_candidates": {
+            "before": 2028,
+            "after": 2596
+          },
+          "no_lexical_prediction": {
+            "before": 150,
+            "after": 153
+          }
+        },
+        "tagger_only": {},
+        "rules_then_tagger": {
+          "compatible": {
+            "before": 3421,
+            "after": 3420
+          },
+          "compatible_singleton": {
+            "before": 3416,
+            "after": 3415
+          },
+          "disjoint_cells": {
+            "before": 306,
+            "after": 307
+          }
+        }
+      },
+      "interpretation": "Raw and model-only stages match historical report exactly. Rules-only retains more cell ambiguity and three more W ambiguity markers receive no lexical prediction under this legacy scorer. Composition changes one compatible result to disjoint cells. This does not independently establish which reading is correct; individual changed construction adjudication remains open. Extra candidates are counted only within compatible scored predictions, not a global candidate census."
+    }
+  },
+  "context_trace": {
+    "consumer": "context-trace [--ocs] <text>; Sentence::contextual_trace; tools context_trace::from_json",
+    "command": "RUSTC_WRAPPER= cargo run --offline --release -p church-slavonic-tools --bin xtask -- context-trace <bundled Sentence documentation example>",
+    "exit_code": 0,
+    "artifact": "target/rewrite/context-trace-consumer.json",
+    "sha256": "689bdd662cece95a3c281f3706179fb0091791cf6b9fe4ce3b1fb51437bf1da9",
+    "bytes": 5293,
+    "events": [
+      {
+        "rule": "bare-loc",
+        "child": 1
+      },
+      {
+        "rule": "one-subject",
+        "child": 3
+      }
+    ],
+    "independent_check": "Python replayed all JSON child replacements through each before-context and matched final proposed tree; verified contiguous UTF-8 source span partition.",
+    "limits": "4096 source bytes at Sentence/tools entry; 256 tree nodes, depth32, 64KiB logical strings/cell/note accounting per tree; 128 events; 16MiB bounded serializer. Nested contextual groups explicitly unsupported. These are trace retention/output bounds, not measured RSS/startup or a full bound on legacy index construction.",
+    "limitations": "Operational snapshots and successful mutations only, not validated attachment/premise edges or rejected-rule attempts. Predicates may capture information before the immediate update; history makes earlier states inspectable but is not a complete dependency graph. Tree child indices are not source spans. Source analysis retains original candidates under Exact separately from legacy lifter policies. Replay validates current observable behavior, not complete code/data dependency identity. Existing in-place consumers and tagger remain separate; no phase completion."
+  },
+  "numeral_model": {
+    "model": "data/rewrite/ocs-numeral-model.json",
+    "lexemes": [
+      "l-000011",
+      "l-000012",
+      "l-000013"
+    ],
+    "orthography": "o-lrc-numerals",
+    "source": {
+      "url": "https://lrc.la.utexas.edu/eieol/ocsol/90",
+      "section": "44, items 2–4",
+      "artifact": "target/rewrite/upstream/lrc-ocs-lesson9.html",
+      "sha256": "a6fb3201f1130b3ea74c398baa2c7798f69cd9c4460db64364c72faaa35f6382",
+      "verification": "Independent upstream download; each distinct expected spelling checked in HTML. Unlabelled head forms interpreted as nominative; common oblique forms expanded over agreeing genders. Assistant transcription/interpretation, not independent expert review."
+    },
+    "cell_rows": 45,
+    "distinct_surfaces": 15,
+    "category_and_shape": "Lexical claims Numeral and Adjective retain source description. Pos pron is reused solely for case/gender/number agreement shape, without person, clitic flag or forced adjective degree; no claim that the lexeme is a Pronoun.",
+    "scope": "Two: listed nominative/genitive/locative dual cells; three and four: listed nominative/accusative/genitive/locative/dative/instrumental plural cells. Unlisted cells remain unsupported, not historically impossible. No numeral-phrase syntax, numeric-value parser, stem induction or Synodal transfer. Legacy NUM corpus mapping remains unresolved.",
+    "consumers": {
+      "two": {
+        "command": "target/release/xtask check-linguistic-slice data/rewrite/ocs-numeral-model.json data/rewrite/ocs-numeral-l-000011.json l-000011 o-lrc-numerals",
+        "exit_code": 0,
+        "artifact": "target/rewrite/numeral-two-consumer.json",
+        "sha256": "25ea9035d063d65428825e3c67b6840b38e2b445e02086be8aabe979ec0ee30d",
+        "report": {
+          "fixture": "lrc-numeral-l-000011",
+          "expected_forms": 9,
+          "exact_generated": 9,
+          "joint_analysis_retained": 9,
+          "inventory_issues": [],
+          "failures": []
+        }
+      },
+      "three": {
+        "command": "target/release/xtask check-linguistic-slice data/rewrite/ocs-numeral-model.json data/rewrite/ocs-numeral-l-000012.json l-000012 o-lrc-numerals",
+        "exit_code": 0,
+        "artifact": "target/rewrite/numeral-three-consumer.json",
+        "sha256": "29124918527dd64c56c394fb4a457f5b4cb45887cb5bbf214185def5980f8701",
+        "report": {
+          "fixture": "lrc-numeral-l-000012",
+          "expected_forms": 18,
+          "exact_generated": 18,
+          "joint_analysis_retained": 18,
+          "inventory_issues": [],
+          "failures": []
+        }
+      },
+      "four": {
+        "command": "target/release/xtask check-linguistic-slice data/rewrite/ocs-numeral-model.json data/rewrite/ocs-numeral-l-000013.json l-000013 o-lrc-numerals",
+        "exit_code": 0,
+        "artifact": "target/rewrite/numeral-four-consumer.json",
+        "sha256": "325e4b372e1e9537b0fdc2f7196022386dfc271a2728ccad99aa60b1faea6a12",
+        "report": {
+          "fixture": "lrc-numeral-l-000013",
+          "expected_forms": 18,
+          "exact_generated": 18,
+          "joint_analysis_retained": 18,
+          "inventory_issues": [],
+          "failures": []
+        }
+      }
+    },
+    "analysis_consumer": {
+      "command": "target/release/xtask analyze --model data/rewrite/ocs-numeral-model.json --orthography o-lrc-numerals 'три дъвоѭ'",
+      "exit_code": 0,
+      "artifact": "target/rewrite/numeral-analysis-consumer.json",
+      "sha256": "70a5d338cd7ba97f703d8ced00ad2cf82ceedf033b9c89b608c11e97a437065f",
+      "candidate_counts": [
+        5,
+        6
+      ]
+    }
+  },
+  "lexical_gender": {
+    "model": "data/rewrite/ocs-noun-numeral-model.json",
+    "source": {
+      "url": "https://lrc.la.utexas.edu/eieol/ocsol/90",
+      "section": "44, items5–10",
+      "artifact": "target/rewrite/upstream/lrc-ocs-lesson9-gender.html",
+      "sha256": "a6fb3201f1130b3ea74c398baa2c7798f69cd9c4460db64364c72faaa35f6382",
+      "status": "Independently reacquired teaching source; same bytes as previous numeral-list download; transcription/source interpretation by assistant, not expert adjudication."
+    },
+    "representation": "LexicalEntry.genders holds typed GenderAssertion values with evidence IDs. Empty means no assertion supplied; alternative m/f/n claims coexist and no first claim is selected. Duplicate values require consolidated evidence; missing/unknown references fail. No contextual agreement or impossibility is inferred from these assertions.",
+    "record_version": 6,
+    "model_artifact_version": 4,
+    "limits": "Optional input field defaults to no assertions. Agreement gender remains on the cell separately; modeled candidate lexical assertions are exported and recomputed on reload. Legacy evidence-backed gender assertions remain unavailable (null); old model entries without the field expose an empty assertion list.",
+    "consumer": {
+      "command": "target/release/xtask analyze --model data/rewrite/ocs-noun-numeral-model.json --orthography o-lrc-noun-numerals 'пѧти дєсѧтє'",
+      "exit_code": 0,
+      "artifact": "target/rewrite/lexical-gender-consumer.json",
+      "sha256": "8881956526c3d1ce4629fa4ee828b31adc0f9fd34b9712d2c2eba03ffee9e53b",
+      "readings": [
+        {
+          "lexeme": "l-000014",
+          "cell": "gen.sg",
+          "lexical_gender": "f"
+        },
+        {
+          "lexeme": "l-000019",
+          "cell": "loc.sg",
+          "lexical_gender": "f"
+        }
+      ]
+    },
+    "fixture_consumers": [
+      {
+        "lexeme": "l-000014",
+        "artifact": "target/rewrite/lexical-gender-l-000014.json",
+        "sha256": "630a30b42af01f3585aca7c688650fd4222535d913f80e8307bd10b270e22236",
+        "exit_code": 0,
+        "report": {
+          "fixture": "lrc-noun-numeral-l-000014",
+          "expected_forms": 2,
+          "exact_generated": 2,
+          "joint_analysis_retained": 2,
+          "inventory_issues": [],
+          "failures": []
+        }
+      },
+      {
+        "lexeme": "l-000015",
+        "artifact": "target/rewrite/lexical-gender-l-000015.json",
+        "sha256": "a5efe6a29de973d573d346e3064fc762a0b77d3fe651096aca6ff7980d509a1d",
+        "exit_code": 0,
+        "report": {
+          "fixture": "lrc-noun-numeral-l-000015",
+          "expected_forms": 2,
+          "exact_generated": 2,
+          "joint_analysis_retained": 2,
+          "inventory_issues": [],
+          "failures": []
+        }
+      },
+      {
+        "lexeme": "l-000016",
+        "artifact": "target/rewrite/lexical-gender-l-000016.json",
+        "sha256": "ad1108ad6834d361676615e5aa64ed28d4d3649c71b472ff4eaefb345763b051",
+        "exit_code": 0,
+        "report": {
+          "fixture": "lrc-noun-numeral-l-000016",
+          "expected_forms": 2,
+          "exact_generated": 2,
+          "joint_analysis_retained": 2,
+          "inventory_issues": [],
+          "failures": []
+        }
+      },
+      {
+        "lexeme": "l-000017",
+        "artifact": "target/rewrite/lexical-gender-l-000017.json",
+        "sha256": "2c9607bcb0aae8a53446dec6310c7069e2b8e0c5bd3d742b10cdf1f6b950549a",
+        "exit_code": 0,
+        "report": {
+          "fixture": "lrc-noun-numeral-l-000017",
+          "expected_forms": 2,
+          "exact_generated": 2,
+          "joint_analysis_retained": 2,
+          "inventory_issues": [],
+          "failures": []
+        }
+      },
+      {
+        "lexeme": "l-000018",
+        "artifact": "target/rewrite/lexical-gender-l-000018.json",
+        "sha256": "bcb1e83f451c5950843c9eae67b6bff39fb2e109064ccdfe11b4421dd9385356",
+        "exit_code": 0,
+        "report": {
+          "fixture": "lrc-noun-numeral-l-000018",
+          "expected_forms": 2,
+          "exact_generated": 2,
+          "joint_analysis_retained": 2,
+          "inventory_issues": [],
+          "failures": []
+        }
+      },
+      {
+        "lexeme": "l-000019",
+        "artifact": "target/rewrite/lexical-gender-l-000019.json",
+        "sha256": "75c82b3f9722316f5ade54b645c052fdbabfcb790e38f47d7abaf0910f79db65",
+        "exit_code": 0,
+        "report": {
+          "fixture": "lrc-noun-numeral-l-000019",
+          "expected_forms": 3,
+          "exact_generated": 3,
+          "joint_analysis_retained": 3,
+          "inventory_issues": [],
+          "failures": []
+        }
+      }
+    ],
+    "open_work": "Existing lexical gender/animacy migration, context-sensitive/common-gender modeling, positive claim acceptance, numeric values and numeral constructions remain incomplete."
+  },
+  "document_artifact_currentness": "Source-document codec remainsv9; model inputv4; compiled index transportv1. New selected engine identity includes index/persistence.rs and invalidates older derived exports. Tools additionally bind compiled caches to executable bytes; dynamic-library/full build closure remains incomplete.",
+  "locative_retention": {
+    "retired_rule": "bare-loc",
+    "source": {
+      "url": "https://lrc.la.utexas.edu/eieol/ocsol/80",
+      "section": "38, The Locative Case",
+      "method": "Independently consulted upstream Krause/Slocum teaching discussion. Non-prepositional temporal uses and verbal locative complements refute the missing-preposition premise. No expert adjudication of particular corpus candidates claimed."
+    },
+    "before_probe": {
+      "log": "target/rewrite/locative-before.log",
+      "sha256": "4fa36bd90411fcaca146ed69302f483f2f4f53f8f240a8ac48a986d8ec1529f3",
+      "exit_code": 101,
+      "expected_failures": 2,
+      "meaning": "Constructed single-lexeme nom/loc and competing-lexeme controls both show bare-loc removing the locative interpretation; final controls pass for OCS and Synodal legacy profiles."
+    },
+    "overlay_comparison": {
+      "previous_report": {
+        "absent_overlay_books": [
+          "Кни́га четве́ртаѧ мѡѷсе́ова чи́сла",
+          "Кни́га пѧ́таѧ мѡѷсе́ова второзако́нїе",
+          "Кни́га і҆исꙋ́са наѵи́на",
+          "Кни́га сꙋді́й і҆и҃левыхъ",
+          "Кни́га рꙋ́ѳь",
+          "Кни́га пе́рваѧ ца́рствъ",
+          "Кни́га втора́ѧ ца́рствъ",
+          "Кни́га тре́тїѧ ца́рствъ",
+          "Кни́га четве́ртаѧ ца́рствъ",
+          "Кни́га пе́рваѧ паралїпоме́нѡнъ",
+          "Кни́га втора́ѧ паралїпоме́нѡнъ",
+          "Кни́га пе́рваѧ є҆́здры",
+          "Кни́га неемі́и",
+          "Кни́га втора́ѧ є҆́здры",
+          "Кни́га тѡві́та",
+          "Кни́га і҆ꙋді́ѳъ",
+          "Кни́га є҆сѳи́рь",
+          "Кни́га і҆́ѡва",
+          "Ѱалти́рь",
+          "Кни́га є҆кклесїа́ста си́рѣчь проповѣ́дника",
+          "Кни́га пѣ́снь пѣ́сней царѧ̀ соломѡ́на",
+          "Кни́га премⷣрости соломѡ́ни",
+          "Кни́га премⷣрости і҆исꙋ́са сы́на сїра́хова",
+          "Кни́га прⷪ҇ро́ка і҆еремі́и",
+          "Кни́га пла́чь і҆еремі́евъ",
+          "Кни́га посла́нїе і҆еремі́ино",
+          "Кни́га прⷪ҇ро́ка варꙋ́ха",
+          "Кни́га прⷪ҇ро́ка і҆езекі́илѧ",
+          "Кни́га прⷪ҇ро́ка данїи́ла",
+          "Кни́га прⷪ҇ро́ка ѡ҆сі́и",
+          "Кни́га прⷪ҇ро́ка і҆ѡи́лѧ",
+          "Кни́га прⷪ҇ро́ка а҆мѡ́са",
+          "Кни́га прⷪ҇ро́ка а҆вді́а",
+          "Кни́га прⷪ҇ро́ка і҆ѡ́ны",
+          "Кни́га прⷪ҇ро́ка мїхе́а",
+          "Кни́га прⷪ҇ро́ка наꙋ́ма",
+          "Кни́га прⷪ҇ро́ка а҆ввакꙋ́ма",
+          "Кни́га прⷪ҇ро́ка софо́нїи",
+          "Кни́га прⷪ҇ро́ка а҆гге́а",
+          "Кни́га прⷪ҇ро́ка заха́рїи",
+          "Кни́га прⷪ҇ро́ка малахі́и",
+          "Кни́га пе́рваѧ маккаве́йскаѧ",
+          "Кни́га втора́ѧ маккаве́йскаѧ",
+          "Кни́га тре́тїѧ маккаве́йскаѧ",
+          "Кни́га тре́тїѧ є҆́здры",
+          "Ѿ ма́рка ст҃о́е бл҃говѣствова́нїе",
+          "Дѣѧ̑нїѧ ст҃ы́хъ а҆пⷭ҇лъ",
+          "Собо́рное посла́нїе і҆а́кѡвле",
+          "Собо́рное посла́нїе пе́рвое ст҃а́гѡ а҆пⷭ҇ла петра̀",
+          "Собо́рное посла́нїе второ́е ст҃а́гѡ а҆пⷭ҇ла петра̀",
+          "Собо́рное посла́нїе пе́рвое ст҃а́гѡ а҆пⷭ҇ла і҆ѡа́нна бг҃осло́ва",
+          "Собо́рное посла́нїе второ́е ст҃а́гѡ а҆пⷭ҇ла і҆ѡа́нна бг҃осло́ва",
+          "Собо́рное посла́нїе тре́тїе ст҃а́гѡ а҆пⷭ҇ла і҆ѡа́нна бг҃осло́ва",
+          "Собо́рное посла́нїе і҆ꙋ́дино",
+          "Посла́нїе второ́е къ корі́нѳѧнѡмъ ст҃а́гѡ а҆пⷭ҇ла па́ѵла",
+          "Посла́нїе къ гала́тѡмъ ст҃а́гѡ а҆пⷭ҇ла па́ѵла",
+          "Посла́нїе ко є҆фесе́ємъ ст҃а́гѡ а҆пⷭ҇ла па́ѵла",
+          "Посла́нїе къ фїлїпписі́ємъ ст҃а́гѡ а҆пⷭ҇ла па́ѵла",
+          "Посла́нїе къ колосса́ємъ ст҃а́гѡ а҆пⷭ҇ла па́ѵла",
+          "Посла́нїе пе́рвое къ солꙋ́нѧнѡмъ ст҃а́гѡ а҆пⷭ҇ла па́ѵла",
+          "Посла́нїе второ́е къ солꙋ́нѧнѡмъ ст҃а́гѡ а҆пⷭ҇ла па́ѵла",
+          "Посла́нїе пе́рвое къ тїмоѳе́ю ст҃а́гѡ а҆пⷭ҇ла па́ѵла",
+          "Посла́нїе второ́е къ тїмоѳе́ю ст҃а́гѡ а҆пⷭ҇ла па́ѵла",
+          "Посла́нїе къ ті́тꙋ ст҃а́гѡ а҆пⷭ҇ла па́ѵла",
+          "Посла́нїе къ фїлимо́нꙋ ст҃а́гѡ а҆пⷭ҇ла па́ѵла",
+          "Посла́нїе ко є҆вре́ємъ ст҃а́гѡ а҆пⷭ҇ла па́ѵла",
+          "А҆пока́лѷѱїсъ ст҃а́гѡ і҆ѡа́нна бг҃осло́ва"
+        ],
+        "alignment": "Exact whole-tree source rendering plus equal ordered projected-word renderings; failures remain in lexical_gold.",
+        "definition": "legacy-overlay-stage-compatibility-v1",
+        "gold_status": "Existing hand annotations, not independently adjudicated gold. Lexeme IDs compared literally; any accepted gold cell establishes compatibility, not candidate precision.",
+        "population": "All entries in present overlay book files; absent overlay books listed separately. Legacy word_nodes projection drops punctuation and attached clitics; not a source-token census.",
+        "raw": {
+          "alignment_failed_lexical": 1386,
+          "alignment_failed_units": 80,
+          "ambiguous_gold": 208,
+          "compatible": 3471,
+          "compatible_singleton": 1945,
+          "disjoint_cells": 0,
+          "extra_cell_candidates": 3748,
+          "lexical_gold": 5042,
+          "missing_source_lexical": 0,
+          "missing_source_units": 0,
+          "no_lexical_prediction": 185,
+          "nonlexical_gold": 386,
+          "projected_words": 5428,
+          "units": 337,
+          "wrong_lexeme": 0
+        },
+        "rules_only": {
+          "alignment_failed_lexical": 1386,
+          "alignment_failed_units": 80,
+          "ambiguous_gold": 208,
+          "compatible": 3502,
+          "compatible_singleton": 2269,
+          "disjoint_cells": 1,
+          "extra_cell_candidates": 2596,
+          "lexical_gold": 5042,
+          "missing_source_lexical": 0,
+          "missing_source_units": 0,
+          "no_lexical_prediction": 153,
+          "nonlexical_gold": 386,
+          "projected_words": 5428,
+          "units": 337,
+          "wrong_lexeme": 0
+        },
+        "rules_then_tagger": {
+          "alignment_failed_lexical": 1263,
+          "alignment_failed_units": 72,
+          "ambiguous_gold": 208,
+          "compatible": 3420,
+          "compatible_singleton": 3415,
+          "disjoint_cells": 307,
+          "extra_cell_candidates": 8,
+          "lexical_gold": 5042,
+          "missing_source_lexical": 0,
+          "missing_source_units": 0,
+          "no_lexical_prediction": 35,
+          "nonlexical_gold": 386,
+          "projected_words": 5428,
+          "units": 337,
+          "wrong_lexeme": 17
+        },
+        "tagger_only": {
+          "alignment_failed_lexical": 1263,
+          "alignment_failed_units": 72,
+          "ambiguous_gold": 208,
+          "compatible": 3365,
+          "compatible_singleton": 3359,
+          "disjoint_cells": 363,
+          "extra_cell_candidates": 16,
+          "lexical_gold": 5042,
+          "missing_source_lexical": 0,
+          "missing_source_units": 0,
+          "no_lexical_prediction": 35,
+          "nonlexical_gold": 386,
+          "projected_words": 5428,
+          "units": 337,
+          "wrong_lexeme": 16
+        }
+      },
+      "delta": {
+        "raw": {},
+        "rules_only": {
+          "compatible": {
+            "before": 3502,
+            "after": 3490
+          },
+          "compatible_singleton": {
+            "before": 2269,
+            "after": 2246
+          },
+          "extra_cell_candidates": {
+            "before": 2596,
+            "after": 2814
+          },
+          "no_lexical_prediction": {
+            "before": 153,
+            "after": 165
+          }
+        },
+        "tagger_only": {},
+        "rules_then_tagger": {
+          "compatible": {
+            "before": 3420,
+            "after": 3419
+          },
+          "compatible_singleton": {
+            "before": 3415,
+            "after": 3414
+          },
+          "disjoint_cells": {
+            "before": 307,
+            "after": 309
+          },
+          "wrong_lexeme": {
+            "before": 17,
+            "after": 16
+          }
+        }
+      },
+      "interpretation": "Raw and model-only unchanged. Rules-only has 12 additional unresolved W lexical predictions and 218 additional extra cell candidates within compatible scored predictions. Composition has one fewer wrong lexeme and two more disjoint-cell outcomes; individual changed analyses not independently adjudicated. No claim of improved contextual accuracy."
+    },
+    "remaining": "prep-gov, np-agree and one-subject still require premise/attachment validation. subj-verb retired in R-AUDIT-27 as unsupported hard exclusion. Retaining candidates is not licensing them or guaranteeing no other rule/tagger can remove them.",
+    "context_consumer": {
+      "artifact": "target/rewrite/locative-context-consumer.json",
+      "sha256": "bff3d2e25341f3b9c319fe4600b4e9c5aad7b9e515eab8b2b3d597e7291ab363",
+      "events": 0,
+      "input_equals_proposed": true,
+      "note": "Terminal exit0 confirmed in prior turn. Historical source-document v6 export; empty trace means no successful rule proposal, not grammatical adjudication."
+    }
+  },
+  "stem_replacement": {
+    "source": {
+      "url": "https://lrc.la.utexas.edu/eieol/ocsol/20",
+      "section": "6.1",
+      "local": "target/rewrite/upstream/lrc-ocs-lesson2-stem.html",
+      "sha256": "f19c61f88ac52c79991faa2a8ea83ddf8a9c0156a01489b01a2d22644d44b6ca"
+    },
+    "scope": "Single exact rule-local final replacement before suffix and post-transformation stress addressing. OCS teaching pairs отрокъ/отроци and могѫ/можєши. Supplied data, not productive induction. Positive acceptance policy remains unfinished.",
+    "fixture_consumer_reports": [
+      {
+        "fixture": "lrc-ocs-6.1-otrok-pair-supplied-development-example",
+        "expected_forms": 2,
+        "exact_generated": 2,
+        "joint_analysis_retained": 2,
+        "inventory_issues": [],
+        "failures": []
+      },
+      {
+        "fixture": "lrc-ocs-6.1-mog-pair-supplied-development-example",
+        "expected_forms": 2,
+        "exact_generated": 2,
+        "joint_analysis_retained": 2,
+        "inventory_issues": [],
+        "failures": []
+      }
+    ],
+    "consumer_export": {
+      "artifact": "target/rewrite/stem-consumer-analysis.json",
+      "sha256": "3f9d7408f280d72bc9a23773225b2840dd3b7e7586a50315ee49490194feef66",
+      "source_document_version": 7,
+      "lexemes": [
+        "l-000020",
+        "l-000021"
+      ],
+      "byte_addressed_readings": [
+        [
+          "отрокъ",
+          "l-000020",
+          "nom.sg"
+        ],
+        [
+          "отроци",
+          "l-000020",
+          "nom.pl"
+        ],
+        [
+          "могѫ",
+          "l-000021",
+          "pres.1.sg"
+        ],
+        [
+          "можєши",
+          "l-000021",
+          "pres.2.sg"
+        ]
+      ]
+    },
+    "verification_scope": "Full workspace completed188passed/1ignored and its log includes all five final stem tests. Final targeted5test and clippy runs also passed. Actual final CLI fixtures4/4 and source-document export inspected."
+  },
+  "import_publication": {
+    "scope": "Individual refit/crosscheck/import lexicon replacement plus quarantine staging; nine existing TSV files checked without modifying source assets. Both outcomes prepared before first rename.",
+    "limitations": [
+      "Two output renames are not a transaction; interruption between them remains unresolved.",
+      "Trusted parent directory, no concurrent writer coordination.",
+      "No directory/power-loss durability, ownership/ACL/xattr preservation guarantee.",
+      "64MiB stage payload cap is not whole-import memory/work bound.",
+      "Other construction writers including --fix-marks remain to migrate."
+    ],
+    "checks": "tests/import_publication.rs seven controls including self-spawned process exit42 before commit, actual refit/import temporary-directory writes, quarantine read failure and duplicate outcome rejection",
+    "library_contract": "https://docs.rs/tempfile/3.27.0/tempfile/struct.NamedTempFile.html#method.persist"
+  },
+  "generation_acceptance": {
+    "scope": "Generation only: exact model/lexeme/cell/rendered derivation with source links; caller-supplied decisions cannot enter via ModelInput. Default unreviewed even when citation records are verified.",
+    "limits": "1024 decisions bounded also by max_candidates; 4096 bytes per method and decision_id; stored decision strings count map and record claim keys; rule/abbreviation check count; returned review metadata budgeted. Not total process RSS/construction closure.",
+    "limitations": [
+      "CallerAccepted is not authentication of scholarly credentials or truth.",
+      "Whole input-model identity conservatively invalidates decisions after unrelated input changes.",
+      "Engine identity remains selected source files, not full dependencies.",
+      "Positive lexical relations and lexical assertions are not accepted by this generation policy."
+    ],
+    "consumer": {
+      "artifact": "target/rewrite/acceptance-consumer.json",
+      "sha256": "1068c3885795ea58091f4c7a5e29cedf97261ba1b30ef7880b8db71023c87ad2",
+      "exit_code": 0,
+      "version": 8,
+      "forms": 4,
+      "distinct_claim_keys": 4,
+      "review": "Unreviewed",
+      "generation_policy_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    }
+  },
+  "lexical_acceptance": {
+    "scope": "Exact lexical category, gender and directed relation claims; separate caller policy preserves alternatives and does not accept generation.",
+    "consumer": {
+      "artifact": "target/rewrite/lexical-acceptance-consumer.json",
+      "sha256": "23e4274e06e77c035e4223f3b1879c6e5839ca67b7b4275029e1bbaa8a5e5a68",
+      "exit_code": 0,
+      "source_document_version": 9,
+      "readings": 2,
+      "claims": 3,
+      "distinct_claim_keys": 3,
+      "review": "Unreviewed"
+    },
+    "limits": "Counts/checks and retained-string budgets; clone only after local and remaining-analysis output checks. At most1024 caller decisions, <=4096-byte identity/method strings. Not total process/RSS bounds.",
+    "limitations": [
+      "Caller acceptance is not proof of scholarly credentials or linguistic truth.",
+      "Whole input model identity invalidates after unrelated changes; selected-engine identity is not full dependency closure.",
+      "No full lexical coverage, independent gold, or historical approval claimed."
+    ]
+  },
+  "o_stem_paradigms": {
+    "source": {
+      "url": "https://lrc.la.utexas.edu/eieol/ocsol/10",
+      "section": "3.1",
+      "artifact": "target/rewrite/upstream/lrc-ocs-lesson1-o-stems.html",
+      "sha256": "e48074ee67e730fcf2df8722605b409b0e5ade5d9a5875538fd0634ed236c9cb",
+      "status": "Freshly reacquired, byte-identical to earlier consulted source; not unseen evaluation material."
+    },
+    "transcription_audit": {
+      "script": "target/rewrite/check-o-stem-transcription.py",
+      "script_sha256": "52e9d75899b3c93cea9bb583075c26affc205deabbe0a8aaac54dd99514cc4e1",
+      "artifact": "target/rewrite/o-stem-transcription.json",
+      "sha256": "07274d745ae0168cf13f9c4284eb1f93b8f08007a596c65c39a7bd2a5854d3a1",
+      "report": {
+        "source_sha256": "e48074ee67e730fcf2df8722605b409b0e5ade5d9a5875538fd0634ed236c9cb",
+        "interpretation": "HTML table transcription check, not independent grammatical validation or held-out accuracy",
+        "tables": [
+          {
+            "lexeme": "l-000022",
+            "source_form_rows": 22,
+            "fixture_form_rows": 22,
+            "exact": true
+          },
+          {
+            "lexeme": "l-000023",
+            "source_form_rows": 21,
+            "fixture_form_rows": 21,
+            "exact": true
+          },
+          {
+            "lexeme": "l-000024",
+            "source_form_rows": 21,
+            "fixture_form_rows": 21,
+            "exact": true
+          }
+        ]
+      }
+    },
+    "consumer_checks": [
+      {
+        "artifact": "target/rewrite/o-stem-consumer-22.json",
+        "sha256": "b41ceb7e88b8b4a338b6b74d8c9d4b77ce01512b98caff0b2aa40628d58c330b",
+        "exit_code": 0,
+        "report": {
+          "fixture": "lrc-o-stem-l-000022",
+          "expected_forms": 22,
+          "exact_generated": 22,
+          "joint_analysis_retained": 22,
+          "inventory_issues": [],
+          "failures": []
+        }
+      },
+      {
+        "artifact": "target/rewrite/o-stem-consumer-23.json",
+        "sha256": "69891c31fdb779ebbbc749c0c677fd9b5e64095abb68877696ddc66bbf9c9573",
+        "exit_code": 0,
+        "report": {
+          "fixture": "lrc-o-stem-l-000023",
+          "expected_forms": 21,
+          "exact_generated": 21,
+          "joint_analysis_retained": 21,
+          "inventory_issues": [],
+          "failures": []
+        }
+      },
+      {
+        "artifact": "target/rewrite/o-stem-consumer-24.json",
+        "sha256": "5c05254e8b5e1df6164f803b43a37ae0a614d4ecfc8e74f9009344e7dcfc215e",
+        "exit_code": 0,
+        "report": {
+          "fixture": "lrc-o-stem-l-000024",
+          "expected_forms": 21,
+          "exact_generated": 21,
+          "joint_analysis_retained": 21,
+          "inventory_issues": [],
+          "failures": []
+        }
+      }
+    ],
+    "analysis_export": {
+      "artifact": "target/rewrite/o-stem-consumer-analysis.json",
+      "sha256": "e7088ce87c5984d239dcfa7c574d339ccd8d0aea6dc4ec5f997ebd44ba1a9c4f",
+      "exit_code": 0,
+      "source_document_version": 9,
+      "readings": 9
+    },
+    "limitations": "Three teaching paradigms and one supplied-stem transfer control; no productive stem induction, independent attestation, full OCS coverage or completed legacy migration.",
+    "input_sha256": {
+      "data/rewrite/ocs-o-stem-model.json": "35ddb555ba20d950fd27f14d56820709c2697fe53f2710a8fee0acab0d6610e5",
+      "data/rewrite/ocs-o-stem-l-000024.json": "bad5992fbf00df062a5e84b1d5f35f796b878fe46261c900ea34ace0338fd2d1",
+      "data/rewrite/ocs-o-stem-l-000022.json": "716515ab37f941b72a9c5fd53a9b8d7c1ef33ec465c76f80ca2379edabfdb806",
+      "data/rewrite/ocs-o-stem-l-000023.json": "056830f1919d92a3ef55f965f2eb9343b9890a6dad78b8e103d65a8cbb97968f"
+    }
+  },
+  "finite_paradigms": {
+    "source": {
+      "url": "https://lrc.la.utexas.edu/eieol/ocsol/10",
+      "section": "4.1–4.2",
+      "artifact": "target/rewrite/upstream/lrc-ocs-lesson1-verbs.html",
+      "sha256": "e48074ee67e730fcf2df8722605b409b0e5ade5d9a5875538fd0634ed236c9cb",
+      "status": "Reacquired source bytes match previously consulted lesson1; not unseen evaluation."
+    },
+    "transcription_audit": {
+      "script": "target/rewrite/check-finite-transcription.py",
+      "script_sha256": "58c41bfab274b9e320b59cd4b4ef4e530c7ab05b1eee3f0611e0f8cf036bc92d",
+      "artifact": "target/rewrite/finite-transcription.json",
+      "sha256": "420d4a69e116df77bdbc057788eefef7460fcaf8c854555e2a4c90bdafdfb6e1",
+      "report": {
+        "source_sha256": "e48074ee67e730fcf2df8722605b409b0e5ade5d9a5875538fd0634ed236c9cb",
+        "interpretation": "Literal finite-table transcription check; infinitives manually checked in section headings and found in source text. Previously consulted work, not blind validation.",
+        "tables": [
+          {
+            "lexeme": "l-000025",
+            "finite_source_rows": 18,
+            "exact": true,
+            "infinitive": "глаголати"
+          },
+          {
+            "lexeme": "l-000026",
+            "finite_source_rows": 18,
+            "exact": true,
+            "infinitive": "молити"
+          }
+        ]
+      }
+    },
+    "consumer_checks": [
+      {
+        "artifact": "target/rewrite/finite-consumer-25.json",
+        "sha256": "c7ede389c43b42a9f892dabdc321505b9145a1700f2e8dd88d363e371684b98a",
+        "exit_code": 0,
+        "report": {
+          "fixture": "lrc-finite-l-000025",
+          "expected_forms": 19,
+          "exact_generated": 19,
+          "joint_analysis_retained": 19,
+          "inventory_issues": [],
+          "failures": []
+        }
+      },
+      {
+        "artifact": "target/rewrite/finite-consumer-26.json",
+        "sha256": "179f908700616be504e53909d302e0b37ebbd77c03c688ec583d420fcb210359",
+        "exit_code": 0,
+        "report": {
+          "fixture": "lrc-finite-l-000026",
+          "expected_forms": 19,
+          "exact_generated": 19,
+          "joint_analysis_retained": 19,
+          "inventory_issues": [],
+          "failures": []
+        }
+      }
+    ],
+    "analysis_export": {
+      "artifact": "target/rewrite/finite-consumer-analysis.json",
+      "sha256": "689f80ba1b3115202374ee6e65a51298291eaf479798954912039fc571df5356",
+      "exit_code": 0,
+      "source_document_version": 9,
+      "readings": 5
+    },
+    "limits": "Selected tables and cited infinitives only. Separately supplied stems/allomorphs, no stress prediction or source-described later textual variants. Missing stem remains unresolved. No full verbal morphology, blind accuracy or legacy migration claimed.",
+    "input_sha256": {
+      "data/rewrite/ocs-finite-l-000026.json": "54509ebebbdfe41729202b4a530729a6f0871a9b5ee308453fe9a144ae2764cd",
+      "data/rewrite/ocs-finite-l-000025.json": "d0cdacc72adf671f648c12f1cffaa6117bb71f4589ec54a4510b6f68f6656e6e",
+      "data/rewrite/ocs-finite-model.json": "503f05a68c82669dc815a3b7abbabf2c496fdaf21f24539b437370b0f6109b17"
+    }
+  },
+  "subject_retention": {
+    "status": "unsupported hard exclusion retired; contextual model remains provisional",
+    "finding": "R-AUDIT-27",
+    "before_probe": {
+      "log": "target/rewrite/subject-before.log",
+      "exit_code": 101,
+      "tests_failed": 2,
+      "observation": "aor.2|3.sg narrowed to aor.3.sg solely by nominative adjacency"
+    },
+    "after_tests": "two new tests pass for both profiles, both adjacent orders and source/document replay; targeted suite9pass",
+    "linguistic_limit": "Constructed controls, not an independently attested counterexample or expert gold; no claim that all preserved readings are correct.",
+    "remaining": "prep-gov, np-agree, one-subject premise validation and full candidate attachments remain open.",
+    "consumer": {
+      "status": "passed",
+      "exit_code": 0,
+      "command": "target/rewrite-subject-audit/release/xtask context-trace 'ра́бъ ви́дѣ'",
+      "artifact": "target/rewrite/subject-consumer.json",
+      "sha256": "10dac2a686c582980519032dbdebc3dba02203bf2efc29682f12ad2c858589bc",
+      "source_document_version": 9,
+      "events": 0,
+      "source_candidates": 6,
+      "observation": "Source candidates preserve видѣти.v aor.2.sg/aor.3.sg plus competing видъ.n loc.sg. Legacy tree uses ambiguity markers, while source_analysis carries6full candidates for2tokens. Input and proposal identical. Bundled lexical ambiguity prevents the retired rule trigger here; isolated constructed Sentence tests reproduce the actual narrowing path."
+    },
+    "overlay_previous_artifact": "target/rewrite/locative-overlay.json",
+    "overlay_delta": {
+      "raw": {},
+      "rules_only": {
+        "compatible_singleton": {
+          "before": 2246,
+          "after": 2220
+        },
+        "extra_cell_candidates": {
+          "before": 2814,
+          "after": 2845
+        }
+      },
+      "rules_then_tagger": {
+        "compatible": {
+          "before": 3419,
+          "after": 3418
+        },
+        "compatible_singleton": {
+          "before": 3414,
+          "after": 3413
+        },
+        "disjoint_cells": {
+          "before": 309,
+          "after": 310
+        }
+      },
+      "tagger_only": {}
+    },
+    "overlay_interpretation": "Raw and tagger-only unchanged; rules retain same3490compatible readings with26fewer singletons and31more unlisted cell candidates within compatible projections. Composition loses1compatible result (3419->3418). Sequential feature selection can change when its input expands. Not independently adjudicated accuracy; individual changed readings remain unreviewed."
+  },
+  "model_runtime_index": {
+    "status": "implemented and verified in targeted tests, final workspace tests, Clippy, benchmark and actual CLI; wider V5 incomplete",
+    "finding": "R-AUDIT-28",
+    "consumer_path": "Model::analyze -> analyze_budgeted -> index::analyze; existing AnalysisDocument::analyze_model and analyze --model CLI use it automatically",
+    "cache_contract": "Complete indexes per orthography/matching policy; immutable derivations, full lexical/cell alternatives, original comparison traces and model-wide uncertainty; generation acceptance resets all entries; lexical acceptance applied at query time.",
+    "limits": {
+      "max_index_bytes": 67108864,
+      "max_index_forms": 100000,
+      "max_index_checks": 1000000,
+      "scope": "Aggregate logical accounting over all successful cached pairs in a model; separate from per-document query/output budgets. No eviction. Not a measured RSS bound."
+    },
+    "benchmark": {
+      "command": "RUSTC_WRAPPER= cargo run --offline --release -p church-slavonic-tools --example model_runtime",
+      "before": "target/rewrite/runtime-before.jsonl",
+      "after": "target/rewrite/runtime-after.jsonl",
+      "environment": {
+        "platform": "Darwin arm64",
+        "rustc": "rustc 1.96.0-nightly (80381278a 2026-03-01)",
+        "profile": "release opt-level2"
+      },
+      "before_rows": [
+        {
+          "build_us": 381,
+          "candidates": 2,
+          "expected_cells": 38,
+          "first_query_us": 824,
+          "lexemes": 2,
+          "population": "Constructed duplicates of two supplied teaching paradigms; no coverage or generalization claim",
+          "warm_40_queries_us": 6770
+        },
+        {
+          "build_us": 180,
+          "candidates": 50,
+          "expected_cells": 950,
+          "first_query_us": 4171,
+          "lexemes": 50,
+          "population": "Constructed duplicates of two supplied teaching paradigms; no coverage or generalization claim",
+          "warm_40_queries_us": 161788
+        },
+        {
+          "build_us": 541,
+          "candidates": 200,
+          "expected_cells": 3800,
+          "first_query_us": 16094,
+          "lexemes": 200,
+          "population": "Constructed duplicates of two supplied teaching paradigms; no coverage or generalization claim",
+          "warm_40_queries_us": 630654
+        }
+      ],
+      "after_rows": [
+        {
+          "build_us": 404,
+          "candidates": 2,
+          "expected_cells": 38,
+          "first_query_us": 910,
+          "index": {
+            "construction_checks": 762,
+            "forms": 38,
+            "indexes": 1,
+            "retained_bytes": 30925
+          },
+          "lexemes": 2,
+          "population": "Constructed duplicates of two supplied teaching paradigms; no coverage or generalization claim",
+          "warm_40_queries_us": 61
+        },
+        {
+          "build_us": 181,
+          "candidates": 50,
+          "expected_cells": 950,
+          "first_query_us": 4370,
+          "index": {
+            "construction_checks": 19050,
+            "forms": 950,
+            "indexes": 1,
+            "retained_bytes": 770743
+          },
+          "lexemes": 50,
+          "population": "Constructed duplicates of two supplied teaching paradigms; no coverage or generalization claim",
+          "warm_40_queries_us": 1348
+        },
+        {
+          "build_us": 546,
+          "candidates": 200,
+          "expected_cells": 3800,
+          "first_query_us": 17782,
+          "index": {
+            "construction_checks": 76200,
+            "forms": 3800,
+            "indexes": 1,
+            "retained_bytes": 3083743
+          },
+          "lexemes": 200,
+          "population": "Constructed duplicates of two supplied teaching paradigms; no coverage or generalization claim",
+          "warm_40_queries_us": 5840
+        }
+      ],
+      "memory": {
+        "exit_code": 0,
+        "child_ru_maxrss_native": 9682944,
+        "user_seconds": 0.032549999999999996,
+        "system_seconds": 0.0014579999999999999,
+        "measurement": "getrusage RUSAGE_CHILDREN for one benchmark subprocess; ru_maxrss in platform-native units; not an index-only allocation measurement",
+        "time_tool_limit": "/usr/bin/time -l could not read kern.clockrate under sandbox; exit1; no peak RSS claimed from that command"
+      },
+      "limits": "Local single-process samples over duplicated teaching paradigms. Not new linguistic coverage, blind generalization or production scale. Cold query includes compilation; warm query costs include producing candidates."
+    },
+    "cli": {
+      "results": "target/rewrite/runtime-consumer-results.json",
+      "input": "target/rewrite/runtime-consumer-input.json",
+      "source": "target/rewrite/runtime-consumer-source.txt",
+      "after_export": "target/rewrite/runtime-consumer-after.json",
+      "before_exit": 1,
+      "before_error": "ResourceLimit(\"rule checks\")",
+      "after_exit": 0,
+      "candidate_records": 4000,
+      "source_bytes": 522,
+      "output_bytes": 7080781,
+      "codec_version": 9,
+      "scope": "Constructed200lexemes,40tokens; preserved original source and exact impf.2.sg/impf.3.sg candidate cells. Earlier saved pre-index binary and freshly built index-audit binary."
+    },
+    "test_adjustment": "Initial full workspace run failed work_limits_accumulate_across_document_tokens, whose800-check threshold represented regeneration work. Updated it to enforce shared query work on one versus two unknown tokens, budget1. Targeted13test rerun passes; final full workspace rerun exited0 with224passed and1ignored.",
+    "remaining": "Persisted compiled transport added in R-AUDIT-29. Separate model-input construction, full build closure, legacy migration, whole-process allocation accounting and production-scale validation remain incomplete.",
+    "artifact_sha256": {
+      "target/rewrite/runtime-before.jsonl": "82e7b6c1395701f233a4cbaad0fc7132ce9d8d8e81b29ad5a644a441d894588f",
+      "target/rewrite/runtime-after.jsonl": "10bed133d8f96caf2f1a0a5bed3850665e70679e53a2d1d7bcc1eca1db8e0d68",
+      "target/rewrite/runtime-consumer-input.json": "f492ee32713d67ea29f0a203c3712b89a4a30a07491d76a766a559488a7ca16a",
+      "target/rewrite/runtime-consumer-after.json": "13ca7694bfdb9699a93e01fce6747331423e27252f2aa39be49984e79ed758fa",
+      "target/rewrite-subject-audit/release/xtask": "a6bcc45d1a3f548792ee00f4768c6bed6dea1fefbf809e74899710ccb6033a75",
+      "target/rewrite-index-audit/release/xtask": "a02ef953a78681ddd812b3f0f8bb17e7564ffdb07e6346b0e6ff608fffa8c261"
+    }
+  },
+  "compiled_index": {
+    "status": "implemented and verified by targeted tests, final full workspace/Clippy, actual CLI and local benchmark; broader V5 incomplete",
+    "finding": "R-AUDIT-29",
+    "format_version": 1,
+    "model_input_version": 4,
+    "source_document_version": 9,
+    "operations": [
+      "Model::compile_analysis_index",
+      "Model::install_compiled_analysis_index",
+      "compile-index <model> <orthography> <policy> <output> [sources]",
+      "analyze --model ... --index ... --index-sha256 <caller-trusted digest>"
+    ],
+    "trust": "Expected byte digest supplied outside the artifact; compatibility binds model, selected engine, generation policy, orthography, matching policy and caller runtime identity. Completeness/unreviewed semantics rely on trusted compiler output. Accepted derivation content is requalified against current exact-claim decisions. No linguistic endorsement inferred from byte identity.",
+    "bounds": {
+      "total_transport_bytes": 67108864,
+      "record_bytes": 1048576,
+      "json_depth": 64,
+      "record_container_separator_units": 4096,
+      "storage": "Aggregate ModelLimits index budgets; no allocation from declared record counts; sequential bounded record parse before final install. Logical accounting, not complete RSS."
+    },
+    "receipt": {
+      "path": "target/rewrite/finite-200.idx",
+      "sha256": "3cdcbb7ad65e5229089cb17588c8469e46955b3cfd12f353fd517c99b65f2e55",
+      "executable_sha256": "5b66ce945af0a4e08a4d25cfca7405cf2266144d238424d336595a47fd099d66",
+      "model_sha256": "e29c09042a900bac89302085d7548141524f6dbc97f4c5c0af807493690b855b",
+      "profile": "o-lrc-finite-tables",
+      "policy": "exact",
+      "bytes": 2246994,
+      "forms": 3800,
+      "trust": "Digest of this locally compiled output; retain through a trusted channel. Neither an adjacent manifest nor this receipt authenticates downloaded data or historical grammar."
+    },
+    "consumer": {
+      "results": [
+        {
+          "name": "restored",
+          "exit_code": 0
+        },
+        {
+          "name": "cold",
+          "exit_code": 0
+        },
+        {
+          "name": "missing-digest",
+          "exit_code": 1
+        }
+      ],
+      "byte_identical_exports": true,
+      "candidate_records": 4000,
+      "source_bytes": 522,
+      "output_bytes": 7080781,
+      "output_sha256": "ce6621e14728cc448e7e15391a3cd2bbf71b7caa77558229028eddd10035885c"
+    },
+    "benchmark": {
+      "command": "RUSTC_WRAPPER= cargo run --offline --release -p church-slavonic-tools --example compiled_runtime",
+      "artifact": "target/rewrite/compiled-benchmark-final.jsonl",
+      "rows": [
+        {
+          "cold_query_us": 1235,
+          "compiled_bytes": 22901,
+          "export_us": 108,
+          "forms": 38,
+          "index": {
+            "construction_checks": 762,
+            "forms": 38,
+            "indexes": 1,
+            "restored_indexes": 1,
+            "retained_bytes": 30933
+          },
+          "lexemes": 2,
+          "restore_us": 315,
+          "restored_query_us": 6,
+          "scope": "Constructed duplicates; restore includes digest and record validation, excludes model-input loading and executable hashing; no production-scale claim"
+        },
+        {
+          "cold_query_us": 7014,
+          "compiled_bytes": 561818,
+          "export_us": 3145,
+          "forms": 950,
+          "index": {
+            "construction_checks": 19050,
+            "forms": 950,
+            "indexes": 1,
+            "restored_indexes": 1,
+            "retained_bytes": 770751
+          },
+          "lexemes": 50,
+          "restore_us": 4200,
+          "restored_query_us": 100,
+          "scope": "Constructed duplicates; restore includes digest and record validation, excludes model-input loading and executable hashing; no production-scale claim"
+        },
+        {
+          "cold_query_us": 22246,
+          "compiled_bytes": 2246994,
+          "export_us": 11224,
+          "forms": 3800,
+          "index": {
+            "construction_checks": 76200,
+            "forms": 3800,
+            "indexes": 1,
+            "restored_indexes": 1,
+            "retained_bytes": 3083751
+          },
+          "lexemes": 200,
+          "restore_us": 19110,
+          "restored_query_us": 359,
+          "scope": "Constructed duplicates; restore includes digest and record validation, excludes model-input loading and executable hashing; no production-scale claim"
+        }
+      ],
+      "environment": "Darwin arm64; rustc1.96.0-nightly80381278a; release opt-level2",
+      "limits": "Constructed duplicate lexemes. Restore includes hashing/record validation, excludes model-input loading and executable hashing. Local single-run samples; only modest startup benefit, not production guarantees."
+    },
+    "runtime_identity": {
+      "method": "SHA256 of current executable file, bounded read256MiB",
+      "linkage": "target/rewrite/compiled-linkage.txt",
+      "observed_dynamic_libraries": [
+        "/usr/lib/libiconv.2.dylib",
+        "/usr/lib/libSystem.B.dylib"
+      ],
+      "limits": "Not full OS/dynamic-library dependency closure or protection against concurrent executable replacement."
+    },
+    "tests": "7new compiled tests plus13index/document tests passed. Final full workspace231passed,1ignored,exit0. Final Clippy passed.",
+    "remaining": "Validated model input still loaded separately; analyze-witness cache options added in R-AUDIT-30. Legacy consumer migration, full dependency closure and production-scale validation remain incomplete.",
+    "artifact_sha256": {
+      "target/rewrite/finite-200.idx": "3cdcbb7ad65e5229089cb17588c8469e46955b3cfd12f353fd517c99b65f2e55",
+      "target/rewrite/compiled-receipt.json": "8478dae592680a801ed86eef7f35a0ceb573829bddbc70d4ed6bafa989f0d389",
+      "target/rewrite/compiled-cli-restored.json": "ce6621e14728cc448e7e15391a3cd2bbf71b7caa77558229028eddd10035885c",
+      "target/rewrite/compiled-benchmark-final.jsonl": "4ab2d3dfc8e6d93af6121be771c35286d4376cd559c8307ef306fc84e6ef5daf",
+      "target/release/xtask": "5b66ce945af0a4e08a4d25cfca7405cf2266144d238424d336595a47fd099d66"
+    },
+    "prior_receipt_currentness": "Historical producer receipt and binary hash from R-AUDIT-29. CLI source changed in R-AUDIT-30, so previously compiled CLI indexes require recompilation under the new executable identity. Current witness receipt is in compiled_witness_cli."
+  },
+  "compiled_witness_cli": {
+    "status": "implemented and verified",
+    "finding": "R-AUDIT-30",
+    "consumer_reports": [
+      {
+        "witness": "w-titlo-divine",
+        "source": "бг҃ъ",
+        "byte_identical": true,
+        "source_start": 4656,
+        "source_end": 4664,
+        "annotations": 1,
+        "candidates": 1,
+        "source_links": [
+          [
+            "ann-titlo-divine"
+          ]
+        ],
+        "sha256": "1957625d3539fd56854197a9ab715142cd8a2fd37c963b8024a729ffed086bbf"
+      },
+      {
+        "witness": "w-titlo-idol",
+        "source": "бо́гъ",
+        "byte_identical": true,
+        "source_start": 4767,
+        "source_end": 4777,
+        "annotations": 1,
+        "candidates": 1,
+        "source_links": [
+          [
+            "ann-titlo-idol"
+          ]
+        ],
+        "sha256": "12954ee0637180fd258ef8f9bc7c2046e789b246884c330380688fe03b373413"
+      }
+    ],
+    "receipt": {
+      "path": "target/rewrite/witness-titlo.idx",
+      "sha256": "7de874dfccf527250c1afbdcc438eb460e334705c8efca8240bff2719f3ba5d2",
+      "executable_sha256": "325a8243b93f54d02dc73c7d1b2706e7ae46914929518858182df56d6a76898b",
+      "model_sha256": "57fada238bae7b28223c32adf6b477fc7e8a1a367103e9b2c54bd013874755a3",
+      "profile": "o-alypy-titlo-examples",
+      "policy": "exact",
+      "bytes": 1789,
+      "forms": 2,
+      "trust": "Digest of this locally compiled output; retain through a trusted channel. Neither an adjacent manifest nor this receipt authenticates downloaded data or historical grammar."
+    },
+    "artifacts": [
+      "target/rewrite/witness-index-consumers.json",
+      "target/rewrite/witness-index-receipt.json",
+      "target/rewrite/witness-titlo.idx",
+      "target/rewrite/witness-index-ordinary.json"
+    ],
+    "controls": "3new real-executable tests: full registered source/annotations/ambiguity; source tampering outside witness and changed declaration; policy matching, unique paired index options. Existing teaching source raw bytes match declared digest; not independently reauthenticated in this engineering turn.",
+    "verification_scope": "CLI/test-only increment.15targeted tests and Clippy passed; actual two-witness restored/cold output byte-identical; ordinary modeled inf query passed. Previous231full-workspace result is historical, not a new234test full run."
+  },
+  "noun_record_migration": {
+    "finding": "R-AUDIT-31",
+    "evidence": "data/rewrite/noun-migration-audit.json",
+    "source_records": 3493,
+    "selected_records": 3,
+    "unselected_records": 3490,
+    "observations": 12,
+    "cell_claims": 9,
+    "exact_compatible_claims": 2,
+    "tolerant_compatible_claims": 3,
+    "new_validated_lexemes": 0,
+    "paradigm_rows_retained": 64,
+    "cold_restored_witnesses_identical": 12,
+    "status": "bounded source adapter exercised; identities and inherited assertions unreviewed; full lexical migration incomplete"
+  }
+}

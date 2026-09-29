@@ -1,0 +1,338 @@
+{
+  "schema": 1,
+  "finding": "R-AUDIT-31",
+  "revision": "09d14f3efc41d20503dd46d9391ca17a15a791c3 plus working tree",
+  "classification": "source-record migration; no new linguistic validation",
+  "report": {
+    "source_sha256": "960cf6c5d7ec6768d25f431fad1fd700559ea14da75c322218cd49dacbbb36c1",
+    "source_records": 3493,
+    "selected_records": 3,
+    "unselected_records": 3490,
+    "imported_forms": 12,
+    "cell_claims": 9,
+    "exact_compatible": 2,
+    "tolerant_compatible": 3,
+    "claims": [
+      {
+        "legacy_id": "вѣко.n",
+        "witness": "legacy:вѣко.n:0",
+        "field": "lemma",
+        "cell": null,
+        "surface": "вѣко",
+        "proposed_targets": [
+          "l-000024"
+        ],
+        "exact": [],
+        "tolerant": []
+      },
+      {
+        "legacy_id": "мѣсто.n",
+        "witness": "legacy:мѣсто.n:0",
+        "field": "lemma",
+        "cell": null,
+        "surface": "мѣсто",
+        "proposed_targets": [
+          "l-000023"
+        ],
+        "exact": [],
+        "tolerant": []
+      },
+      {
+        "legacy_id": "чловѣкъ.n",
+        "witness": "legacy:чловѣкъ.n:0",
+        "field": "lemma",
+        "cell": null,
+        "surface": "чловѣкъ",
+        "proposed_targets": [
+          "l-000022"
+        ],
+        "exact": [],
+        "tolerant": []
+      },
+      {
+        "legacy_id": "чловѣкъ.n",
+        "witness": "legacy:чловѣкъ.n:1",
+        "field": "variant",
+        "cell": "dat.sg",
+        "surface": "чловѣкови",
+        "proposed_targets": [
+          "l-000022"
+        ],
+        "exact": [
+          "l-000022"
+        ],
+        "tolerant": [
+          "l-000022"
+        ]
+      },
+      {
+        "legacy_id": "чловѣкъ.n",
+        "witness": "legacy:чловѣкъ.n:2",
+        "field": "variant",
+        "cell": "dat.sg",
+        "surface": "члвѣкови",
+        "proposed_targets": [
+          "l-000022"
+        ],
+        "exact": [],
+        "tolerant": []
+      },
+      {
+        "legacy_id": "чловѣкъ.n",
+        "witness": "legacy:чловѣкъ.n:3",
+        "field": "variant",
+        "cell": "acc.sg",
+        "surface": "чловѣка",
+        "proposed_targets": [
+          "l-000022"
+        ],
+        "exact": [
+          "l-000022"
+        ],
+        "tolerant": [
+          "l-000022"
+        ]
+      },
+      {
+        "legacy_id": "чловѣкъ.n",
+        "witness": "legacy:чловѣкъ.n:4",
+        "field": "variant",
+        "cell": "nom.sg",
+        "surface": "члвкъ",
+        "proposed_targets": [
+          "l-000022"
+        ],
+        "exact": [],
+        "tolerant": []
+      },
+      {
+        "legacy_id": "чловѣкъ.n",
+        "witness": "legacy:чловѣкъ.n:5",
+        "field": "variant",
+        "cell": "nom.pl",
+        "surface": "чловѣчи",
+        "proposed_targets": [
+          "l-000022"
+        ],
+        "exact": [],
+        "tolerant": []
+      },
+      {
+        "legacy_id": "чловѣкъ.n",
+        "witness": "legacy:чловѣкъ.n:6",
+        "field": "variant",
+        "cell": "gen.pl",
+        "surface": "овѣкъ",
+        "proposed_targets": [
+          "l-000022"
+        ],
+        "exact": [],
+        "tolerant": []
+      },
+      {
+        "legacy_id": "чловѣкъ.n",
+        "witness": "legacy:чловѣкъ.n:7",
+        "field": "variant",
+        "cell": "dat.pl",
+        "surface": "чловѣкомь",
+        "proposed_targets": [
+          "l-000022"
+        ],
+        "exact": [],
+        "tolerant": []
+      },
+      {
+        "legacy_id": "чловѣкъ.n",
+        "witness": "legacy:чловѣкъ.n:8",
+        "field": "variant",
+        "cell": "acc.pl",
+        "surface": "чловѣкъи",
+        "proposed_targets": [
+          "l-000022"
+        ],
+        "exact": [],
+        "tolerant": [
+          "l-000022"
+        ]
+      },
+      {
+        "legacy_id": "чловѣкъ.n",
+        "witness": "legacy:чловѣкъ.n:9",
+        "field": "variant",
+        "cell": "loc.pl",
+        "surface": "чловѣцѣ",
+        "proposed_targets": [
+          "l-000022"
+        ],
+        "exact": [],
+        "tolerant": []
+      }
+    ],
+    "interpretation": "Selected legacy claims imported as unreviewed source observations and proposed identity correspondences. No legacy classes, generated forms or variant claims become grammatical rules. Compatibility is model-relative, not adjudicated identity or grammaticality. Unselected records remain outside this increment; no new validated lexemes counted."
+  },
+  "consumers": [
+    {
+      "witness": "legacy:вѣко.n:0",
+      "surface": "вѣко",
+      "cold_restored_identical": true,
+      "candidates": 3,
+      "source_annotations": 1
+    },
+    {
+      "witness": "legacy:мѣсто.n:0",
+      "surface": "мѣсто",
+      "cold_restored_identical": true,
+      "candidates": 3,
+      "source_annotations": 1
+    },
+    {
+      "witness": "legacy:чловѣкъ.n:0",
+      "surface": "чловѣкъ",
+      "cold_restored_identical": true,
+      "candidates": 2,
+      "source_annotations": 1
+    },
+    {
+      "witness": "legacy:чловѣкъ.n:1",
+      "surface": "чловѣкови",
+      "cold_restored_identical": true,
+      "candidates": 1,
+      "source_annotations": 1
+    },
+    {
+      "witness": "legacy:чловѣкъ.n:2",
+      "surface": "члвѣкови",
+      "cold_restored_identical": true,
+      "candidates": 0,
+      "source_annotations": 1
+    },
+    {
+      "witness": "legacy:чловѣкъ.n:3",
+      "surface": "чловѣка",
+      "cold_restored_identical": true,
+      "candidates": 5,
+      "source_annotations": 1
+    },
+    {
+      "witness": "legacy:чловѣкъ.n:4",
+      "surface": "члвкъ",
+      "cold_restored_identical": true,
+      "candidates": 0,
+      "source_annotations": 1
+    },
+    {
+      "witness": "legacy:чловѣкъ.n:5",
+      "surface": "чловѣчи",
+      "cold_restored_identical": true,
+      "candidates": 0,
+      "source_annotations": 1
+    },
+    {
+      "witness": "legacy:чловѣкъ.n:6",
+      "surface": "овѣкъ",
+      "cold_restored_identical": true,
+      "candidates": 0,
+      "source_annotations": 1
+    },
+    {
+      "witness": "legacy:чловѣкъ.n:7",
+      "surface": "чловѣкомь",
+      "cold_restored_identical": true,
+      "candidates": 1,
+      "source_annotations": 1
+    },
+    {
+      "witness": "legacy:чловѣкъ.n:8",
+      "surface": "чловѣкъи",
+      "cold_restored_identical": true,
+      "candidates": 0,
+      "source_annotations": 1
+    },
+    {
+      "witness": "legacy:чловѣкъ.n:9",
+      "surface": "чловѣцѣ",
+      "cold_restored_identical": true,
+      "candidates": 1,
+      "source_annotations": 1
+    }
+  ],
+  "paradigms": [
+    {
+      "fixture": "lrc-o-stem-l-000022",
+      "expected_forms": 22,
+      "exact_generated": 22,
+      "joint_analysis_retained": 22,
+      "inventory_issues": [],
+      "failures": []
+    },
+    {
+      "fixture": "lrc-o-stem-l-000023",
+      "expected_forms": 21,
+      "exact_generated": 21,
+      "joint_analysis_retained": 21,
+      "inventory_issues": [],
+      "failures": []
+    },
+    {
+      "fixture": "lrc-o-stem-l-000024",
+      "expected_forms": 21,
+      "exact_generated": 21,
+      "joint_analysis_retained": 21,
+      "inventory_issues": [],
+      "failures": []
+    }
+  ],
+  "review": {
+    "method": "Separate local source/test review; no independent expert or subagent review claimed",
+    "fixed": "Repeated weight delimiter could leave ×1 in the imported surface for form×1×2. Use the first delimiter so the malformed count fails; covered by rejection test.",
+    "test_corrections": "Initial grammar equality assertion compared omitted JSON defaults with expanded defaults; corrected to compare typed serialization. Initial metadata stress fixture remained below the stated budget; increased its population to exceed it. Neither failure established an implementation defect."
+  },
+  "limitations": [
+    "Proposed identities, inherited labels and forms remain unreviewed.",
+    "3490 records unselected; zero new validated lexemes.",
+    "Metadata and byte limits are not measured whole-process RSS or a shared analysis-work budget.",
+    "No upstream linguistic source authentication or new held-out examples in this engineering increment."
+  ],
+  "files": {
+    "crates/church-slavonic-tools/src/migration.rs": "eec8ec26a91ec1e9bc59fdd9ed434a2226d81189c8954fbbdcfd2f936c682406",
+    "crates/church-slavonic-tools/tests/noun_migration.rs": "885b894aa7ccecf5dc0aa1250479bbe563747bbdfed760a22986b4374c185f1f",
+    "data/rewrite/ocs-noun-correspondences.json": "a90be965bb98e1ce01204ef0e27fdf5b70d0170f8419686e7b2c1715d1df4188",
+    "data/rewrite/ocs-noun-observed-model.json": "190b36d8161342aace50049c6cbdae242a46ae9872b9326d709f325355b6cbf5"
+  },
+  "checks": [
+    {
+      "command": "RUSTC_WRAPPER= cargo test --offline --release -p church-slavonic-tools --test noun_migration --test o_stem_paradigms --test compiled_witness_cli --test source_observations --test compiled_index",
+      "status": "passed",
+      "exit_code": 0,
+      "log": "target/rewrite/noun-migration-tests.log",
+      "tests_passed": 24,
+      "scope_note": "Before final repeated-weight parsing correction; affected migration tests rerun afterward.",
+      "log_sha256": "7164ccb8ecac750417eb01e3b869f491fb53f014aaa403c3b205398416da0404"
+    },
+    {
+      "command": "RUSTC_WRAPPER= cargo test --offline --release -p church-slavonic-tools --test noun_migration",
+      "status": "passed",
+      "exit_code": 0,
+      "log": "target/rewrite/noun-migration-final-targeted.log",
+      "tests_passed": 5,
+      "log_sha256": "524546773998033e8cdb912d188df07db980b82b7a01f4f0c65e90b5b4322810"
+    },
+    {
+      "command": "RUSTC_WRAPPER= cargo clippy --offline --workspace --all-targets --all-features -- -D warnings",
+      "status": "passed",
+      "exit_code": 0,
+      "log": "target/rewrite/noun-migration-final-clippy.log",
+      "log_sha256": "b76ac62be15e8c6e572c0fa237051c3f6716e4b4cf553be13601ed2651285cfa"
+    },
+    {
+      "command": "RUSTC_WRAPPER= cargo test --offline --release --workspace --all-features",
+      "status": "passed",
+      "exit_code": 0,
+      "log": "target/rewrite/noun-migration-workspace.log",
+      "log_sha256": "9dc73ca1d39cf291c5a4b2a61f33b9e2efb58abaee53e0aa332646c22575d531",
+      "tests_passed": 239,
+      "tests_ignored": 1,
+      "scope_note": "Workspace run started before final parser correction; final affected migration tests and clippy rerun after correction."
+    }
+  ]
+}

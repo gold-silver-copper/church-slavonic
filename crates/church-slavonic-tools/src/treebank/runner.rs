@@ -772,182 +772,73 @@ pub(crate) fn word_nodes(node: &Node) -> Vec<&Node> {
     out
 }
 
-/// The kind of a tagger's wrong cell against the hand's: what a one-token
-/// window does not see (the subject against the object of an inanimate,
-/// the antecedent's gender) apart from the rest.
-fn error_kind(hand: church_slavonic::cell::Cell, auto: church_slavonic::cell::Cell) -> &'static str {
-    use church_slavonic::grammar::Case;
-    let case_only = hand.gender() == auto.gender() && hand.number() == auto.number() && hand.person() == auto.person();
-    match (hand.case(), auto.case()) {
-        (Some(h), Some(a)) if h != a && case_only => match (h, a) {
-            (Case::Nominative, Case::Accusative) | (Case::Accusative, Case::Nominative) => "nominative against accusative",
-            (Case::Locative, Case::Dative) | (Case::Dative, Case::Locative) => "dative against locative (по)",
-            (Case::Genitive, Case::Accusative) | (Case::Accusative, Case::Genitive) => "genitive against accusative",
-            (Case::Vocative, _) | (_, Case::Vocative) => "the vocative",
-            _ => "another case",
-        },
-        _ if hand.case() == auto.case() && hand.gender() != auto.gender() && hand.number() == auto.number() => "gender",
-        _ if hand.case() == auto.case() && hand.number() != auto.number() => "number",
-        _ if hand.case() == auto.case() && hand.gender() == auto.gender() && hand.number() == auto.number() => "another feature (person, tense, series)",
-        _ => "several features",
-    }
-}
-
-/// `cargo xtask score-disambiguation`: the constraint layer against the
-/// hand overlay. Every hand verse is auto-lifted and constrained; each
-/// hand leaf is aligned with the auto word at its position. Precision:
-/// the auto leaf's set contains the hand's cell (a rule that excludes a
-/// hand cell is wrong). Resolution: the auto set equals the hand's cell.
-/// A hand leaf the auto lift left `:amb` or verbatim is out of the
-/// constraint layer's reach and counted apart.
+/// Compare explicit legacy pipeline stages against the same overlay population.
+/// Gold is consulted only after inference. See overlay_score for metric scope.
 pub fn score_disambiguation() -> Result<(), Box<dyn Error>> {
-    let Some(bible) = bible::load()? else {
-        return Err("pinned Bible absent".into());
-    };
+    use super::overlay_score::Score;
+    let Some(bible) = bible::load()? else { return Err("pinned Bible absent".into()); };
     let lexicon = church_slavonic::Lexicon::synodal();
     let lifter = Lifter::new(lexicon);
     let tagger = crate::treebank::tag::enabled().then(church_slavonic_tagger::Tagger::bundled).filter(|t| !t.is_empty());
-    // the tagger's own score: (leaves it chose, right, wrong cell, wrong lexeme)
-    let mut tagger_score = (0usize, 0usize, 0usize, 0usize);
-    let mut tagger_wrong: Vec<String> = Vec::new();
-    // 3.0 Part 0.5: the tagger's errors by kind
-    let mut tagger_kinds: std::collections::BTreeMap<&'static str, usize> = std::collections::BTreeMap::new();
-    // by confidence: p bucket (tenths) → (chosen, right)
-    let mut tagger_buckets: std::collections::BTreeMap<u8, (usize, usize)> = std::collections::BTreeMap::new();
-    let mut hand_leaves = 0;
-    let mut contained = 0;
-    let mut resolved = 0;
-    let mut wrong: Vec<String> = Vec::new();
-    let mut out_of_reach = 0;
-    let mut other_lexeme: Vec<String> = Vec::new();
-    let mut misaligned = 0;
-    let mut undecided = 0;
-    let mut by_rule: std::collections::BTreeMap<String, (usize, usize, usize)> = std::collections::BTreeMap::new();
+    let mut raw_score = Score::default();
+    let mut rules_score = Score::default();
+    let mut model_score = tagger.as_ref().map(|_| Score::default());
+    let mut composed_score = tagger.as_ref().map(|_| Score::default());
+    let mut absent_overlay_books = Vec::new();
     for (bi, book) in bible.books.iter().enumerate() {
         let hand_path = book_file(&hand_dir(), bi);
-        let Ok(text) = std::fs::read_to_string(&hand_path) else { continue };
-        let entries = sexpr::parse_many(&text).map_err(|e| format!("{}: {e}", hand_path.display()))?;
-        for entry in &entries {
-            let (ch, vs, hand) = read_entry(entry)?;
-            let Some(print) = book.chapters.iter().find(|c| c.chapter == ch).and_then(|c| c.verses.iter().find(|v| v.verse == vs)).map(|v| v.print().to_string()) else { continue };
-            let (mut auto, _) = lifter.lift_verse(&print);
-            crate::treebank::disambiguate::disambiguate(&mut auto, lexicon);
-            if let Some(t) = &tagger {
-                crate::treebank::tag::tag(&mut auto, lexicon, t);
-            }
-            // CS_DEBUG_VERSE=3:14 prints the auto tree of that verse of every
-            // overlay book, the rules' notes on it (a debugging aid, 3.4)
-            if std::env::var("CS_DEBUG_VERSE").ok().as_deref() == Some(format!("{ch}:{vs}").as_str()) {
-                println!("{} {ch}:{vs} auto: {}", book.name, sexpr::print(&verse_entry(ch, vs, &auto)));
-            }
-            let h = word_nodes(&hand);
-            let a = word_nodes(&auto);
-            if h.len() != a.len() {
-                misaligned += 1;
+        let text = match std::fs::read_to_string(&hand_path) {
+            Ok(text) => text,
+            Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
+                absent_overlay_books.push(book.name.clone());
                 continue;
             }
-            for (hn, an) in h.iter().zip(a.iter()) {
-                let Node::Lex { id: hid, cells: hc, .. } = hn else { continue };
-                hand_leaves += 1;
-                match an {
-                    Node::Lex { id: aid, cells: ac, notes, .. } => {
-                        let rule = notes.iter().find(|(k, _)| k == "by").map(|(_, v)| v.clone()).unwrap_or_default();
-                        // a hand leaf that is itself a set (3.3: a redrafted
-                        // verbatim leaf whose note named no cell) decides
-                        // nothing — it is counted apart, and the auto's choice
-                        // is wrong only when it lies outside the whole set
-                        if hc.len() > 1 {
-                            undecided += 1;
-                            if aid == hid && !hc.iter().any(|c| ac.contains(c)) {
-                                wrong.push(format!("{} {ch}:{vs} {hid}: hand set {} disjoint from auto {} (:by {rule})", book.name, hc.name(), ac.name()));
-                                by_rule.entry(rule).or_default().2 += 1;
-                            }
-                            continue;
-                        }
-                        if tagged(notes) {
-                            tagger_score.0 += 1;
-                            let p = notes.iter().find(|(k, _)| k == "prob").map(|(_, v)| v.as_str()).unwrap_or("?");
-                            let bucket = p.parse::<f32>().map(|x| ((x * 10.0).floor() as u8).min(9)).unwrap_or(0);
-                            let b = tagger_buckets.entry(bucket).or_default();
-                            b.0 += 1;
-                            if aid == hid && ac.first() == hc.first() {
-                                b.1 += 1;
-                            }
-                            if aid != hid {
-                                tagger_score.3 += 1;
-                                tagger_wrong.push(format!("{} {ch}:{vs} hand {hid} {} / tagger {aid} {} (p {p})", book.name, hc.name(), ac.name()));
-                                let same_pos = lexicon.get(hid).map(|l| l.pos) == lexicon.get(aid).map(|l| l.pos);
-                                *tagger_kinds.entry(if same_pos { "another lexeme of the same part of speech" } else { "another part of speech" }).or_default() += 1;
-                            } else if ac.first() == hc.first() {
-                                tagger_score.1 += 1;
-                            } else {
-                                tagger_score.2 += 1;
-                                tagger_wrong.push(format!("{} {ch}:{vs} {hid}: hand {} / tagger {} (p {p})", book.name, hc.name(), ac.name()));
-                                *tagger_kinds.entry(error_kind(hc.first(), ac.first())).or_default() += 1;
-                            }
-                        }
-                        if aid != hid {
-                            other_lexeme.push(format!("{} {ch}:{vs} hand {hid} {} / auto {aid} {} {}", book.name, hc.name(), ac.name(), if rule.is_empty() { String::new() } else { format!("(:by {rule})") }));
-                            if !rule.is_empty() {
-                                by_rule.entry(rule).or_default().2 += 1;
-                            }
-                            continue;
-                        }
-                        let hand_cell = hc.first();
-                        if ac.contains(hand_cell) {
-                            contained += 1;
-                            if ac.len() == 1 {
-                                resolved += 1;
-                            }
-                            if !rule.is_empty() {
-                                let e = by_rule.entry(rule).or_default();
-                                e.0 += 1;
-                                if ac.len() == 1 {
-                                    e.1 += 1;
-                                }
-                            }
-                        } else {
-                            wrong.push(format!("{} {ch}:{vs} {hid}: hand {} outside auto {} (:by {rule})", book.name, hc.name(), ac.name()));
-                            by_rule.entry(rule).or_default().2 += 1;
-                        }
-                    }
-                    _ => out_of_reach += 1,
-                }
+            Err(e) => return Err(e.into()),
+        };
+        let entries = sexpr::parse_many(&text).map_err(|e| format!("{}: {e}", hand_path.display()))?;
+        let mut seen = std::collections::HashSet::new();
+        for entry in &entries {
+            let (ch, vs, hand) = read_entry(entry)?;
+            if !seen.insert((ch, vs)) { return Err(format!("duplicate overlay address {} {ch}:{vs}", book.name).into()); }
+            let source = book.chapters.iter().find(|c| c.chapter == ch).and_then(|c| c.verses.iter().find(|v| v.verse == vs));
+            let Some(source) = source else {
+                raw_score.observe(&hand, None, lexicon);
+                rules_score.observe(&hand, None, lexicon);
+                if let Some(s) = &mut model_score { s.observe(&hand, None, lexicon); }
+                if let Some(s) = &mut composed_score { s.observe(&hand, None, lexicon); }
+                continue;
+            };
+            let print = source.print();
+            let (raw, _) = lifter.lift_verse(print);
+            let mut rules = raw.clone();
+            crate::treebank::disambiguate::disambiguate(&mut rules, lexicon);
+            let predictions = tagger.as_ref().map(|t| {
+                let mut model = raw.clone();
+                let mut composed = rules.clone();
+                crate::treebank::tag::tag(&mut model, lexicon, t);
+                crate::treebank::tag::tag(&mut composed, lexicon, t);
+                (model, composed)
+            });
+            raw_score.observe(&hand, Some((&raw, print)), lexicon);
+            rules_score.observe(&hand, Some((&rules, print)), lexicon);
+            if let Some((model, composed)) = &predictions {
+                if let Some(s) = &mut model_score { s.observe(&hand, Some((model, print)), lexicon); }
+                if let Some(s) = &mut composed_score { s.observe(&hand, Some((composed, print)), lexicon); }
             }
         }
     }
-    println!("score-disambiguation: {hand_leaves} hand leaves ({undecided} of them sets, counted apart); auto contains the hand cell {contained} ({:.2}%), resolves it {resolved} ({:.2}%); hand cell outside the auto set {} (precision failures); another lexeme {}; out of reach (auto :amb or verbatim) {out_of_reach}; misaligned verses {misaligned}",
-        100.0 * contained as f64 / (hand_leaves - undecided).max(1) as f64,
-        100.0 * resolved as f64 / (hand_leaves - undecided).max(1) as f64,
-        wrong.len(),
-        other_lexeme.len());
-    for (rule, (ok, res, bad)) in &by_rule {
-        println!("  rule {rule:<16} hand cell inside {ok}, resolved {res}, excluded {bad}");
-    }
-    match &tagger {
-        Some(_) => {
-            let (chose, right, wrong, lexeme) = tagger_score;
-            println!("tagger: chose {chose} hand leaves; right {right} ({:.2}%), wrong cell {wrong}, wrong lexeme {lexeme}", 100.0 * right as f64 / chose.max(1) as f64);
-            let mut above_n = 0;
-            let mut above_r = 0;
-            for (bucket, (n, r)) in tagger_buckets.iter().rev() {
-                above_n += n;
-                above_r += r;
-                println!("  p ≥ 0.{bucket}: chose {above_n}, right {above_r} ({:.2}%); this tenth {n} chosen, {r} right", 100.0 * above_r as f64 / above_n.max(1) as f64);
-            }
-            println!("  errors by kind: {}", tagger_kinds.iter().map(|(k, n)| format!("{k} {n}")).collect::<Vec<_>>().join("; "));
-            for w in tagger_wrong.iter().take(if std::env::var_os("CS_ALL").is_some() { usize::MAX } else { 60 }) {
-                println!("  TAGGER {w}");
-            }
-        }
-        None => println!("tagger: off (CS_NO_TAGGER or no model)"),
-    }
-    for w in &wrong {
-        println!("  WRONG {w}");
-    }
-    for o in other_lexeme.iter().take(40) {
-        println!("  lexeme {o}");
-    }
+    raw_score.validate()?;
+    rules_score.validate()?;
+    if let Some(s) = &model_score { s.validate()?; }
+    if let Some(s) = &composed_score { s.validate()?; }
+    println!("{}", serde_json::to_string_pretty(&serde_json::json!({
+        "definition":"legacy-overlay-stage-compatibility-v1",
+        "population":"All entries in present overlay book files; absent overlay books listed separately. Legacy word_nodes projection drops punctuation and attached clitics; not a source-token census.",
+        "gold_status":"Existing hand annotations, not independently adjudicated gold. Lexeme IDs compared literally; any accepted gold cell establishes compatibility, not candidate precision.",
+        "alignment":"Exact whole-tree source rendering plus equal ordered projected-word renderings; failures remain in lexical_gold.",
+        "absent_overlay_books":absent_overlay_books,
+        "raw":raw_score,"rules_only":rules_score,"tagger_only":model_score,"rules_then_tagger":composed_score
+    }))?);
     Ok(())
 }
 

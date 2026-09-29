@@ -1,0 +1,175 @@
+{
+  "schema": 1,
+  "retrieved_date": "2026-09-06",
+  "sources": [
+    {
+      "id": "alypy-address",
+      "url": "https://www.ponomar.net/files/gama2/p153.htm",
+      "retrieved_url": "https://www.ponomar.net/files/gama2/p153.htm",
+      "sha256": "b2f81cd5d6fed21c27f01aefb5eef32e5872fbe17d21f6b399439820c8fb468f",
+      "path": "target/rewrite/upstream/alypy-address.html",
+      "bytes": 5271,
+      "status": "downloaded; content interpretation separately recorded",
+      "permission_status": "not established for redistribution; raw download stays in ignored target directory"
+    },
+    {
+      "id": "alypy-dative-absolute",
+      "url": "https://www.ponomar.net/files/gama2/p197.htm",
+      "retrieved_url": "https://www.ponomar.net/files/gama2/p197.htm",
+      "sha256": "a1db790c14c41047d81f761ebf770d508d64376b1511d893d37a8e5285a9ba3d",
+      "path": "target/rewrite/upstream/alypy-dative-absolute.html",
+      "bytes": 16411,
+      "status": "downloaded; content interpretation separately recorded",
+      "permission_status": "not established for redistribution; raw download stays in ignored target directory"
+    },
+    {
+      "id": "lrc-nouns",
+      "url": "https://lrc.la.utexas.edu/eieol/ocsol/10",
+      "retrieved_url": "https://lrc.la.utexas.edu/eieol/ocsol/10",
+      "sha256": "e48074ee67e730fcf2df8722605b409b0e5ade5d9a5875538fd0634ed236c9cb",
+      "path": "target/rewrite/upstream/lrc-nouns.html",
+      "bytes": 194404,
+      "status": "downloaded; content interpretation separately recorded",
+      "permission_status": "not established for redistribution; raw download stays in ignored target directory"
+    },
+    {
+      "id": "lrc-locative",
+      "url": "https://lrc.la.utexas.edu/eieol/ocsol/80",
+      "retrieved_url": "https://lrc.la.utexas.edu/eieol/ocsol/80",
+      "sha256": "e268fc26ea73c828d4743402fc69a364a4a747b0a2f7e7f09914af723a39c74c",
+      "path": "target/rewrite/upstream/lrc-locative.html",
+      "bytes": 222296,
+      "status": "downloaded; content interpretation separately recorded",
+      "permission_status": "not established for redistribution; raw download stays in ignored target directory"
+    },
+    {
+      "id": "lrc-supine",
+      "url": "https://lrc.la.utexas.edu/eieol/ocsol/100",
+      "retrieved_url": "https://lrc.la.utexas.edu/eieol/ocsol/100",
+      "sha256": "382920f3b1ecbf4882755f858479b33c46af39ad582b1d5232b85d634ea30c5b",
+      "path": "target/rewrite/upstream/lrc-supine.html",
+      "bytes": 319779,
+      "status": "downloaded; content interpretation separately recorded",
+      "permission_status": "not established for redistribution; raw download stays in ignored target directory"
+    },
+    {
+      "id": "ud-ocs",
+      "url": "https://universaldependencies.org/treebanks/cu_proiel/index.html",
+      "retrieved_url": "https://universaldependencies.org/treebanks/cu_proiel/index.html",
+      "sha256": "23d7f06f9cd9c16d631c29366af10c7b5adba5352e2206c23521bf2597e37120",
+      "path": "target/rewrite/upstream/ud-ocs.html",
+      "bytes": 60841,
+      "status": "downloaded; content interpretation separately recorded",
+      "permission_status": "not established for redistribution; raw download stays in ignored target directory"
+    },
+    {
+      "id": "alypy-consonant-clusters",
+      "url": "https://www.ponomar.net/files/gama2/p012.htm",
+      "retrieved_url": "https://www.ponomar.net/files/gama2/p012.htm",
+      "sha256": "199963be431c05e673e57ffdbd880513294ed61a099e029dbf8d7d7796af4184",
+      "path": "target/rewrite/upstream/alypy-noun-declension.html",
+      "bytes": 3762,
+      "status": "checked: §12 concerns consonant clusters, not the sought noun declension table; do not treat as noun evidence",
+      "permission_status": "not established; raw download ignored"
+    },
+    {
+      "id": "alypy-first-declension",
+      "url": "https://www.ponomar.net/files/gama2/p034.htm",
+      "retrieved_url": "https://www.ponomar.net/files/gama2/p034.htm",
+      "sha256": "58bd3eb844fe431e2af7e41f0789825b82da20425654a3a195870d0a1a3b5ecd",
+      "path": "target/rewrite/upstream/alypy-first-declension.html",
+      "bytes": 15207,
+      "status": "downloaded; content interpretation pending",
+      "permission_status": "not established for redistribution; raw download ignored"
+    },
+    {
+      "id": "alypy-adverbs",
+      "url": "https://www.ponomar.net/files/gama2/p105.htm",
+      "retrieved_url": "https://www.ponomar.net/files/gama2/p105.htm",
+      "sha256": "92d828af41d1c3a3b10ebf926ca2a109b7c83656ef15237ce0575b56a34435e1",
+      "path": "target/rewrite/upstream/alypy-adverbs.html",
+      "bytes": 2603,
+      "status": "downloaded; content interpretation pending",
+      "permission_status": "not established for redistribution; raw download ignored"
+    },
+    {
+      "id": "alypy-edition-description",
+      "url": "https://www.ponomar.net/files/gama2/toc.html",
+      "sha256": "b877635eab1520ebe8b6edfc2c3727a138870b27810db16800aa31a2755e21d6",
+      "path": "target/rewrite/upstream/alypy-toc.html",
+      "bytes": 27305,
+      "status": "Introduction states that this online transcription incorporates editorial corrections and modernization; it is not verified here against a printed facsimile.",
+      "permission_status": "not established for redistribution; raw download ignored"
+    },
+    {
+      "id": "alypy-byti",
+      "url": "https://www.ponomar.net/files/gama2/p081.htm",
+      "retrieved_url": "https://www.ponomar.net/files/gama2/p081.htm",
+      "sha256": "47e294d9a3c95926dd5b0746970c62b8ec8f60814ef1864d550baf055b6b327f",
+      "path": "target/rewrite/upstream/alypy-byti.html",
+      "bytes": 16123,
+      "status": "downloaded; interpretation pending. Revised online transcription; printed-edition comparison unverified.",
+      "permission_status": "not established for redistribution; raw download ignored"
+    },
+    {
+      "id": "alypy-archaic-verbs",
+      "url": "https://www.ponomar.net/files/gama2/p103.htm",
+      "retrieved_url": "https://www.ponomar.net/files/gama2/p103.htm",
+      "sha256": "9487c9903ff61e0fcf63127239cef1600d1c2d30f569e7f508593fd583882ffd",
+      "path": "target/rewrite/upstream/alypy-archaic-verbs.html",
+      "bytes": 9108,
+      "status": "downloaded; interpretation pending. Revised online transcription; printed-edition comparison unverified.",
+      "permission_status": "not established for redistribution; raw download ignored"
+    },
+    {
+      "id": "alypy-adverb-formation",
+      "url": "https://www.ponomar.net/files/gama2/p106.htm",
+      "retrieved_url": "https://www.ponomar.net/files/gama2/p106.htm",
+      "sha256": "08c244546dea122d1517366c45f482f0c5b309195205efd8437a99ff7a5c5488",
+      "path": "target/rewrite/upstream/alypy-adverb-formation.html",
+      "bytes": 10877,
+      "status": "downloaded; interpretation pending. Revised online transcription; printed-edition comparison unverified.",
+      "permission_status": "not established for redistribution; raw download ignored"
+    },
+    {
+      "id": "alypy-p053",
+      "url": "https://www.ponomar.net/files/gama2/p053.htm",
+      "retrieved_url": "https://www.ponomar.net/files/gama2/p053.htm",
+      "sha256": "68c82d6127d1d56799d5f1b2931ffcba7a1a8174d2d73b5147f5fe2f9277b373",
+      "path": "target/rewrite/upstream/alypy-p053.html",
+      "bytes": 9317,
+      "status": "fresh urllib retrieval; HTML text inspected. §53 and §106 supply selected adjective/adverb fixtures; §57 inspected as a comparison only. Revised online edition, not an authenticated facsimile.",
+      "permission_status": "not established for redistribution; raw download stays in ignored target directory"
+    },
+    {
+      "id": "alypy-p057",
+      "url": "https://www.ponomar.net/files/gama2/p057.htm",
+      "retrieved_url": "https://www.ponomar.net/files/gama2/p057.htm",
+      "sha256": "8b778c898222e82bf45f50c965300d5c8def824a8adf714e01b0d27ced623473",
+      "path": "target/rewrite/upstream/alypy-p057.html",
+      "bytes": 17738,
+      "status": "fresh urllib retrieval; HTML text inspected. §53 and §106 supply selected adjective/adverb fixtures; §57 inspected as a comparison only. Revised online edition, not an authenticated facsimile.",
+      "permission_status": "not established for redistribution; raw download stays in ignored target directory"
+    },
+    {
+      "id": "alypy-p106",
+      "url": "https://www.ponomar.net/files/gama2/p106.htm",
+      "retrieved_url": "https://www.ponomar.net/files/gama2/p106.htm",
+      "sha256": "08c244546dea122d1517366c45f482f0c5b309195205efd8437a99ff7a5c5488",
+      "path": "target/rewrite/upstream/alypy-p106.html",
+      "bytes": 10877,
+      "status": "fresh urllib retrieval; HTML text inspected. §53 and §106 supply selected adjective/adverb fixtures; §57 inspected as a comparison only. Revised online edition, not an authenticated facsimile.",
+      "permission_status": "not established for redistribution; raw download stays in ignored target directory"
+    },
+    {
+      "id": "alypy-p003",
+      "url": "https://www.ponomar.net/files/gama2/p003.htm",
+      "retrieved_url": "https://www.ponomar.net/files/gama2/p003.htm",
+      "sha256": "3ed721f48ddb854c5ebcb98b00245fec7712cb289aec3bf2f0ab3e5d20cd573d",
+      "path": "target/rewrite/upstream/alypy-p003.html",
+      "bytes": 10540,
+      "status": "Fresh urllib retrieval; titlo note and table inspected. Web tool failed with HTTP 400. Revised online transcription, not authenticated facsimile.",
+      "permission_status": "not established for redistribution; raw download stays in ignored target directory"
+    }
+  ]
+}

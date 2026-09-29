@@ -1,0 +1,117 @@
+{
+  "schema": 2,
+  "id": "lrc-o-stem-l-000024",
+  "purpose": "Literal teaching-table cells including alternatives; supplied stem and rule application, not blind productivity or independently adjudicated token analysis",
+  "source": {
+    "url": "https://lrc.la.utexas.edu/eieol/ocsol/10",
+    "section": "3.1 вѣко",
+    "sha256": "e48074ee67e730fcf2df8722605b409b0e5ade5d9a5875538fd0634ed236c9cb"
+  },
+  "forms": [
+    {
+      "pos": "n",
+      "cell": "nom.sg",
+      "surface": "вѣко"
+    },
+    {
+      "pos": "n",
+      "cell": "nom.du",
+      "surface": "вѣцѣ"
+    },
+    {
+      "pos": "n",
+      "cell": "nom.pl",
+      "surface": "вѣка"
+    },
+    {
+      "pos": "n",
+      "cell": "acc.sg",
+      "surface": "вѣко"
+    },
+    {
+      "pos": "n",
+      "cell": "acc.du",
+      "surface": "вѣцѣ"
+    },
+    {
+      "pos": "n",
+      "cell": "acc.pl",
+      "surface": "вѣка"
+    },
+    {
+      "pos": "n",
+      "cell": "gen.sg",
+      "surface": "вѣка"
+    },
+    {
+      "pos": "n",
+      "cell": "gen.du",
+      "surface": "вѣкѹ"
+    },
+    {
+      "pos": "n",
+      "cell": "gen.pl",
+      "surface": "вѣкъ"
+    },
+    {
+      "pos": "n",
+      "cell": "loc.sg",
+      "surface": "вѣцѣ"
+    },
+    {
+      "pos": "n",
+      "cell": "loc.du",
+      "surface": "вѣкѹ"
+    },
+    {
+      "pos": "n",
+      "cell": "loc.pl",
+      "surface": "вѣцѣхъ"
+    },
+    {
+      "pos": "n",
+      "cell": "dat.sg",
+      "surface": "вѣкѹ"
+    },
+    {
+      "pos": "n",
+      "cell": "dat.du",
+      "surface": "вѣкома"
+    },
+    {
+      "pos": "n",
+      "cell": "dat.pl",
+      "surface": "вѣкомъ"
+    },
+    {
+      "pos": "n",
+      "cell": "ins.sg",
+      "surface": "вѣкомь"
+    },
+    {
+      "pos": "n",
+      "cell": "ins.du",
+      "surface": "вѣкома"
+    },
+    {
+      "pos": "n",
+      "cell": "ins.pl",
+      "surface": "вѣкꙑ"
+    },
+    {
+      "pos": "n",
+      "cell": "voc.sg",
+      "surface": "вѣко"
+    },
+    {
+      "pos": "n",
+      "cell": "voc.du",
+      "surface": "вѣцѣ"
+    },
+    {
+      "pos": "n",
+      "cell": "voc.pl",
+      "surface": "вѣка"
+    }
+  ]
+}

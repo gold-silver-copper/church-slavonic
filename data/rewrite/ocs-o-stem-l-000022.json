@@ -1,0 +1,122 @@
+{
+  "schema": 2,
+  "id": "lrc-o-stem-l-000022",
+  "purpose": "Literal teaching-table cells including alternatives; supplied stem and rule application, not blind productivity or independently adjudicated token analysis",
+  "source": {
+    "url": "https://lrc.la.utexas.edu/eieol/ocsol/10",
+    "section": "3.1 чловѣкъ",
+    "sha256": "e48074ee67e730fcf2df8722605b409b0e5ade5d9a5875538fd0634ed236c9cb"
+  },
+  "forms": [
+    {
+      "pos": "n",
+      "cell": "nom.sg",
+      "surface": "чловѣкъ"
+    },
+    {
+      "pos": "n",
+      "cell": "nom.du",
+      "surface": "чловѣка"
+    },
+    {
+      "pos": "n",
+      "cell": "nom.pl",
+      "surface": "чловѣци"
+    },
+    {
+      "pos": "n",
+      "cell": "acc.sg",
+      "surface": "чловѣка"
+    },
+    {
+      "pos": "n",
+      "cell": "acc.du",
+      "surface": "чловѣка"
+    },
+    {
+      "pos": "n",
+      "cell": "acc.pl",
+      "surface": "чловѣкꙑ"
+    },
+    {
+      "pos": "n",
+      "cell": "gen.sg",
+      "surface": "чловѣка"
+    },
+    {
+      "pos": "n",
+      "cell": "gen.du",
+      "surface": "чловѣкѹ"
+    },
+    {
+      "pos": "n",
+      "cell": "gen.pl",
+      "surface": "чловѣкъ"
+    },
+    {
+      "pos": "n",
+      "cell": "loc.sg",
+      "surface": "чловѣцѣ"
+    },
+    {
+      "pos": "n",
+      "cell": "loc.du",
+      "surface": "чловѣкѹ"
+    },
+    {
+      "pos": "n",
+      "cell": "loc.pl",
+      "surface": "чловѣцѣхъ"
+    },
+    {
+      "pos": "n",
+      "cell": "dat.sg",
+      "surface": "чловѣкѹ"
+    },
+    {
+      "pos": "n",
+      "cell": "dat.sg",
+      "surface": "чловѣкови"
+    },
+    {
+      "pos": "n",
+      "cell": "dat.du",
+      "surface": "чловѣкома"
+    },
+    {
+      "pos": "n",
+      "cell": "dat.pl",
+      "surface": "чловѣкомъ"
+    },
+    {
+      "pos": "n",
+      "cell": "ins.sg",
+      "surface": "чловѣкомь"
+    },
+    {
+      "pos": "n",
+      "cell": "ins.du",
+      "surface": "чловѣкома"
+    },
+    {
+      "pos": "n",
+      "cell": "ins.pl",
+      "surface": "чловѣкꙑ"
+    },
+    {
+      "pos": "n",
+      "cell": "voc.sg",
+      "surface": "чловѣчє"
+    },
+    {
+      "pos": "n",
+      "cell": "voc.du",
+      "surface": "чловѣка"
+    },
+    {
+      "pos": "n",
+      "cell": "voc.pl",
+      "surface": "чловѣци"
+    }
+  ]
+}

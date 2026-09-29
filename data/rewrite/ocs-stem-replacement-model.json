@@ -1,0 +1,185 @@
+{
+  "version": 4,
+  "input": {
+    "evidence": [
+      {
+        "id": "e-otrok-pair",
+        "source": "https://lrc.la.utexas.edu/eieol/ocsol/20",
+        "location": "§6.1 Second Palatalization, отрокъ / отроци example",
+        "claim": "Teaching example pairs отрокъ with plural отроци. The stem segmentation and explicit rule-local к → ц replacement are assistant modeling decisions; no full paradigm or generalization claimed.",
+        "kind": "DescriptiveRule",
+        "review": "SourceChecked",
+        "source_sha256": "f19c61f88ac52c79991faa2a8ea83ddf8a9c0156a01489b01a2d22644d44b6ca",
+        "method": "Independently acquired upstream teaching source; supplied example pair, not independent held-out gold"
+      },
+      {
+        "id": "e-mog-pair",
+        "source": "https://lrc.la.utexas.edu/eieol/ocsol/20",
+        "location": "§6.1 First Palatalization, могѫ / можєши and мошти examples",
+        "claim": "Teaching examples supply могѫ / можєши and the infinitive мошти. Supplied base мог plus explicit rule-local г → ж replacement and endings represent the two present forms; no full verbal paradigm, productivity or independent gold claimed.",
+        "kind": "DescriptiveRule",
+        "review": "SourceChecked",
+        "source_sha256": "f19c61f88ac52c79991faa2a8ea83ddf8a9c0156a01489b01a2d22644d44b6ca",
+        "method": "Independently acquired upstream teaching source; supplied example pair, not independent held-out gold"
+      }
+    ],
+    "grammars": [
+      {
+        "id": "g-ocs-otrok-pair",
+        "description": "Selected OCS Cyrillic teaching pairs in LRC §6.1; nominative noun and present verb cells only",
+        "evidence": [
+          "e-otrok-pair",
+          "e-mog-pair"
+        ]
+      }
+    ],
+    "orthographies": [
+      {
+        "id": "o-lrc-otrok",
+        "description": "Literal unaccented Cyrillic spellings in two selected teaching pairs",
+        "compatible_grammars": [
+          "g-ocs-otrok-pair"
+        ],
+        "rules": [],
+        "evidence": [
+          "e-otrok-pair",
+          "e-mog-pair"
+        ]
+      }
+    ],
+    "paradigms": [
+      {
+        "id": "p-otrok-pair",
+        "grammar": "g-ocs-otrok-pair",
+        "pos": "n",
+        "rules": [
+          {
+            "id": "r-nom-sg",
+            "cell": [
+              "n",
+              "nom.sg"
+            ],
+            "stem": "base",
+            "suffix": "ъ",
+            "evidence": [
+              "e-otrok-pair"
+            ]
+          },
+          {
+            "id": "r-nom-pl",
+            "cell": [
+              "n",
+              "nom.pl"
+            ],
+            "stem": "base",
+            "stem_replacement": {
+              "from": "к",
+              "to": "ц",
+              "evidence": [
+                "e-otrok-pair"
+              ]
+            },
+            "suffix": "и",
+            "evidence": [
+              "e-otrok-pair"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "p-mog-pair",
+        "grammar": "g-ocs-otrok-pair",
+        "pos": "v",
+        "rules": [
+          {
+            "id": "r-pres-1-sg",
+            "cell": [
+              "v",
+              "pres.1.sg"
+            ],
+            "stem": "base",
+            "suffix": "ѫ",
+            "evidence": [
+              "e-mog-pair"
+            ]
+          },
+          {
+            "id": "r-pres-2-sg",
+            "cell": [
+              "v",
+              "pres.2.sg"
+            ],
+            "stem": "base",
+            "stem_replacement": {
+              "from": "г",
+              "to": "ж",
+              "evidence": [
+                "e-mog-pair"
+              ]
+            },
+            "suffix": "єши",
+            "evidence": [
+              "e-mog-pair"
+            ]
+          }
+        ]
+      }
+    ],
+    "lexemes": [
+      {
+        "id": "l-000020",
+        "displayed_lemma": "отрокъ",
+        "categories": [
+          {
+            "category": "Noun",
+            "evidence": [
+              "e-otrok-pair"
+            ]
+          }
+        ],
+        "paradigm": "p-otrok-pair",
+        "stems": [
+          {
+            "name": "base",
+            "text": "отрок",
+            "evidence": [
+              "e-otrok-pair"
+            ]
+          }
+        ],
+        "unavailable": [],
+        "relations": [],
+        "evidence": [
+          "e-otrok-pair"
+        ]
+      },
+      {
+        "id": "l-000021",
+        "displayed_lemma": "мошти",
+        "categories": [
+          {
+            "category": "Verb",
+            "evidence": [
+              "e-mog-pair"
+            ]
+          }
+        ],
+        "paradigm": "p-mog-pair",
+        "stems": [
+          {
+            "name": "base",
+            "text": "мог",
+            "evidence": [
+              "e-mog-pair"
+            ]
+          }
+        ],
+        "unavailable": [],
+        "relations": [],
+        "evidence": [
+          "e-mog-pair"
+        ]
+      }
+    ]
+  }
+}

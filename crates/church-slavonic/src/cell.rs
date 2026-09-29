@@ -93,6 +93,8 @@ pub enum VerbCell {
     Finite { tense: FiniteTense, person: Person, number: Number },
     Imperative { person: Person, number: Number },
     Infinitive,
+    /// Invariable supine; licensing is profile/paradigm-specific.
+    Supine,
     /// The l-participle (resultative), nominative only.
     LPart { gender: Gender, number: Number },
     Participle {
@@ -364,6 +366,7 @@ impl VerbCell {
                 format!("impv.{}.{}", person_name(*person), number_name(*number))
             }
             VerbCell::Infinitive => "inf".to_string(),
+            VerbCell::Supine => "sup".to_string(),
             VerbCell::LPart { gender, number } => {
                 format!("lpart.{}.{}", gender_name(*gender), number_name(*number))
             }
@@ -388,6 +391,7 @@ impl VerbCell {
         let parts: Vec<&str> = s.split('.').collect();
         Some(match parts.as_slice() {
             ["inf"] => VerbCell::Infinitive,
+            ["sup"] => VerbCell::Supine,
             ["impv", p, n] => VerbCell::Imperative { person: parse_person(p)?, number: parse_number(n)? },
             ["lpart", g, n] => VerbCell::LPart { gender: parse_gender(g)?, number: parse_number(n)? },
             ["part", t, v, s, g, n, c] => VerbCell::Participle {
@@ -541,6 +545,9 @@ impl Cell {
     pub fn imperative(person: Person, number: Number) -> Cell {
         Cell::Verb(VerbCell::Imperative { person, number })
     }
+    /// The supine, where licensed by the selected grammatical profile.
+    pub fn supine() -> Cell { Cell::Verb(VerbCell::Supine) }
+
     /// The infinitive.
     pub fn infinitive() -> Cell {
         Cell::Verb(VerbCell::Infinitive)
@@ -645,7 +652,7 @@ impl Cell {
             | Cell::Verb(VerbCell::Imperative { number, .. })
             | Cell::Verb(VerbCell::LPart { number, .. })
             | Cell::Verb(VerbCell::Participle { number, .. }) => Some(*number),
-            Cell::Verb(VerbCell::Infinitive) => None,
+            Cell::Verb(VerbCell::Infinitive | VerbCell::Supine) => None,
             Cell::Pron(c) => c.number,
             Cell::Adv(_) | Cell::Word => None,
         }
@@ -852,6 +859,7 @@ mod tests {
             VerbCell::Finite { tense: FiniteTense::Aorist, person: Person::Third, number: Number::Plural },
             VerbCell::Imperative { person: Person::Second, number: Number::Singular },
             VerbCell::Infinitive,
+            VerbCell::Supine,
             VerbCell::LPart { gender: Gender::Neuter, number: Number::Dual },
             VerbCell::Participle {
                 tense: PartTense::Past,

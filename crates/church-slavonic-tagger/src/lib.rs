@@ -217,14 +217,22 @@ impl Tagger {
             return None;
         }
         let n = u32::from_le_bytes(bytes[4..8].try_into().ok()?) as usize;
+        // Check the complete payload before allocating from an external count.
+        // A malformed eight-byte header must not request gigabytes of memory.
+        if n.checked_mul(12)?.checked_add(8)? != bytes.len() {
+            return None;
+        }
         let mut at = 8;
-        let mut weights = HashMap::with_capacity(n);
+        let mut weights = HashMap::new();
+        weights.try_reserve(n).ok()?;
         for _ in 0..n {
             let k = u64::from_le_bytes(bytes.get(at..at + 8)?.try_into().ok()?);
             at += 8;
             let w = f32::from_le_bytes(bytes.get(at..at + 4)?.try_into().ok()?);
             at += 4;
-            weights.insert(k, w);
+            if !w.is_finite() || weights.insert(k, w).is_some() {
+                return None;
+            }
         }
         Some(Tagger { weights })
     }

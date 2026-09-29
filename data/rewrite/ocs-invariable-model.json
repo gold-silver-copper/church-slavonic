@@ -1,0 +1,186 @@
+{
+  "version": 4,
+  "input": {
+    "evidence": [
+      {
+        "id": "e-lrc-invariable",
+        "source": "https://lrc.la.utexas.edu/eieol/ocsol/100",
+        "location": "§46.1, displayed infinitive/supine pairs",
+        "claim": "The six selected printed forms distinguish infinitive from supine. Stems and two suffix rules are supplied segmentation of these examples, not independently tested productive stem derivation.",
+        "kind": "DescriptiveRule",
+        "review": "SourceChecked",
+        "source_sha256": "382920f3b1ecbf4882755f858479b33c46af39ad582b1d5232b85d634ea30c5b",
+        "method": "Assistant reading of independently downloaded LRC teaching material; selected strings checked in HTML. No expert review or manuscript collation claimed."
+      }
+    ],
+    "grammars": [
+      {
+        "id": "g-ocs-lrc-invariable",
+        "description": "Selected OCS invariable forms from Krause and Slocum §46.1; other cells and recensions not licensed by this fixture.",
+        "evidence": [
+          "e-lrc-invariable"
+        ]
+      }
+    ],
+    "orthographies": [
+      {
+        "id": "o-lrc-invariable",
+        "description": "Preserve selected Cyrillic source spellings and absence of accent marks.",
+        "compatible_grammars": [
+          "g-ocs-lrc-invariable"
+        ],
+        "rules": [],
+        "evidence": [
+          "e-lrc-invariable"
+        ]
+      }
+    ],
+    "paradigms": [
+      {
+        "id": "p-invariable-hard",
+        "grammar": "g-ocs-lrc-invariable",
+        "pos": "v",
+        "rules": [
+          {
+            "id": "r-p-invariable-hard-inf",
+            "cell": [
+              "v",
+              "inf"
+            ],
+            "stem": "invariable",
+            "suffix": "ти",
+            "evidence": [
+              "e-lrc-invariable"
+            ]
+          },
+          {
+            "id": "r-p-invariable-hard-sup",
+            "cell": [
+              "v",
+              "sup"
+            ],
+            "stem": "invariable",
+            "suffix": "тъ",
+            "evidence": [
+              "e-lrc-invariable"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "p-invariable-soft",
+        "grammar": "g-ocs-lrc-invariable",
+        "pos": "v",
+        "rules": [
+          {
+            "id": "r-p-invariable-soft-inf",
+            "cell": [
+              "v",
+              "inf"
+            ],
+            "stem": "invariable",
+            "suffix": "ти",
+            "evidence": [
+              "e-lrc-invariable"
+            ]
+          },
+          {
+            "id": "r-p-invariable-soft-sup",
+            "cell": [
+              "v",
+              "sup"
+            ],
+            "stem": "invariable",
+            "suffix": "ть",
+            "evidence": [
+              "e-lrc-invariable"
+            ]
+          }
+        ]
+      }
+    ],
+    "lexemes": [
+      {
+        "id": "l-000008",
+        "displayed_lemma": "бити",
+        "paradigm": "p-invariable-hard",
+        "stems": [
+          {
+            "name": "invariable",
+            "text": "би",
+            "evidence": [
+              "e-lrc-invariable"
+            ]
+          }
+        ],
+        "unavailable": [],
+        "relations": [],
+        "evidence": [
+          "e-lrc-invariable"
+        ],
+        "categories": [
+          {
+            "category": "Verb",
+            "evidence": [
+              "e-lrc-invariable"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "l-000009",
+        "displayed_lemma": "мꙑти",
+        "paradigm": "p-invariable-hard",
+        "stems": [
+          {
+            "name": "invariable",
+            "text": "мꙑ",
+            "evidence": [
+              "e-lrc-invariable"
+            ]
+          }
+        ],
+        "unavailable": [],
+        "relations": [],
+        "evidence": [
+          "e-lrc-invariable"
+        ],
+        "categories": [
+          {
+            "category": "Verb",
+            "evidence": [
+              "e-lrc-invariable"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "l-000010",
+        "displayed_lemma": "рєшти",
+        "paradigm": "p-invariable-soft",
+        "stems": [
+          {
+            "name": "invariable",
+            "text": "рєш",
+            "evidence": [
+              "e-lrc-invariable"
+            ]
+          }
+        ],
+        "unavailable": [],
+        "relations": [],
+        "evidence": [
+          "e-lrc-invariable"
+        ],
+        "categories": [
+          {
+            "category": "Verb",
+            "evidence": [
+              "e-lrc-invariable"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

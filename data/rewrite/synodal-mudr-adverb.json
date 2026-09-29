@@ -1,0 +1,22 @@
+{
+  "schema": 2,
+  "id": "synodal-mudr-adverb",
+  "purpose": "Selected source-table reproduction and lexical ambiguity fixture, not held-out generalization.",
+  "source": {
+    "url": "https://www.ponomar.net/files/gama2/p106.htm",
+    "sha256": "08c244546dea122d1517366c45f482f0c5b309195205efd8437a99ff7a5c5488",
+    "location": "§106, adjective-derived adverb paragraph"
+  },
+  "forms": [
+    {
+      "pos": "x",
+      "cell": "word",
+      "surface": "мꙋ́дрѡ"
+    },
+    {
+      "pos": "x",
+      "cell": "word",
+      "surface": "мꙋ́дрѣ"
+    }
+  ]
+}

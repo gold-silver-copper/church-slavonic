@@ -36,6 +36,32 @@ impl fmt::Display for LexiconError {
 
 impl std::error::Error for LexiconError {}
 
+/// A candidate dataset that cannot form a consistent lexicon snapshot.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct LexiconBuildError {
+    pub lexeme_id: String,
+    pub problem: LexiconBuildProblem,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum LexiconBuildProblem {
+    EmptyIdentity,
+    DuplicateIdentity,
+    MixedProfile,
+    InvalidStress(String),
+    UnknownClass(String),
+    DuplicateField(String),
+    WrongCell(Cell),
+}
+
+impl fmt::Display for LexiconBuildError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "lexeme {:?}: {:?}", self.lexeme_id, self.problem)
+    }
+}
+
+impl std::error::Error for LexiconBuildError {}
+
 /// Why a lexeme has no form for a cell.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum InflectError {

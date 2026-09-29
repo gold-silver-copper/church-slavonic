@@ -1,26 +1,12 @@
-//! The Old Church Slavonic treebanks, read into typed cells.
+//! Legacy UD/PROIEL adapters into the current inflection cell schema.
+//! Original annotations and unsupported distinctions are not yet fully retained.
+//! Filename-based train/dev/test selection does not establish independence:
+//! consumers include import, training and regression diagnostics, and overlapping
+//! source ancestry requires a separate audit. Local archive identity establishes
+//! supplied bytes only, not linguistic authority, authenticity or permission.
 //!
-//! - `ud-ocs-proiel-r2.18`: UD_Old_Church_Slavonic-PROIEL, CoNLL-U. The
-//!   **train** split is an import source (institutional grant,
-//!   `references/TERMS.md`); the **dev/test** splits are held-out
-//!   evaluation only. The held-out property is structural: the loaders
-//!   select by file name, and nothing but `cargo xtask eval` reads the
-//!   dev/test files.
-//! - `syntacticus-20230428`: the PROIEL XML of every text whose `<source>`
-//!   is `language="chu"`. Evaluation only (its texts overlap the train
-//!   split, so it measures spelling robustness, not generalisation).
-//!
-//! Features: `Case`, `Number`, `Gender` (a list attests every gender
-//! named), `Degree`, `Variant=Short`, `Person`, `Mood`, `Tense` with
-//! `Aspect` (the aorist is `Tense=Past|Aspect=Perf`, the imperfect
-//! `Tense=Past|Aspect=Imp`), `VerbForm` (`Fin`/`Part`/`Inf`/`PartRes`;
-//! `Sup` is outside the schema), `PronType=Prs` for the personal pronoun.
-//! The PROIEL ten-letter `morphology` is person, number, tense, mood,
-//! voice, gender, case, degree, strength, inflection; strength `s` is the
-//! short form and `w` the long one.
-//!
-//! A feature the schema has no cell for (a subjunctive, a supine, an
-//! ambiguous `Case=Dat,Gen`) skips the token and is counted by reason.
+//! Archives pass through the bounded, content-verified staged cache in archive.rs.
+//! Mapping and skip behavior below remain legacy behavior pending migration.
 
 use church_slavonic::cell::{AdjCell, Cell, FiniteTense, NounCell, PartTense, Pos, PronCell, VerbCell};
 use church_slavonic::grammar::*;
@@ -29,7 +15,6 @@ use std::collections::BTreeMap;
 use std::error::Error;
 use std::fs;
 use std::path::{Path, PathBuf};
-use std::process::Command;
 
 /// One attested cell of a treebank: the lemma the annotators gave the
 /// token, the typed cell its features name, and the surface as written.
@@ -53,6 +38,8 @@ pub struct SequenceToken {
     /// a direct object (UD `obj`, PROIEL `obj`)
     pub object: bool,
     pub slots: Vec<usize>,
+    /// Original record, when provided by the adapter; never an inference feature.
+    pub source_record: Option<usize>,
 }
 
 /// A loaded treebank: its slots and the accounting of what was left out;
@@ -65,10 +52,29 @@ pub struct Corpus {
     pub slots: Vec<CorpusSlot>,
     pub skipped: BTreeMap<&'static str, u64>,
     pub sentences: Vec<Vec<SequenceToken>>,
+    pub observations: super::observations::Observations,
+    pub excluded_sources: Vec<super::observations::ExcludedDocument>,
 }
 
 impl Corpus {
-    fn skip(&mut self, reason: &'static str) {
+    /// Export original records and their legacy mapping as separate JSONL rows.
+    pub fn write_observations(&self, mut out: impl std::io::Write) -> std::io::Result<()> {
+        if self.observations.documents().is_empty() && self.excluded_sources.is_empty() { return Err(std::io::Error::new(std::io::ErrorKind::InvalidData,"original corpus records unavailable")); }
+        serde_json::to_writer(&mut out, &serde_json::json!({"schema":1,"type":"mapping_policy","definition":"legacy-corpus-cell-mapping-v2","corpus":self.label,"tokens":self.tokens,"skipped":self.skipped,"limitations":"Original lines are preserved; mapped labels retain legacy category folds, lowercased lemmas and cleaned surfaces. Neither annotations nor mappings are independently adjudicated gold."}))?;
+        writeln!(out)?;
+        for document in &self.excluded_sources {
+            serde_json::to_writer(&mut out, &serde_json::json!({"schema":1,"type":"excluded_source","document":document}))?;
+            writeln!(out)?;
+        }
+        self.observations.write_jsonl(&mut out)?;
+        for (id, slot) in self.slots.iter().enumerate() {
+            serde_json::to_writer(&mut out, &serde_json::json!({"schema":1,"type":"mapped_slot","id":id,"pos":slot.pos.tag(),"cell":slot.cell.name(),"lemma":slot.lemma,"surface":slot.surface}))?;
+            writeln!(out)?;
+        }
+        Ok(())
+    }
+
+    pub(crate) fn skip(&mut self, reason: &'static str) {
         *self.skipped.entry(reason).or_default() += 1;
     }
 
@@ -81,33 +87,22 @@ impl Corpus {
 pub const UD_PROIEL_SOURCE: &str = "ud-ocs-proiel-r2.18";
 pub const SYNTACTICUS_SOURCE: &str = "syntacticus-20230428";
 
-/// Unpack the one `.tar.gz` of a source directory into `artifacts_dir/
-/// treebanks/<name>` (once) and return it, or `None` when the source is
-/// not downloaded.
-fn unpacked(
-    sources_dir: &Path,
-    artifacts_dir: &Path,
-    name: &str,
-) -> Result<Option<PathBuf>, Box<dyn Error>> {
+/// Resolve exactly one source archive through the verified extraction cache.
+fn unpacked(sources_dir: &Path, artifacts_dir: &Path, name: &str) -> Result<Option<PathBuf>, Box<dyn Error>> {
     let source = sources_dir.join(name);
-    if !source.is_dir() {
-        return Ok(None);
-    }
-    let Some(tarball) = fs::read_dir(&source)?
-        .filter_map(|e| e.ok().map(|e| e.path()))
-        .find(|p| p.to_string_lossy().ends_with(".tar.gz"))
-    else {
-        return Ok(None);
+    let entries = match fs::read_dir(&source) {
+        Ok(entries) => entries,
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => return Ok(None),
+        Err(e) => return Err(e.into()),
     };
-    let into = artifacts_dir.join("treebanks").join(name);
-    if !into.is_dir() {
-        fs::create_dir_all(&into)?;
-        let status = Command::new("tar").arg("xzf").arg(&tarball).arg("-C").arg(&into).status()?;
-        if !status.success() {
-            return Err(format!("tar failed on {}", tarball.display()).into());
-        }
+    let mut archives = Vec::new();
+    for entry in entries {
+        let path = entry?.path();
+        if path.to_string_lossy().ends_with(".tar.gz") { archives.push(path); }
     }
-    Ok(Some(into))
+    if archives.is_empty() { return Err(format!("source directory {} contains no archive", source.display()).into()); }
+    if archives.len() != 1 { return Err(format!("source directory {} contains multiple archives", source.display()).into()); }
+    Ok(Some(super::archive::verified_extract(&archives[0], &artifacts_dir.join("treebanks-verified-v1").join(name))?))
 }
 
 fn files_with_extension(dir: &Path, extension: &str, out: &mut Vec<PathBuf>) -> Result<(), Box<dyn Error>> {
@@ -125,7 +120,7 @@ fn files_with_extension(dir: &Path, extension: &str, out: &mut Vec<PathBuf>) -> 
 
 /// A treebank surface, lowercased and with the editors' brackets removed
 /// (`дрѣ[вѣ]`, `въ]ньмемъ`, `христ(ос)ъ`).
-fn clean_surface(form: &str) -> String {
+pub(crate) fn clean_surface(form: &str) -> String {
     form.to_lowercase().chars().filter(|c| !matches!(c, '[' | ']' | '(' | ')')).collect()
 }
 
@@ -159,30 +154,79 @@ fn load_ud_proiel_split(
     files_with_extension(&root, "conllu", &mut files)?;
     files.retain(|f| f.file_stem().and_then(|s| s.to_str()).is_some_and(|s| s.ends_with("train") == train));
     for file in files {
-        let mut sentence: Vec<SequenceToken> = Vec::new();
-        for line in fs::read_to_string(&file)?.lines() {
-            if line.trim().is_empty() {
-                if !sentence.is_empty() {
-                    corpus.sentences.push(std::mem::take(&mut sentence));
-                }
-                continue;
-            }
-            let fields: Vec<&str> = line.split('\t').collect();
-            if fields.len() < 10 || fields[0].contains('-') || fields[0].contains('.') {
-                continue;
-            }
-            corpus.tokens += 1;
-            let feats: BTreeMap<&str, &str> =
-                fields[5].split('|').filter_map(|f| f.split_once('=')).collect();
-            let before = corpus.slots.len();
-            ud_token(&mut corpus, fields[1], fields[2], fields[3], &feats);
-            sentence.push(SequenceToken { surface: clean_surface(fields[1]), lemma: fields[2].to_lowercase(), object: fields[7] == "obj", slots: (before..corpus.slots.len()).collect() });
-        }
-        if !sentence.is_empty() {
-            corpus.sentences.push(sentence);
-        }
+        let mut text = String::new();
+        use std::io::Read;
+        fs::File::open(&file)?.take(64 * 1024 * 1024 + 1).read_to_string(&mut text)?;
+        append_conllu(&mut corpus, file.strip_prefix(&root)?.to_string_lossy().into_owned(), text)?;
     }
     Ok(Some(corpus))
+}
+
+/// Preserve the complete source before applying legacy cell mappings. Invalid
+/// rows remain explicit records; structurally valid word rows remain tokens even
+/// when their feature mapping fails. Raw labels are never overwritten.
+pub fn append_conllu(corpus: &mut Corpus, path: String, text: String) -> Result<(), Box<dyn Error>> {
+    use super::observations::{SourceDocument, SourceRecord, RecordKind};
+    let document = SourceDocument::new(path, text)?;
+    let mut records = Vec::new();
+    let slot_base = corpus.slots.len();
+    let mut parsed = Corpus::default();
+    let mut sentences = Vec::new();
+    let mut sentence = Vec::new();
+    let mut ids = std::collections::BTreeSet::new();
+    let mut offset = 0;
+    let first_record = corpus.observations.records().len();
+    for raw in document.text().split_inclusive('\n') {
+        if raw.len() > 64 * 1024 { return Err("source record byte limit".into()); }
+        if records.len() >= 1_000_000 { return Err("source record limit".into()); }
+        let line = raw.trim_end_matches(['\r', '\n']);
+        let fields: Vec<_> = line.split('\t').collect();
+        let id = fields[0];
+        let positive = |s: &str| !s.starts_with('0') && s.bytes().all(|b| b.is_ascii_digit()) && s.parse::<u64>().is_ok_and(|n| n > 0);
+        let kind = if line.is_empty() { RecordKind::Separator }
+            else if line.starts_with('#') { RecordKind::Comment }
+            else if fields.len() != 10 { RecordKind::Malformed }
+            else if positive(id) { RecordKind::Word }
+            else if id.split_once('-').is_some_and(|(a,b)| positive(a) && positive(b) && a.parse::<u64>().ok() < b.parse::<u64>().ok()) { RecordKind::Multiword }
+            else if id.split_once('.').is_some_and(|(a,b)| (a=="0" || positive(a)) && positive(b)) { RecordKind::EmptyNode }
+            else { RecordKind::Malformed };
+        let mut record = SourceRecord { source:0, start:offset, end:offset+raw.len(), kind, mapped_slots:Vec::new(), mapping_issue:None };
+        offset += raw.len();
+        if kind == RecordKind::Separator {
+            if !sentence.is_empty() { sentences.push(std::mem::take(&mut sentence)); }
+            ids.clear();
+        } else if kind == RecordKind::Malformed {
+            record.mapping_issue = Some("invalid CoNLL-U field count or ID".into());
+        } else if kind == RecordKind::Word {
+            parsed.tokens += 1;
+            let before = parsed.slots.len();
+            let old_skips = parsed.skipped.clone();
+            let mut feats = BTreeMap::new();
+            let valid_features = fields[5] == "_" || fields[5].split('|').all(|f| f.split_once('=').is_some_and(|(k,v)| !k.is_empty() && !v.is_empty() && feats.insert(k,v).is_none()));
+            if !ids.insert(id.parse::<u64>()?) {
+                parsed.skip("duplicate token ID");
+            } else if !valid_features {
+                parsed.skip("invalid feature field");
+            } else {
+                ud_token(&mut parsed, fields[1], fields[2], fields[3], &feats);
+            }
+            record.mapped_slots = (before..parsed.slots.len()).map(|i| slot_base+i).collect();
+            record.mapping_issue = parsed.skipped.iter().find(|(k,v)| **v > old_skips.get(*k).copied().unwrap_or(0)).map(|(k,_)| k.to_string());
+            if record.mapped_slots.is_empty() && record.mapping_issue.is_none() {
+                parsed.skip("no mapped cells");
+                record.mapping_issue = Some("no mapped cells".into());
+            }
+            sentence.push(SequenceToken { surface:clean_surface(fields[1]), lemma:fields[2].to_lowercase(), object:fields[7]=="obj", slots:record.mapped_slots.clone(), source_record:Some(first_record+records.len()) });
+        }
+        records.push(record);
+    }
+    if !sentence.is_empty() { sentences.push(sentence); }
+    corpus.observations.append(document, records)?;
+    corpus.tokens += parsed.tokens;
+    corpus.slots.extend(parsed.slots);
+    for (reason, count) in parsed.skipped { *corpus.skipped.entry(reason).or_default() += count; }
+    corpus.sentences.extend(sentences);
+    Ok(())
 }
 
 fn push(corpus: &mut Corpus, lemma: &str, pos: Pos, cell: impl Into<Cell>, surface: &str) {
@@ -197,6 +241,19 @@ fn push(corpus: &mut Corpus, lemma: &str, pos: Pos, cell: impl Into<Cell>, surfa
 fn ud_token(corpus: &mut Corpus, form: &str, lemma: &str, upos: &str, feats: &BTreeMap<&str, &str>) {
     if !matches!(upos, "NOUN" | "PROPN" | "ADJ" | "VERB" | "AUX" | "PRON") {
         return corpus.skip("part of speech outside the lexicon");
+    }
+    // These source categories carry no agreement number in the target cell.
+    // Original tense/voice/case annotations remain on their source records.
+    if matches!(upos, "VERB" | "AUX") {
+        let invariant = match feats.get("VerbForm") {
+            Some(&"Inf") => Some(VerbCell::Infinitive),
+            Some(&"Sup") => Some(VerbCell::Supine),
+            _ => None,
+        };
+        if let Some(cell) = invariant {
+            push(corpus, &lemma.to_lowercase(), Pos::Verb, cell, &clean_surface(form));
+            return;
+        }
     }
     let number = match feats.get("Number") {
         Some(&"Sing") => Number::Singular,
@@ -309,7 +366,6 @@ fn ud_token(corpus: &mut Corpus, form: &str, lemma: &str, upos: &str, feats: &BT
                         );
                     }
                 }
-                Some(&"Inf") => push(corpus, &lemma, Pos::Verb, VerbCell::Infinitive, &surface),
                 Some(&"PartRes") => {
                     if matches!(feats.get("Case"), Some(c) if *c != "Nom") {
                         return corpus.skip("verb: l-participle in an oblique case");
@@ -319,7 +375,6 @@ fn ud_token(corpus: &mut Corpus, form: &str, lemma: &str, upos: &str, feats: &BT
                         push(corpus, &lemma, Pos::Verb, VerbCell::LPart { gender, number }, &surface);
                     }
                 }
-                Some(&"Sup") => corpus.skip("verb: supine"),
                 _ => corpus.skip("verb: no verb form"),
             }
         }
@@ -482,59 +537,15 @@ pub fn load_syntacticus(sources_dir: &Path, artifacts_dir: &Path) -> Result<Opti
     let mut files = Vec::new();
     files_with_extension(&root, "xml", &mut files)?;
     for file in files {
-        let xml = fs::read_to_string(&file)?;
-        let is_ocs = xml
-            .find("<source ")
-            .map(|at| &xml[at..])
-            .and_then(|s| s.find('>').map(|end| &s[..end]))
-            .is_some_and(|tag| tag.contains("language=\"chu\""));
-        if !is_ocs {
-            continue;
-        }
-        let mut rest = xml.as_str();
-        let mut sentence: Vec<SequenceToken> = Vec::new();
-        while let Some(at) = rest.find("<token ") {
-            // a sentence boundary before this token
-            if rest[..at].contains("<sentence") && !sentence.is_empty() {
-                corpus.sentences.push(std::mem::take(&mut sentence));
-            }
-            let tag = &rest[at..];
-            let Some(end) = tag.find('>') else { break };
-            let tag = &tag[..end];
-            rest = &rest[at + end + 1..];
-            let attribute = |name: &str| {
-                let key = format!(" {name}=\"");
-                let start = tag.find(&key)? + key.len();
-                let value = &tag[start..];
-                Some(unescape(&value[..value.find('"')?]))
-            };
-            let (Some(form), Some(lemma), Some(pos), Some(morphology)) =
-                (attribute("form"), attribute("lemma"), attribute("part-of-speech"), attribute("morphology"))
-            else {
-                continue;
-            };
-            corpus.tokens += 1;
-            let before = corpus.slots.len();
-            proiel_token(&mut corpus, &form, &lemma, &pos, &morphology);
-            let object = attribute("relation").is_some_and(|r| r == "obj");
-            sentence.push(SequenceToken { surface: clean_surface(&form), lemma: lemma.to_lowercase(), object, slots: (before..corpus.slots.len()).collect() });
-        }
-        if !sentence.is_empty() {
-            corpus.sentences.push(std::mem::take(&mut sentence));
-        }
+        use std::io::Read;
+        let mut xml = String::new();
+        fs::File::open(&file)?.take(64 * 1024 * 1024 + 1).read_to_string(&mut xml)?;
+        super::proiel::append_xml(&mut corpus, file.strip_prefix(&root)?.to_string_lossy().into_owned(), xml)?;
     }
     Ok(Some(corpus))
 }
 
-fn unescape(text: &str) -> String {
-    text.replace("&amp;", "&")
-        .replace("&lt;", "<")
-        .replace("&gt;", ">")
-        .replace("&quot;", "\"")
-        .replace("&apos;", "'")
-}
-
-fn proiel_token(corpus: &mut Corpus, form: &str, lemma: &str, pos: &str, morphology: &str) {
+pub(crate) fn proiel_token(corpus: &mut Corpus, form: &str, lemma: &str, pos: &str, morphology: &str) {
     if !matches!(
         pos,
         "Nb" | "Ne" | "A-" | "V-" | "Pp" | "Pk" | "Pd" | "Pi" | "Pr" | "Px" | "Ps" | "Pt" | "Py" | "Pc"
@@ -547,6 +558,11 @@ fn proiel_token(corpus: &mut Corpus, form: &str, lemma: &str, pos: &str, morphol
     }
     let (person, number, tense, mood, voice, gender, case_letter, degree, strength) =
         (m[0], m[1], m[2], m[3], m[4], m[5], m[6], m[7], m[8]);
+    if pos == "V-" && matches!(mood, 'n' | 'u') {
+        let cell = if mood == 'n' { VerbCell::Infinitive } else { VerbCell::Supine };
+        push(corpus, &lemma.to_lowercase(), Pos::Verb, cell, &clean_surface(form));
+        return;
+    }
     let number = match number {
         's' => Number::Singular,
         'd' => Number::Dual,
@@ -638,7 +654,6 @@ fn proiel_token(corpus: &mut Corpus, form: &str, lemma: &str, pos: &str, morphol
                     push(corpus, &lemma, Pos::Verb, VerbCell::Participle { tense, voice, series, gender, number, case }, &surface);
                 }
             }
-            'n' => push(corpus, &lemma, Pos::Verb, VerbCell::Infinitive, &surface),
             's' => corpus.skip("verb: subjunctive"),
             _ => corpus.skip("verb: mood outside the schema"),
         },

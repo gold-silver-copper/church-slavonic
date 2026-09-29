@@ -1,0 +1,22 @@
+{
+  "id": "lrc-ocs-6.1-mog-pair-supplied-development-example",
+  "forms": [
+    {
+      "pos": "v",
+      "cell": "pres.1.sg",
+      "surface": "могѫ"
+    },
+    {
+      "pos": "v",
+      "cell": "pres.2.sg",
+      "surface": "можєши"
+    }
+  ],
+  "schema": 2,
+  "purpose": "Supplied teaching pair and assistant segmentation; rule application, not independent productivity evaluation",
+  "source": {
+    "url": "https://lrc.la.utexas.edu/eieol/ocsol/20",
+    "section": "6.1",
+    "sha256": "f19c61f88ac52c79991faa2a8ea83ddf8a9c0156a01489b01a2d22644d44b6ca"
+  }
+}

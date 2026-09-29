@@ -19,6 +19,11 @@ church-slavonic-tagger = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 unicode-normalization = { workspace = true }
+sha2 = "0.10.9"
+tar = "0.4.46"
+flate2 = "1.1.10"
+tempfile = "3.27.0"
+quick-xml = "0.41.0"
 
 [lints]
 workspace = true

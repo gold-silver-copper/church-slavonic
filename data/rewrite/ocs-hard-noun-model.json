@@ -1,0 +1,349 @@
+{
+  "version": 4,
+  "input": {
+    "evidence": [
+      {
+        "id": "e-grammar",
+        "source": "https://lrc.la.utexas.edu/eieol/ocsol/10",
+        "location": "3.1, masculine hard-stem nouns, city paradigm",
+        "claim": "The listed suffixes realize the displayed nominal cells in this pedagogical paradigm.",
+        "kind": "DescriptiveRule",
+        "review": "SourceChecked",
+        "source_sha256": "e48074ee67e730fcf2df8722605b409b0e5ade5d9a5875538fd0634ed236c9cb",
+        "method": "Assistant transcription checked against independently downloaded HTML; no expert review claimed."
+      },
+      {
+        "id": "e-spelling",
+        "source": "https://lrc.la.utexas.edu/eieol/ocsol/10",
+        "location": "3.1, city paradigm table",
+        "claim": "Render the table’s Cyrillic spellings unchanged; no further editorial substitutions or accents.",
+        "kind": "EditorialPrescription",
+        "review": "SourceChecked",
+        "source_sha256": "e48074ee67e730fcf2df8722605b409b0e5ade5d9a5875538fd0634ed236c9cb",
+        "method": "Assistant transcription checked against independently downloaded HTML; no expert review claimed."
+      },
+      {
+        "id": "e-lexeme",
+        "source": "https://lrc.la.utexas.edu/eieol/ocsol/10",
+        "location": "3.1, city paradigm lemma and forms",
+        "claim": "The fixture lexeme has displayed lemma градъ and stem град. This is a pedagogical paradigm, not an individual token attestation.",
+        "kind": "LexicalAssertion",
+        "review": "SourceChecked",
+        "source_sha256": "e48074ee67e730fcf2df8722605b409b0e5ade5d9a5875538fd0634ed236c9cb",
+        "method": "Assistant transcription checked against independently downloaded HTML; no expert review claimed."
+      }
+    ],
+    "grammars": [
+      {
+        "id": "g-ocs-lrc-hard-masculine",
+        "description": "OCS pedagogical masculine hard-stem city paradigm, Krause and Slocum §3.1; no claim of complete OCS coverage.",
+        "evidence": [
+          "e-grammar"
+        ]
+      }
+    ],
+    "orthographies": [
+      {
+        "id": "o-lrc-cyrillic",
+        "description": "Exact Cyrillic spelling of the LRC table, without supplied accent marks.",
+        "compatible_grammars": [
+          "g-ocs-lrc-hard-masculine"
+        ],
+        "rules": [],
+        "evidence": [
+          "e-spelling"
+        ]
+      }
+    ],
+    "paradigms": [
+      {
+        "id": "p-hard-masculine-city",
+        "grammar": "g-ocs-lrc-hard-masculine",
+        "pos": "n",
+        "rules": [
+          {
+            "cell": [
+              "n",
+              "nom.sg"
+            ],
+            "stem": "base",
+            "suffix": "ъ",
+            "evidence": [
+              "e-grammar"
+            ],
+            "id": "r-nom.sg"
+          },
+          {
+            "cell": [
+              "n",
+              "nom.du"
+            ],
+            "stem": "base",
+            "suffix": "а",
+            "evidence": [
+              "e-grammar"
+            ],
+            "id": "r-nom.du"
+          },
+          {
+            "cell": [
+              "n",
+              "nom.pl"
+            ],
+            "stem": "base",
+            "suffix": "и",
+            "evidence": [
+              "e-grammar"
+            ],
+            "id": "r-nom.pl"
+          },
+          {
+            "cell": [
+              "n",
+              "acc.sg"
+            ],
+            "stem": "base",
+            "suffix": "ъ",
+            "evidence": [
+              "e-grammar"
+            ],
+            "id": "r-acc.sg"
+          },
+          {
+            "cell": [
+              "n",
+              "acc.du"
+            ],
+            "stem": "base",
+            "suffix": "а",
+            "evidence": [
+              "e-grammar"
+            ],
+            "id": "r-acc.du"
+          },
+          {
+            "cell": [
+              "n",
+              "acc.pl"
+            ],
+            "stem": "base",
+            "suffix": "ꙑ",
+            "evidence": [
+              "e-grammar"
+            ],
+            "id": "r-acc.pl"
+          },
+          {
+            "cell": [
+              "n",
+              "gen.sg"
+            ],
+            "stem": "base",
+            "suffix": "а",
+            "evidence": [
+              "e-grammar"
+            ],
+            "id": "r-gen.sg"
+          },
+          {
+            "cell": [
+              "n",
+              "gen.du"
+            ],
+            "stem": "base",
+            "suffix": "ѹ",
+            "evidence": [
+              "e-grammar"
+            ],
+            "id": "r-gen.du"
+          },
+          {
+            "cell": [
+              "n",
+              "gen.pl"
+            ],
+            "stem": "base",
+            "suffix": "ъ",
+            "evidence": [
+              "e-grammar"
+            ],
+            "id": "r-gen.pl"
+          },
+          {
+            "cell": [
+              "n",
+              "loc.sg"
+            ],
+            "stem": "base",
+            "suffix": "ѣ",
+            "evidence": [
+              "e-grammar"
+            ],
+            "id": "r-loc.sg"
+          },
+          {
+            "cell": [
+              "n",
+              "loc.du"
+            ],
+            "stem": "base",
+            "suffix": "ѹ",
+            "evidence": [
+              "e-grammar"
+            ],
+            "id": "r-loc.du"
+          },
+          {
+            "cell": [
+              "n",
+              "loc.pl"
+            ],
+            "stem": "base",
+            "suffix": "ѣхъ",
+            "evidence": [
+              "e-grammar"
+            ],
+            "id": "r-loc.pl"
+          },
+          {
+            "cell": [
+              "n",
+              "dat.sg"
+            ],
+            "stem": "base",
+            "suffix": "ѹ",
+            "evidence": [
+              "e-grammar"
+            ],
+            "id": "r-dat.sg"
+          },
+          {
+            "cell": [
+              "n",
+              "dat.du"
+            ],
+            "stem": "base",
+            "suffix": "ома",
+            "evidence": [
+              "e-grammar"
+            ],
+            "id": "r-dat.du"
+          },
+          {
+            "cell": [
+              "n",
+              "dat.pl"
+            ],
+            "stem": "base",
+            "suffix": "омъ",
+            "evidence": [
+              "e-grammar"
+            ],
+            "id": "r-dat.pl"
+          },
+          {
+            "cell": [
+              "n",
+              "ins.sg"
+            ],
+            "stem": "base",
+            "suffix": "омь",
+            "evidence": [
+              "e-grammar"
+            ],
+            "id": "r-ins.sg"
+          },
+          {
+            "cell": [
+              "n",
+              "ins.du"
+            ],
+            "stem": "base",
+            "suffix": "ома",
+            "evidence": [
+              "e-grammar"
+            ],
+            "id": "r-ins.du"
+          },
+          {
+            "cell": [
+              "n",
+              "ins.pl"
+            ],
+            "stem": "base",
+            "suffix": "ꙑ",
+            "evidence": [
+              "e-grammar"
+            ],
+            "id": "r-ins.pl"
+          },
+          {
+            "cell": [
+              "n",
+              "voc.sg"
+            ],
+            "stem": "base",
+            "suffix": "є",
+            "evidence": [
+              "e-grammar"
+            ],
+            "id": "r-voc.sg"
+          },
+          {
+            "cell": [
+              "n",
+              "voc.du"
+            ],
+            "stem": "base",
+            "suffix": "а",
+            "evidence": [
+              "e-grammar"
+            ],
+            "id": "r-voc.du"
+          },
+          {
+            "cell": [
+              "n",
+              "voc.pl"
+            ],
+            "stem": "base",
+            "suffix": "и",
+            "evidence": [
+              "e-grammar"
+            ],
+            "id": "r-voc.pl"
+          }
+        ]
+      }
+    ],
+    "lexemes": [
+      {
+        "id": "l-000001",
+        "displayed_lemma": "градъ",
+        "paradigm": "p-hard-masculine-city",
+        "stems": [
+          {
+            "name": "base",
+            "text": "град",
+            "evidence": [
+              "e-lexeme"
+            ]
+          }
+        ],
+        "unavailable": [],
+        "relations": [],
+        "evidence": [
+          "e-lexeme"
+        ],
+        "categories": [
+          {
+            "category": "Noun",
+            "evidence": [
+              "e-lexeme"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,415 @@
+{
+  "schema": 1,
+  "findings": [
+    {
+      "id": "A01",
+      "revision": "09d14f3efc41d20503dd46d9391ca17a15a791c3",
+      "baseline_evidence": "data/rewrite/baseline-probe-output.txt",
+      "evidence_status": "reproduced constructed API behavior",
+      "observed": "Query uppercase `РА́БЪ` against a custom noun whose generated print is lowercase `ра́бъ`: `exact=true`.",
+      "location_and_invariant": "`src/analyze.rs::analyze` lowercases the query before comparing. Separate exact bytes, Unicode equivalence, and case-insensitive matching.",
+      "disposition": "regression implemented",
+      "regression": "matching_policies_do_not_call_case_or_accent_changes_exact",
+      "linguistic_validity": "not established by API probe"
+    },
+    {
+      "id": "A02",
+      "revision": "09d14f3efc41d20503dd46d9391ca17a15a791c3",
+      "baseline_evidence": "data/rewrite/baseline-probe-output.txt",
+      "evidence_status": "reproduced constructed API behavior",
+      "observed": "A one-lexeme custom dictionary with ID `audit.n` analyzes `ра́бъ` in two cells, but `Sentence::parse` returns no reading and retains the text verbatim.",
+      "location_and_invariant": "`src/sentence/node.rs::leaf_form` uses `Lexicon::of`, and the lifter checks rendering against it. Pass the same snapshot through analysis and rendering; fallback must not hide a dependency error.",
+      "disposition": "regression implemented",
+      "regression": "custom_lexicon_is_used_by_lifting_and_rendering",
+      "linguistic_validity": "not established by API probe"
+    },
+    {
+      "id": "A03",
+      "revision": "09d14f3efc41d20503dd46d9391ca17a15a791c3",
+      "baseline_evidence": "data/rewrite/baseline-probe-output.txt",
+      "evidence_status": "reproduced constructed API behavior",
+      "observed": "Rendering `verbatim_tree(\"  xyz\\tqrs\\n\")` gives `\"xyz qrs\"` when the escapes denote a tab and newline.",
+      "location_and_invariant": "`src/sentence/node.rs::tokenize` uses `split_whitespace`. Preserve source separators or declare a normalized-text API; do not call this exact reproduction.",
+      "disposition": "partial",
+      "regression": "observed_source_survives_analysis_edits_with_all_separators",
+      "linguistic_validity": "not established by API probe"
+    },
+    {
+      "id": "A04",
+      "revision": "09d14f3efc41d20503dd46d9391ca17a15a791c3",
+      "baseline_evidence": "data/rewrite/baseline-probe-output.txt",
+      "evidence_status": "reproduced constructed API behavior",
+      "observed": "A parsed noun with no class and an explicit `nom.sg=ра́бъ` override successfully inflects that cell; `cells()` and `all_forms()` are empty.",
+      "location_and_invariant": "`src/inflect.rs` accepts the override before class validation but enumerates the class only. Reject inconsistent construction or make generation, enumeration, and indexing agree.",
+      "disposition": "regression implemented",
+      "regression": "explicit_only_cells_are_indexed_and_enumerated",
+      "linguistic_validity": "not established by API probe"
+    },
+    {
+      "id": "A05",
+      "revision": "09d14f3efc41d20503dd46d9391ca17a15a791c3",
+      "baseline_evidence": "data/rewrite/baseline-probe-output.txt",
+      "evidence_status": "reproduced constructed API behavior",
+      "observed": "Give an `N1t` noun 260 distinct nominative variants (`р` + repeated `а` + `б`). Analyze the generated form at index 256: the returned alternative is 255 and resolves to a different form.",
+      "location_and_invariant": "`src/analyze.rs::Index::build` uses `alt.min(255) as u8`. Reject overflow or use a sufficient representation; never saturate an identity.",
+      "disposition": "regression implemented",
+      "regression": "alternative_identity_is_not_saturated_at_255",
+      "linguistic_validity": "not established by API probe"
+    },
+    {
+      "id": "A06",
+      "revision": "09d14f3efc41d20503dd46d9391ca17a15a791c3",
+      "baseline_evidence": "data/rewrite/baseline-probe-output.txt",
+      "evidence_status": "reproduced constructed API behavior",
+      "observed": "`corpus_matches(\"лесъ\", \"лсъ\", Noun)` and `corpus_matches(\"нести\", \"ести\", Verb)` both return true.",
+      "location_and_invariant": "Tools `src/eval.rs::corpus_matches` elides internal `е` broadly and permits initial `н` for verbs too. These are matcher counterexamples, not claims that the constructed forms are attested. Separate these tolerances from exact correctness and verify each linguistic justification.",
+      "disposition": "open",
+      "regression": null,
+      "linguistic_validity": "not established by API probe"
+    },
+    {
+      "id": "A07",
+      "revision": "09d14f3efc41d20503dd46d9391ca17a15a791c3",
+      "baseline_evidence": "data/rewrite/baseline-probe-output.txt",
+      "evidence_status": "reproduced constructed API behavior",
+      "observed": "A TSV noun with stress `not_a_stress_paradigm` parses successfully; its subsequent `inflect` panics.",
+      "location_and_invariant": "`src/lexicon.rs::parse_lines` and `src/inflect.rs::stress_spec`. Validate references before exposing a usable lexeme; malformed external data must yield a structured error.",
+      "disposition": "partial",
+      "regression": "malformed_stress_fails_at_the_input_boundary",
+      "linguistic_validity": "not established by API probe"
+    },
+    {
+      "id": "A08",
+      "revision": "09d14f3efc41d20503dd46d9391ca17a15a791c3",
+      "baseline_evidence": "data/rewrite/baseline-probe-output.txt",
+      "evidence_status": "reproduced constructed API behavior",
+      "observed": "Two ambiguous noun tokens whose annotated lemmas are fabricated still count twice as gold present when their POS/cells match candidates.",
+      "location_and_invariant": "Tools `src/tagger.rs::examples` matches only POS/cell; `Candidate` has no lexeme identity. Name this a feature-level measure and add a separate joint lexical measure.",
+      "disposition": "open",
+      "regression": null,
+      "linguistic_validity": "not established by API probe"
+    },
+    {
+      "id": "A09",
+      "revision": "09d14f3efc41d20503dd46d9391ca17a15a791c3",
+      "baseline_evidence": "data/rewrite/baseline-probe-output.txt",
+      "evidence_status": "reproduced constructed API behavior",
+      "observed": "In the same fixture, an example's `next_lemma` is the fabricated gold lemma and the second example's `prev_choice` is the first token's gold-selected accusative.",
+      "location_and_invariant": "Tools `src/tagger.rs::examples`, used for held-out scoring, constructs oracle context. Evaluate deployment with predicted/available context; keep oracle scores diagnostic only.",
+      "disposition": "open",
+      "regression": null,
+      "linguistic_validity": "not established by API probe"
+    },
+    {
+      "id": "A10",
+      "revision": "09d14f3efc41d20503dd46d9391ca17a15a791c3",
+      "baseline_evidence": "data/rewrite/baseline-probe-output.txt",
+      "evidence_status": "reproduced constructed API behavior",
+      "observed": "Two custom closed lexemes `one.x` and `two.x` with surface `же` produce two exact readings, but `Lifter::lift_core` returns `Fn(\"же\"), ClosedClass`.",
+      "location_and_invariant": "`src/sentence/lift.rs::lift_core` collapses closed readings. Preserve both lexical alternatives and report the ambiguity.",
+      "disposition": "partial: full closed alternatives survive AnalysisDocument JSON reload; legacy tree serialization still pending migration",
+      "regression": "closed_class_alternatives_are_still_ambiguous",
+      "linguistic_validity": "not established by API probe"
+    },
+    {
+      "id": "A11",
+      "revision": "09d14f3efc41d20503dd46d9391ca17a15a791c3",
+      "baseline_evidence": "data/rewrite/baseline-probe-output.txt",
+      "evidence_status": "reproduced constructed API behavior",
+      "observed": "A `CST1` payload with one feature of NaN weight and an extra trailing byte is accepted by `Tagger::from_bytes`.",
+      "location_and_invariant": "Tagger `src/lib.rs::from_bytes`. Validate finite weights, complete payload consumption, duplicate policy, and count/length consistency before allocation.",
+      "disposition": "regression implemented",
+      "regression": "crates/church-slavonic-tagger/tests/model_input.rs",
+      "linguistic_validity": "not established by API probe"
+    },
+    {
+      "id": "R-AUDIT-01",
+      "evidence_status": "reproduced and statically traced",
+      "observed": "Bundled что.pron has repeated variant groups. forms_with concatenates all groups for a cell.",
+      "location": "crates/church-slavonic/lexicon/syn/pronouns.tsv:63; crates/church-slavonic/src/inflect.rs::forms_with",
+      "disposition": "Rejected suspicion: repeated variant groups are additive, not duplicate singleton fields. Keep observations unchanged; reject duplicate overrides, stems, and variant weights instead."
+    },
+    {
+      "id": "R-AUDIT-02",
+      "evidence_status": "reproduced constructed model input; regression passes",
+      "location": "crates/church-slavonic/src/morphology.rs::generate; crates/church-slavonic-tools/tests/morphology_model.rs::unverified_restrictions_never_suppress_generated_candidates",
+      "observed": "An unverified restriction initially suppressed generated forms.",
+      "invariant": "Unverified exclusions retain otherwise licensed alternatives and remain visible as unresolved restrictions.",
+      "disposition": "fixed; targeted checks and clippy passed after separate review",
+      "revision": "working tree captured by current.json checked_source_sha256"
+    },
+    {
+      "id": "R-AUDIT-03",
+      "evidence_status": "constructed regression reproduced and fixed",
+      "observed": "Unbounded spelling replacements and incomplete retained-string accounting could exceed resource budgets. Per-token work limits also failed to bound a whole document.",
+      "location": "morphology.rs::realize/analyze_budgeted; document.rs::analyze_model; modeled_document.rs resource tests",
+      "disposition": "Explicit caller-owned limits now cover expansion, long identifiers, query bytes, retained results and cumulative document work. Export writing stops at the record byte limit."
+    },
+    {
+      "id": "R-AUDIT-04",
+      "evidence_status": "constructed trust-boundary regression reproduced and fixed",
+      "observed": "A serialized SourceChecked label could authorize an exclusion; even a trusted citation did not validate a new restriction attached to it.",
+      "location": "morphology.rs::build_with_verification/generate; morphology_model.rs reported_review_status and trusted_citation tests",
+      "disposition": "Artifact loading grants no exclusion authority. The caller must supply both full verified evidence records and the exact lexeme/restriction assertion. Unregistered restrictions remain unresolved and preserve generated alternatives."
+    },
+    {
+      "id": "R-AUDIT-05",
+      "revision": "09d14f3efc41d20503dd46d9391ca17a15a791c3 plus current working tree",
+      "evidence_status": "statically traced evaluator defect with passing regression controls after correction",
+      "location": "crates/church-slavonic-tools/src/model_artifact.rs::check_fixture",
+      "observed": "The old checker hard-coded noun cells, counted only wholly Licensed output, and appended a failure for every query whenever any model inventory cell was unresolved. A known form with a missing alternative could not pass the fixture gate.",
+      "invariant": "Concrete expected-form retention and inventory completeness are distinct measures. Missing requested forms remain in the denominator.",
+      "disposition": "Fixture rows now name POS/cell; Partial and unresolved-restriction outputs preserve known-form credit. Deduplicated inventory_issues expose unknown coverage. Tests establish 21/21 with one missing alternative and 20/21 when a requested form is missing. Ten supplied verb forms use the same checker and document codec."
+    },
+    {
+      "id": "R-AUDIT-06",
+      "revision": "09d14f3efc41d20503dd46d9391ca17a15a791c3 plus current working tree",
+      "evidence_status": "representation gap statically traced; classification and consumer regressions now pass",
+      "location": "morphology::LexicalEntry and document/analysis_document candidate export",
+      "observed": "The evidence-bearing model represented inflection POS but had no separate lexical classification. An adverb using the uninflected Word cell exported only x, and source-backed competing classifications had no field.",
+      "disposition": "Required evidence-linked CategoryAssertion alternatives on modeled lexemes; document candidates export them independently from cell/POS. Runtime schema 2 and document schema 3 reject older contracts. A selected adjective/adverb source fixture retains lexical ambiguity through generation, analysis and reload. Full inflection ontology and contextual category selection remain open."
+    },
+    {
+      "id": "R-AUDIT-07",
+      "revision": "09d14f3efc41d20503dd46d9391ca17a15a791c3 plus current working tree",
+      "evidence_status": "representation gap and consumer boundary statically traced; new regression controls pass",
+      "location": "morphology/abbreviation.rs; document.rs; abbreviation_model.rs",
+      "observed": "The new model had no abbreviation mechanism; the legacy titlo table was globally embedded. Treating an expansion as interchangeable printed text can also erase an editorial distinction: the independently retrieved Alypy §3 note contrasts contracted бг҃ъ with uncontracted бо́гъ for an idol.",
+      "disposition": "Profile-local, lexeme/cell-bound spelling rules now retain expansion provenance, support multiple candidates, and explicitly control full-form printing. Single-segment and NFC output requirements reject tokenization/canonicalization mismatches. Growth and candidate limits are tested. Legacy table migration, multi-segment expansions and witness-token attestations remain incomplete."
+    },
+    {
+      "id": "R-AUDIT-08",
+      "revision": "09d14f3efc41d20503dd46d9391ca17a15a791c3 plus current working tree",
+      "evidence_status": "representation gap statically traced; source binding, annotation isolation and resource-boundary controls pass",
+      "location": "morphology/observations.rs, source_observations.rs, analyze-witness consumer",
+      "observed": "Evidence records did not bind observed surfaces to verified source bytes or separate source annotations from generated cell licensing. Review of the new archive also found missing charges for identifier copies and supplied raw-source records.",
+      "disposition": "Caller-supplied bytes must match declared source digests; exact source/witness/observation spans are validated. Original and unmapped/contradictory annotations survive. Generation links only exact lexeme/cell/profile/surface assertions and does not invent forms or spread support across syncretism. Budget accounting was corrected and tested. Source authenticity, annotation correctness, general extraction and corpus migration remain separate obligations."
+    },
+    {
+      "id": "R-AUDIT-09",
+      "revision": "09d14f3efc41d20503dd46d9391ca17a15a791c3 plus current working tree",
+      "evidence_status": "Static review, seven passing evaluator controls, and full local UD dev/test regression run",
+      "location": "tagger/deployment.rs; tagger.rs::curve; main.rs tag-sequence",
+      "observed": "Old heldout feature examples used annotation-derived context and excluded missing correct candidates. Review of the new scorer found annotation slots could be orphaned or reused across identical surfaces.",
+      "invariant": "Deployment predictions use available surfaces and model/lexicon information only. Every source token remains visible and every mapped annotation slot belongs to exactly one token. Feature scoring does not imply lexical identification.",
+      "disposition": "Shared surface-only predictor and separate fixed-denominator scorer; controlled oracle diagnostic; unique/exhaustive annotation ownership gates; explicit lemma-string retention. Seven controls and all 39133 local heldout rows pass. Overlay transfer remains an explicitly named oracle diagnostic; overlay scorer, broad recall matching, source label/schema gaps and artifact contamination remain unresolved."
+    },
+    {
+      "id": "R-AUDIT-10",
+      "revision": "09d14f3efc41d20503dd46d9391ca17a15a791c3 plus current working tree",
+      "evidence_status": "Static scorer audit, five passing controls, measured overlay stage report",
+      "location": "treebank/runner.rs::score_disambiguation; treebank/overlay_score.rs; tests/overlay_evaluation.rs",
+      "observed": "Old overlay scorer skipped misaligned units before lexical counts and ignored wrong lexemes when accepted gold had several cells. Its default output mixed constrained and tagger-selected trees under constraint precision; explicit function-word lexical IDs were excluded from lexical gold.",
+      "invariant": "Every annotation in the declared projected population is accounted for, accepted alternatives do not excuse a wrong lexical identity, and each inference stage has its own diagnostic.",
+      "disposition": "Four stage reports now share all 337 overlay units and 5042 lexical annotations. Five controls pass; missing sources, rendering/alignment failures and no lexical predictions remain visible. Explicit Fn IDs count as lexical gold. Full source-token accounting, original-span alignment, per-token failure traces, general loader validation and independent annotation adjudication remain open."
+    },
+    {
+      "id": "R-AUDIT-11",
+      "revision": "09d14f3efc41d20503dd46d9391ca17a15a791c3 plus current working tree",
+      "evidence_status": "Static source-unpacker trace; six regression controls; two real adapter loads; independent archive/cache byte comparison",
+      "location": "sources/ud.rs::unpacked; sources/archive.rs::verified_extract; tests/source_archive.rs",
+      "observed": "Old unpacker reused an extraction directory by existence, picked the first archive in filesystem order, suppressed directory-entry errors and delegated extraction without corpus-specific input bounds. Modified, incomplete or unrelated cached files could become evaluation/training inputs.",
+      "disposition": "Archive choice is unique or fails; sources are privately snapshotted and digest-addressed; every cache read is checked against actual archive files. New extraction publishes only after validation. Changed sources preserve old snapshots; malformed/cache-modified inputs fail. Six controls and both real corpora pass. Original-source authentication, artifact publication outside extraction, full source annotation migration and concurrent-mutation guarantees remain separate work."
+    },
+    {
+      "id": "R-AUDIT-12",
+      "revision": "09d14f3efc41d20503dd46d9391ca17a15a791c3 plus current working tree",
+      "evidence_status": "Static adapter audit, four observation controls, independent reconstruction of real consumer exports",
+      "location": "sources/ud.rs::append_conllu; sources/observations.rs; tests/corpus_observations.rs",
+      "observed": "The legacy adapter discarded comments, multiword/empty rows and malformed records, lowercased lemmas, and collapsed feature maps without retaining original labels or source locations. Global skip counts could not identify affected original rows.",
+      "disposition": "Immutable source documents and exact record partitions preserve all original CoNLL-U bytes. Word rows reference mapped slots separately; unsupported mappings, duplicate IDs/features and malformed records remain explicit. Consumer export reconstructs all three files and accounts for every mapped slot. Appends are staged and resource-bounded. Syntacticus XML, broader schema migration and independent linguistic adjudication remain incomplete."
+    },
+    {
+      "id": "R-AUDIT-13",
+      "revision": "09d14f3efc41d20503dd46d9391ca17a15a791c3 plus current working tree",
+      "evidence_status": "Static XML adapter trace, three XML controls, independently checked actual consumer export",
+      "location": "sources/proiel.rs::append_xml; sources/ud.rs::load_syntacticus; tests/proiel_observations.rs",
+      "observed": "String searches recognized only double-quoted attributes, treated tag-like substrings as structure, omitted missing-attribute tokens, and used replacement-based entity decoding that could decode twice and missed numeric references. Original XML labels/spans and excluded-file inventories were lost.",
+      "disposition": "XML event intake, bounded UTF-8 source preservation, original token/markup records, actual language/sentence boundaries, explicit missing-annotation and missing-surface statuses, file exclusion hashes and guarded transactional construction. Nine files reconstruct exactly; all 224990 XML tokens including 11332 nonsurface nodes and 77 excluded files accounted. Legacy cell ontology, full schema/dependency checks and independent linguistic review remain open."
+    },
+    {
+      "id": "R-AUDIT-14",
+      "revision": "09d14f3efc41d20503dd46d9391ca17a15a791c3 plus current working tree",
+      "evidence_status": "Schema and mapper trace; independently consulted teaching/tag sources; four controls; real source-to-cell export audit",
+      "location": "cell.rs::VerbCell; sources/ud.rs::ud_token/proiel_token; tests/invariable_verbs.rs",
+      "observed": "Supine was absent from the inherited cell enum. Both adapters required number before reaching infinitives or supines, excluding these ordinary invariable categories as no number. UD heldout lost 693 infinitives and 25 supines this way.",
+      "disposition": "Separate supine cell across codecs/model consumers; invariable mapping runs before agreement requirements in both adapters. Source features remain intact in observations. Six LRC supplied-stem forms reproduce exactly. Mapping v2 populations supersede v1 denominators; no statistical retraining, universal productive rule, or cross-profile licensing is claimed."
+    },
+    {
+      "id": "R-AUDIT-15",
+      "revision": "09d14f3efc41d20503dd46d9391ca17a15a791c3 plus working tree",
+      "evidence_status": "static consumer trace, five controlled tests, real UD and PROIEL conditional-generation runs",
+      "location": "tools/src/eval.rs::run/legacy_relaxed_generation; eval/generation.rs; tests/generation_evaluation.rs",
+      "observed": "Default eval reported held-out recall while using annotated lemmas, guessed fallback, widened cells and relaxed spelling acceptance. Missing sources could disappear; Synodal hand-rule report was labelled leave-one-out.",
+      "disposition": "Default corpus section now reports NFC-lemma-conditioned generation for exactly mapped cells with byte-exact and Unicode surface counts, no guessing or target broadening. Tokens, slots, unmapped inputs and unavailable data are explicit. Old relaxed function renamed as diagnostic. Full original-label and opaque-identity evaluation, morphology migration and source independence remain open."
+    },
+    {
+      "id": "R-AUDIT-16",
+      "revision": "09d14f3efc41d20503dd46d9391ca17a15a791c3 plus working tree",
+      "evidence_status": "Upstream teaching-source counterexample plus two reproduced failures and repaired cross-profile controls",
+      "location": "core sentence/rules.rs::disambiguate retired voc-drop/bare-voc; tools tests/vocative_retention.rs",
+      "observed": "Rules removed vocative cells or selected a different lexeme solely when no immediately adjacent imperative/interjection was represented. LRC lesson10 identifies a vocative address followed by indicative; controlled ambiguities exhibit both destructive operations.",
+      "disposition": "Retired both unsupported elimination rules across shared Sentence/treebank path. Retains alternatives rather than ranking by an unsupported premise. Does not validate other local rules or claim every retained analysis correct."
+    },
+    {
+      "id": "R-AUDIT-17",
+      "revision": "09d14f3efc41d20503dd46d9391ca17a15a791c3 plus working tree",
+      "evidence_status": "Static loss-of-history trace; three executable controls; actual CLI transition replay",
+      "location": "sentence/rules.rs::narrow/reduce; sentence/trace.rs; tools/context_trace.rs",
+      "observed": "Legacy notes preserve first from-cell set and concatenated rule names; multi-lexeme reduction retains a count. They cannot represent the successive operational states of rule decisions.",
+      "disposition": "Opt-in trace evaluates a copy, stores pre-update group state and proposed child at every successful local-rule update, preserves original source candidates separately, and exposes bounded JSON with recomputation-based reload. Ordinary in-place behavior retained for measured baseline. Complete linguistic premise/attachment representation, rejected attempts, source-to-tree address mapping and migration of all consumers remain incomplete."
+    },
+    {
+      "id": "R-AUDIT-18",
+      "revision": "09d14f3efc41d20503dd46d9391ca17a15a791c3 plus working tree",
+      "evidence_status": "Feature inventory inspection, independently downloaded teaching list, 45 checked cells and four targeted tests",
+      "location": "cell.rs Pos::Closed comment; morphology.rs LexicalCategory/Paradigm; data/rewrite/ocs-numeral-model.json; tests/numeral_model.rs",
+      "observed": "Legacy Closed description groups numerals among invariant forms. New model already supports separate lexical classifications and agreement-shaped cells; it need not force selected numerals to be invariant. Upstream §44 lists gender/number/case-varying forms of two, three and four.",
+      "disposition": "Added a bounded explicit runtime model using reusable pronominal agreement shape with Numeral/Adjective classifications and supplied stems. 45 readings/15 surfaces pass generation, analysis and source-document tests. General numeral ontology, construction syntax, broader migration and legacy NUM source mapping remain open."
+    },
+    {
+      "id": "R-AUDIT-19",
+      "revision": "09d14f3efc41d20503dd46d9391ca17a15a791c3 plus working tree",
+      "evidence_status": "Schema inspection, source-checked nominal numeral forms, typed assertion/serialization controls and actual CLI",
+      "location": "morphology.rs::LexicalEntry/GenderAssertion; document.rs::Candidate; tools analysis_document.rs version6; tests/lexical_gender.rs",
+      "observed": "Noun cells encode case and number but no gender, and modeled lexical entries previously had no typed lexical gender assertion. Source §44 nominal numerals require the distinction between grammatical singular/feminine and numeric quantity.",
+      "disposition": "Optional evidence-backed lexical gender alternatives are validated and retained through modeled analysis records without overriding cell agreement features. Added 13 sourced form rows for five through ten. Broader lexical property migration and contextual agreement remain open."
+    },
+    {
+      "id": "R-AUDIT-20",
+      "revision": "09d14f3efc41d20503dd46d9391ca17a15a791c3 plus working tree",
+      "evidence_status": "Independent teaching-source premise check, two reproduced failures, repaired controls and actual overlay-stage comparison",
+      "location": "sentence/rules.rs retired bare-loc; tests/locative_retention.rs; Sentence doctest and contextual trace controls",
+      "observed": "Missing local prepositional governor caused locative cell deletion and nonlocative lexeme selection. The source explicitly describes bare temporal locatives and locative complements of verbs. Allowing single-candidate locatives while eliminating ambiguous ones did not repair the unsupported premise.",
+      "disposition": "Removed bare-loc across shared Sentence/treebank rule path. Updated executable documentation and trace tests; measured retained ambiguity and composed-model changes. Other local rules and candidate-level linguistic adjudication remain incomplete."
+    },
+    {
+      "id": "R-AUDIT-21",
+      "revision": "09d14f3efc41d20503dd46d9391ca17a15a791c3 plus working tree",
+      "evidence_status": "Static implementation gap, independently acquired teaching pairs, tested rule application and consumer replay",
+      "location": "morphology.rs::CellRule/realize; morphology/stem.rs; tests/stem_replacement.rs",
+      "observed": "New model only concatenated a supplied stem and ending, requiring separate supplied allomorphs or inappropriate editorial rules for a stem-final alternation. Source §6.1 provides noun к/ц and verb г/ж examples.",
+      "disposition": "Added explicit final replacement with precise scope, validation, post-transformation stress semantics, distinct derivation trace, budgets and recordversion7. Four supplied source cells pass actual consumers. Full productive morphology, independent validation and precise positive evidence acceptance remain open."
+    },
+    {
+      "id": "R-AUDIT-22",
+      "revision": "09d14f3efc41d20503dd46d9391ca17a15a791c3 plus working tree",
+      "evidence_status": "Static direct-write/data-loss paths; seven executable controls including child process exit and existing nine TSV staging checks",
+      "location": "tools import/publication.rs; import/mod.rs write_outcome_at; crosscheck::write; refit::run_file; tests/import_publication.rs",
+      "observed": "Direct fs::write could truncate live lexicon outputs. ID-keyed outcome merge could hide duplicate input identities. Quarantine read errors were swallowed as absence and lexicon publication preceded quarantine preparation.",
+      "disposition": "Validated sibling staging and per-file atomic replacement integrated into the actual writers. Validate outcome identities before merging, propagate quarantine read errors, reject field separator injection, and prepare both outputs before publication. Seven controls pass; full multi-file transaction, concurrent-writer coordination, directory durability and remaining construction writers remain unresolved."
+    },
+    {
+      "id": "R-AUDIT-23",
+      "revision": "09d14f3efc41d20503dd46d9391ca17a15a791c3 plus working tree",
+      "evidence_status": "Static positive-acceptance gap, seven constructed controls, actual default consumer export",
+      "location": "morphology/acceptance.rs; morphology.rs generate; tools analysis_document.rs v8; tests/generation_acceptance.rs",
+      "observed": "Positive generation exposed evidence IDs and model-relative Licensed results but no separate exact-form caller acceptance dimension. Verified citation content did not establish its positive rule attachment.",
+      "disposition": "Ordinary generation/analysis/export now carry unreviewed claim keys by default. Caller-only policy accepts exact claims, records decision/method, invalidates altered data/attachments, preserves alternatives and missing inputs, and participates in document replay. No expert approval claimed. Positive lexical relation/category/gender acceptance and full dependency identity remain open."
+    },
+    {
+      "id": "R-AUDIT-24",
+      "revision": "09d14f3efc41d20503dd46d9391ca17a15a791c3 plus working tree",
+      "evidence_status": "Static lexical-acceptance gap, seven constructed controls, actual ordinary consumer export",
+      "location": "morphology/lexical_acceptance.rs; ModelAnalysis and document Candidate; tools source-document v9; tests/lexical_acceptance.rs",
+      "observed": "Generation acceptance did not qualify lexical category, gender or directed relation assertions, and ordinary analysis exported no reviewed lexical relation claim. Verified citation records alone did not validate these attachments.",
+      "disposition": "Added exact-claim caller lexical policy and reviewed lexical claims to ordinary modeled analysis/export/replay. Acceptance preserves alternatives and does not transfer to another assertion or generation. Changed relation targets/kinds/citations, moved decisions, forged records and bounds are checked. Full dependency closure, broader linguistic coverage and independent validation remain incomplete."
+    },
+    {
+      "id": "R-AUDIT-25",
+      "revision": "09d14f3efc41d20503dd46d9391ca17a15a791c3 plus working tree",
+      "evidence_status": "Additional morphology coverage; independently reacquired teaching tables, exact HTML transcription check, consumer tests",
+      "location": "data/rewrite/ocs-o-stem-model.json and three fixtures; tests/o_stem_paradigms.rs",
+      "observed": "The supplied stem-replacement examples covered only selected nominatives/present forms, not the contrasting full hard masculine/neuter teaching paradigms or alternative dative singular outputs.",
+      "disposition": "Added64listed form rows for чловѣкъ/мѣсто/вѣко with lexical gender and cell-local к→ц/ч changes, public generation/analysis/reload, preserved alternatives and syncretism. Frozen earlier отрокъ rules transfer to two additional supplied-stem outputs. Same teaching source already consulted: not blind productivity, independent gold or full legacy migration."
+    },
+    {
+      "id": "R-AUDIT-26",
+      "revision": "09d14f3efc41d20503dd46d9391ca17a15a791c3 plus working tree",
+      "evidence_status": "Additional finite morphology coverage, source-table transcription check, missing-input and matching-policy controls",
+      "location": "data/rewrite/ocs-finite-model.json and two fixtures; tests/finite_paradigms.rs",
+      "observed": "Modeled verbal examples did not cover these complete present/imperfect teaching tables, their person/number syncretism, and their preserved palatalization marks.",
+      "disposition": "Added38listed forms across two verbs with explicit separate supplied stems and cell-local present changes. Actual CLI checks38/38, byte-preserving document replay, preserved ambiguous cells and palatalization mark, and nine missing-present cells retained in denominator. Same source previously consulted; no blind productivity, full verbal coverage or legacy migration claim."
+    },
+    {
+      "id": "R-AUDIT-27",
+      "revision": "09d14f3efc41d20503dd46d9391ca17a15a791c3 plus working tree",
+      "evidence_status": "Reproduced constructed consumer behavior; unsupported attachment premise, not independently attested linguistic counterexample",
+      "location": "crates/church-slavonic/src/sentence/rules.rs::apply_rules; crates/church-slavonic-tools/tests/subject_retention.rs",
+      "observed": "Fresh isolated pre-change build: both new tests failed; nominative-only рабъ adjacent to supplied видѣ aor.2|3.sg caused ordinary Sentence::disambiguate to delete second person and record subj-verb. No attachment assertion was required.",
+      "invariant": "Nominative morphology and adjacency alone do not satisfy the V5 requirement for explicitly validated hard-exclusion premises. Retain the candidate set pending a supported contextual relation.",
+      "disposition": "Retired subj-verb hard exclusion; ordinary context and trace now retain both cells in both profiles and both orders. Two new tests plus seven context/vocative/locative regressions pass. Other rule exclusions and full context model remain open.",
+      "evidence": [
+        "target/rewrite/subject-before.log",
+        "target/rewrite/subject-targeted.log",
+        "target/rewrite/subject-overlay.json"
+      ],
+      "linguistic_validity": "Constructed diagnostic: not historical gold or proof that every retained second-person reading is correct. No adequate independently checked source example claimed.",
+      "overlay_delta": "Against previous locative-overlay diagnostic, raw and tagger-only unchanged. Rules compatibility unchanged; compatible_singleton2246->2220, extra_cell_candidates2814->2845. Composition compatible3419->3418/disjoint309->310. Individual changed annotations not independently adjudicated; not an accuracy improvement claim."
+    },
+    {
+      "id": "R-AUDIT-28",
+      "revision": "09d14f3efc41d20503dd46d9391ca17a15a791c3 plus working tree",
+      "evidence_status": "Measured repeated runtime generation; constructed equivalence and resource controls, not additional linguistic validation",
+      "location": "crates/church-slavonic/src/morphology.rs::analyze_budgeted; morphology/index.rs; tools/examples/model_runtime.rs; tools/tests/model_index.rs",
+      "observed": "Each modeled query previously enumerated every compatible lexeme/cell and regenerated forms. Constructed200lexeme/3800cell benchmark:40queries630654us. Same40-token CLI document exceeded the old shared generation-work budget.",
+      "disposition": "Existing Model::analyze and modeled document/CLI path now use bounded per-profile/policy indexes. Complete derivations, comparisons and uncertainty retained. Cold builds atomic in memory; generation acceptance invalidates cache; query budgets remain cumulative. Five new runtime controls and updated document-budget regression.",
+      "evidence": [
+        "target/rewrite/runtime-before.jsonl",
+        "target/rewrite/runtime-after.jsonl",
+        "target/rewrite/runtime-consumer-results.json",
+        "target/rewrite/runtime-final-targeted.log"
+      ],
+      "limits": "Local timings on duplicated teaching fixtures, not production-scale measurements or new linguistic coverage. No persisted compiled index or full dependency-closure identity. Full rewrite remains incomplete.",
+      "test_change": "work_limits_accumulate_across_document_tokens previously assumed800generation checks. Now tests that a one-query budget accepts one no-match token but rejects two, independently of cached construction. A separate test checks warm ambiguous candidate exhaustion."
+    },
+    {
+      "id": "R-AUDIT-29",
+      "revision": "09d14f3efc41d20503dd46d9391ca17a15a791c3 plus working tree",
+      "evidence_status": "Implemented compiled runtime transport with adversarial codec, policy and actual CLI controls; no new linguistic evidence",
+      "location": "crates/church-slavonic/src/morphology/index/persistence.rs; tools/src/compiled_index.rs; tools/src/main.rs compile-index/analyze --index; tests/compiled_index.rs",
+      "observed": "Model indexes were only in memory, requiring fresh generation in each process. A transport digest alone cannot establish compiler-output completeness or authorize review labels attached to changed claims.",
+      "disposition": "Version1 bounded record transport and caller-digest/runtime/model/policy compatibility checks; reference/count/duplicate validation before atomic cache installation; accepted-claim content requalification; staged file publication and actual analyze --index integration.7new tests plus13index/document tests pass; CLI cold/restored4000candidate exports byte-identical.",
+      "review_fix": "Separate static review identified the need to recompute accepted derivation claim identities on restore. A rehashed transport carrying changed underlying text under a copied accepted label now fails; the regression also verifies no partial installation. Clippy large enum variant fixed with boxed transport form.",
+      "evidence": [
+        "target/rewrite/compiled-targeted-final.log",
+        "target/rewrite/compiled-cli-results.json",
+        "target/rewrite/compiled-benchmark-final.jsonl",
+        "target/rewrite/compiled-linkage.txt"
+      ],
+      "limitations": "Completeness and unreviewed derivation semantics rely on caller-trusted compiler output, not a self-authenticating cache. Executable identity omits dynamic system libraries and concurrent replacement. Separate model-input loading, legacy migration, analyze-witness CLI cache options and production-scale validation remain open."
+    },
+    {
+      "id": "R-AUDIT-30",
+      "revision": "09d14f3efc41d20503dd46d9391ca17a15a791c3 plus working tree",
+      "evidence_status": "Actual CLI integration and constructed source-tampering controls; no new linguistic validation",
+      "location": "tools/src/main.rs analyze-witness/option helpers; tools/tests/compiled_witness_cli.rs",
+      "observed": "Registered-witness CLI loaded validated sources but could not install the compiled index already supported by ordinary modeled analysis.",
+      "disposition": "Added explicit paired index/digest options and matching-policy selection; original source validation runs before cache installation. Shared option parsing rejects duplicate index flags. Three executable tests plus12source/compiled regressions pass; existing two Synodal teaching witnesses produce identical cold/restored documents and annotation links.",
+      "evidence": [
+        "target/rewrite/witness-index-targeted.log",
+        "target/rewrite/witness-index-consumers.json",
+        "target/rewrite/witness-index-receipt.json"
+      ],
+      "limits": "Byte integrity and source-link preservation, not independent source authenticity or grammatical correctness. No core morphology change, legacy migration or full dependency-closure claim."
+    },
+    {
+      "id": "R-AUDIT-31",
+      "revision": "09d14f3efc41d20503dd46d9391ca17a15a791c3 plus working tree",
+      "evidence_status": "Actual legacy-source import, five constructed regression tests, source-backed CLI and cached consumer checks",
+      "location": "tools/src/migration.rs; tools/src/main.rs migrate-noun-records; tests/noun_migration.rs",
+      "observed": "Legacy records and class labels were not mapped into the new observation archive. Import parsing also accepted repeated variant weight delimiters as surface text.",
+      "disposition": "Selected source adapter preserves exact spans and unreviewed claims without changing grammatical data; rejects malformed count suffixes and failed imports before replacement. Three records imported; all12cold/restored witnesses agree;64original table rows retained.",
+      "evidence": [
+        "data/rewrite/noun-migration-audit.json",
+        "target/rewrite/noun-migration-final-targeted.log"
+      ],
+      "limits": [
+        "Proposed identities, inherited labels and forms remain unreviewed.",
+        "3490 records unselected; zero new validated lexemes.",
+        "Metadata and byte limits are not measured whole-process RSS or a shared analysis-work budget.",
+        "No upstream linguistic source authentication or new held-out examples in this engineering increment."
+      ]
+    }
+  ]
+}

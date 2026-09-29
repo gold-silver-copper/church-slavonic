@@ -1,10 +1,9 @@
-//! Training and scoring of the statistical tagger (V2.2 Part 5):
-//! `cargo xtask train-tagger` learns from the gold morphology of the Old
-//! Church Slavonic treebanks — UD PROIEL **train** and Syntacticus with
-//! the sentences UD holds out removed — and scores on UD dev+test over
-//! the tokens the analyzer gives several readings. The Bible is never
-//! training material. The model goes to `data/models/tagger.bin`, its
-//! record to `data/models/tagger.md`.
+//! Statistical feature tagger training and diagnostics. Training retains explicit
+//! teacher-forced/oracle contexts. Deployment evaluation performs raw lexical
+//! lookup and sequential prediction before reading corpus annotations. Legacy
+//! overlay transfer remains an oracle-context conditional diagnostic.
+
+pub mod deployment;
 
 use church_slavonic::cell::{Cell, FiniteTense, PronCell, VerbCell};
 use church_slavonic::orthography::comparison_key;
@@ -67,10 +66,12 @@ fn gold_cells(lemma: &str, cell: Cell, object: bool) -> Vec<Cell> {
     cells
 }
 
+/// Oracle-context, conditional feature examples for training/diagnostics.
+/// Never use these contexts as deployment evaluation inputs.
 /// The examples of a corpus: every token with several readings among
 /// which the gold reading stands; `all` counts the tokens with a gold
 /// reading among the readings at all (the denominator of the report).
-pub fn examples(lexicon: &Lexicon, corpus: &crate::sources::ud::Corpus) -> (Vec<Example>, usize, usize) {
+pub fn oracle_examples(lexicon: &Lexicon, corpus: &crate::sources::ud::Corpus) -> (Vec<Example>, usize, usize) {
     let mut out = Vec::new();
     let mut with_gold = 0;
     let mut tokens = 0;
@@ -128,46 +129,22 @@ fn accuracy(examples: &[Example], choose: impl Fn(&Example) -> usize) -> (usize,
     (right, examples.len())
 }
 
-fn pct(a: usize, b: usize) -> f64 {
-    100.0 * a as f64 / b.max(1) as f64
+fn pct(a: usize, b: usize) -> String {
+    if b == 0 { "unavailable".into() } else { format!("{:.2}%", 100.0 * a as f64 / b as f64) }
 }
 
-/// `cargo xtask train-tagger [--epochs n]`.
-/// `cargo xtask tagger-curve`: the bundled tagger's calibration on UD
-/// PROIEL dev+test (never the overlay, never the Bible) — for each tenth
-/// of its softmax share, how many tokens it chose there and how many
-/// right, cumulatively from the top. 3.2 Part 5: a threshold is applied
-/// only if the overlay's precision above it is ≥ 90%; the curve says
-/// whether the share means anything.
+/// Evaluate the bundled model on the existing UD dev/test adapter population.
+/// The score-share bins are feature-level diagnostics, not a claim of calibrated
+/// lexical probabilities or a new blind evaluation.
 pub fn curve() -> Result<(), Box<dyn Error>> {
     let root = crate::workspace_root();
-    let sources = root.join("references/downloads");
-    let artifacts = root.join("target/sources");
-    let lexicon = Lexicon::ocs();
-    let Some(heldout) = crate::sources::ud::load_ud_proiel_heldout(&sources, &artifacts)? else {
-        return Err("UD PROIEL absent under references/downloads".into());
+    let Some(heldout) = crate::sources::ud::load_ud_proiel_heldout(&root.join("references/downloads"), &root.join("target/sources"))? else {
+        return Err("UD PROIEL absent".into());
     };
-    let tagger = church_slavonic_tagger::Tagger::bundled();
-    if tagger.is_empty() {
-        return Err("no bundled tagger model".into());
-    }
-    let (dev_examples, _, _) = examples(lexicon, &heldout);
-    let mut buckets: std::collections::BTreeMap<u8, (usize, usize)> = std::collections::BTreeMap::new();
-    for e in &dev_examples {
-        let Some((i, p)) = tagger.choose(&e.ctx, &e.candidates) else { continue };
-        let b = buckets.entry(((p * 10.0).floor() as u8).min(9)).or_default();
-        b.0 += 1;
-        if i == e.gold {
-            b.1 += 1;
-        }
-    }
-    println!("tagger-curve: UD PROIEL dev+test, {} tokens with several readings", dev_examples.len());
-    let (mut above_n, mut above_r) = (0, 0);
-    for (bucket, (n, r)) in buckets.iter().rev() {
-        above_n += n;
-        above_r += r;
-        println!("  p ≥ 0.{bucket}: chose {above_n}, right {above_r} ({:.2}%); this tenth {n} chosen, {r} right ({:.2}%)", pct(above_r, above_n), pct(*r, *n));
-    }
+    let tagger = Tagger::bundled();
+    if tagger.is_empty() { return Err("no bundled tagger model".into()); }
+    let evaluation = deployment::evaluate(Lexicon::ocs(), &tagger, &heldout, church_slavonic::matching::MatchPolicy::LegacyOrthographic)?;
+    println!("{}", serde_json::to_string_pretty(&evaluation.report)?);
     Ok(())
 }
 
@@ -194,21 +171,23 @@ pub fn train(args: &[String]) -> Result<(), Box<dyn Error>> {
         s.sentences.retain(|sent| !held.contains(&sentence_key(sent)));
         dropped = before - s.sentences.len();
     }
-    let (mut train_examples, train_gold, train_tokens) = examples(lexicon, &train_ud);
+    let (mut train_examples, train_gold, train_tokens) = oracle_examples(lexicon, &train_ud);
     let ud_examples = train_examples.len();
     let mut synt_line = String::from("Syntacticus: absent");
     if let Some(s) = &syntacticus {
-        let (ex, gold, tokens) = examples(lexicon, s);
+        let (ex, gold, tokens) = oracle_examples(lexicon, s);
         synt_line = format!("Syntacticus: {} sentences ({dropped} held-out sentences removed), {tokens} annotated tokens, gold among the readings {gold}, examples with several readings {}", s.sentences.len(), ex.len());
         train_examples.extend(ex);
     }
-    let (dev_examples, dev_gold, dev_tokens) = examples(lexicon, &heldout);
+    let (dev_examples, dev_gold, dev_tokens) = oracle_examples(lexicon, &heldout);
+    if train_examples.is_empty() { return Err("training unavailable: no conditional training examples".into()); }
+    println!("The following legacy diagnostic uses oracle context and conditional POS/cell labels; it is not deployment accuracy.");
     println!("corpora loaded and analyzed in {:.1?}", started.elapsed());
     println!("UD PROIEL train: {} sentences, {train_tokens} annotated tokens, gold among the readings {train_gold}, examples with several readings {ud_examples}", train_ud.sentences.len());
     println!("{synt_line}");
-    println!("UD PROIEL dev+test: {} sentences, {dev_tokens} annotated tokens, gold among the readings {dev_gold} ({:.2}%), examples with several readings {}", heldout.sentences.len(), pct(dev_gold, dev_tokens), dev_examples.len());
+    println!("UD PROIEL dev+test: {} sentences, {dev_tokens} annotated tokens, gold among the readings {dev_gold} ({}), examples with several readings {}", heldout.sentences.len(), pct(dev_gold, dev_tokens), dev_examples.len());
     let (b, n) = accuracy(&dev_examples, |_| 0);
-    println!("baseline (the analyzer's first reading): {b}/{n} = {:.2}%", pct(b, n));
+    println!("oracle-conditional cohort baseline (the analyzer's first reading): {b}/{n} = {}", pct(b, n));
 
     let mut trainer = Trainer::default();
     let mut order: Vec<usize> = (0..train_examples.len()).collect();
@@ -229,8 +208,8 @@ pub fn train(args: &[String]) -> Result<(), Box<dyn Error>> {
                 right += 1;
             }
         }
-        println!("epoch {epoch}: training accuracy {right}/{} = {:.2}%", order.len(), pct(right, order.len()));
-        report.push(format!("epoch {epoch}: training accuracy {:.2}%", pct(right, order.len())));
+        println!("epoch {epoch}: training accuracy {right}/{} = {}", order.len(), pct(right, order.len()));
+        report.push(format!("epoch {epoch}: training accuracy {}", pct(right, order.len())));
     }
     let mut tagger = trainer.finish();
     // weights too small to move a decision go, for the model's size
@@ -241,7 +220,7 @@ pub fn train(args: &[String]) -> Result<(), Box<dyn Error>> {
         println!("pruned |w| < {prune}: {before} → {} features", tagger.weights.len());
     }
     let (r, n) = accuracy(&dev_examples, |e| tagger.choose(&e.ctx, &e.candidates).map(|(i, _)| i).unwrap_or(0));
-    println!("tagger on UD dev+test, tokens with several readings: {r}/{n} = {:.2}% (baseline {:.2}%)", pct(r, n), pct(b, n));
+    println!("oracle conditional feature score on UD dev+test, tokens with several readings: {r}/{n} = {} (baseline {})", pct(r, n), pct(b, n));
     // by number of candidates
     let mut by_size: std::collections::BTreeMap<usize, (usize, usize)> = std::collections::BTreeMap::new();
     for e in &dev_examples {
@@ -253,7 +232,7 @@ pub fn train(args: &[String]) -> Result<(), Box<dyn Error>> {
         }
     }
     for (k, (a, t)) in &by_size {
-        println!("  {} readings: {a}/{t} = {:.2}%", if *k == 6 { "6+".to_string() } else { k.to_string() }, pct(*a, *t));
+        println!("  {} readings: {a}/{t} = {}", if *k == 6 { "6+".to_string() } else { k.to_string() }, pct(*a, *t));
     }
     // by part of speech (the gold reading's)
     let mut by_pos: std::collections::BTreeMap<&'static str, (usize, usize, usize)> = std::collections::BTreeMap::new();
@@ -269,16 +248,18 @@ pub fn train(args: &[String]) -> Result<(), Box<dyn Error>> {
     }
     let mut pos_lines = Vec::new();
     for (pos, (a, b, t)) in &by_pos {
-        println!("  {pos:<6} {a}/{t} = {:.2}% (first reading {:.2}%)", pct(*a, *t), pct(*b, *t));
-        pos_lines.push(format!("{pos} {a}/{t} = {:.2}% (first reading {:.2}%)", pct(*a, *t), pct(*b, *t)));
+        println!("  {pos:<6} {a}/{t} = {} (first reading {})", pct(*a, *t), pct(*b, *t));
+        pos_lines.push(format!("{pos} {a}/{t} = {} (first reading {})", pct(*a, *t), pct(*b, *t)));
     }
     println!("trained and scored in {:.1?}", started.elapsed());
+    let deployment = deployment::evaluate(lexicon, &tagger, &heldout, church_slavonic::matching::MatchPolicy::LegacyOrthographic)?;
+    println!("Deployment-context evaluation: {}", serde_json::to_string_pretty(&deployment.report)?);
     let model_path = root.join("data/models/tagger.bin");
     let bytes = tagger.to_bytes();
     std::fs::write(&model_path, &bytes)?;
     println!("model: {} features, {} bytes → {}", tagger.weights.len(), bytes.len(), model_path.display());
     let record = format!(
-        "# The tagger model\n\nTrained by `cargo xtask train-tagger --epochs {epochs}{}` on {} (never on the Bible).\n\n- UD PROIEL train: {} sentences, {train_tokens} annotated tokens\n- {synt_line}\n- examples (tokens with several readings, the gold among them): {}\n- {}\n- UD PROIEL dev+test, tokens with several readings: {r}/{n} = {:.2}% (the analyzer's first reading: {:.2}%)\n- by part of speech: {}\n- features {}, {} bytes\n\nHashes in `tagger.sha256` (the model and the corpora it was trained on).\n",
+        "# The tagger model\n\nOracle-context, conditional POS/cell diagnostics below are not deployment accuracy.\n\nTrained by `cargo xtask train-tagger --epochs {epochs}{}` on {} (never on the Bible).\n\n- UD PROIEL train: {} sentences, {train_tokens} annotated tokens\n- {synt_line}\n- examples (tokens with several readings, the gold among them): {}\n- {}\n- UD PROIEL dev+test, tokens with several readings: {r}/{n} = {} (the analyzer's first reading: {})\n- by part of speech: {}\n- features {}, {} bytes\n\nHashes in `tagger.sha256` (the model and the corpora it was trained on).\n",
         if prune > 0.0 { format!(" --prune {prune}") } else { String::new() },
         chrono_date(),
         train_ud.sentences.len(),
@@ -290,6 +271,7 @@ pub fn train(args: &[String]) -> Result<(), Box<dyn Error>> {
         tagger.weights.len(),
         bytes.len()
     );
+    let record = format!("{record}\nThe conditional scores above use oracle context and POS/cell-only labels, not deployment inputs.\n\nDeployment-context report (existing adapter labels; not a new blind evaluation):\n```json\n{}\n```\n", serde_json::to_string_pretty(&deployment.report)?);
     std::fs::write(root.join("data/models/tagger.md"), record)?;
     let _ = Tagger::default();
     Ok(())
@@ -455,6 +437,7 @@ pub fn rule_examples(lexicon: &Lexicon, dir: &std::path::Path, book_names: &[Str
 /// on the same examples as the baseline. The shipped model stays the
 /// OCS-only one.
 pub fn transfer(args: &[String]) -> Result<(), Box<dyn Error>> {
+    println!("ORACLE-CONTEXT CONDITIONAL DIAGNOSTIC: overlay contexts use hand-selected previous choices. These scores are not deployment accuracy.");
     let epochs: usize = args.iter().position(|a| a == "--epochs").and_then(|i| args.get(i + 1)).and_then(|v| v.parse().ok()).unwrap_or(8);
     let root = crate::workspace_root();
     let sources = root.join("references/downloads");
@@ -472,9 +455,9 @@ pub fn transfer(args: &[String]) -> Result<(), Box<dyn Error>> {
     if let Some(s) = syntacticus.as_mut() {
         s.sentences.retain(|sent| !held.contains(&sentence_key(sent)));
     }
-    let (mut ocs_examples, _, _) = examples(ocs, &train_ud);
+    let (mut ocs_examples, _, _) = oracle_examples(ocs, &train_ud);
     if let Some(s) = &syntacticus {
-        ocs_examples.extend(examples(ocs, s).0);
+        ocs_examples.extend(oracle_examples(ocs, s).0);
     }
     let synodal = Lexicon::synodal();
     let overlay = overlay_examples(synodal)?;
@@ -505,7 +488,7 @@ pub fn transfer(args: &[String]) -> Result<(), Box<dyn Error>> {
     }
     let bundled = Tagger::bundled();
     let (b_right, b_n) = accuracy_pairs(&overlay, |e| bundled.choose(&e.ctx, &e.candidates).map(|(i, _)| i).unwrap_or(0));
-    println!("the bundled OCS-only model on the overlay's examples: {b_right}/{b_n} = {:.2}%", pct(b_right, b_n));
+    println!("the bundled OCS-only model on the overlay's examples: {b_right}/{b_n} = {}", pct(b_right, b_n));
     let folds = 5;
     let mut total = (0usize, 0usize);
     let mut total_ocs_only = (0usize, 0usize);
@@ -530,7 +513,7 @@ pub fn transfer(args: &[String]) -> Result<(), Box<dyn Error>> {
             let test_ex: Vec<(String, Example)> = test.iter().map(|(c, e)| (c.clone(), Example { ctx: e.ctx.clone(), candidates: e.candidates.clone(), gold: e.gold })).collect();
             let (rr, _) = accuracy_pairs(&test_ex, |e| tagger_rules.choose(&e.ctx, &e.candidates).map(|(i, _)| i).unwrap_or(0));
             let (rb, _) = accuracy_pairs(&test_ex, |e| tagger_both.choose(&e.ctx, &e.candidates).map(|(i, _)| i).unwrap_or(0));
-            println!("fold {}: OCS + the rules' examples {rr}/{} = {:.2}%; OCS + rules + the other folds {rb}/{} = {:.2}%", f + 1, test_ex.len(), pct(rr, test_ex.len()), test_ex.len(), pct(rb, test_ex.len()));
+            println!("fold {}: OCS + the rules' examples {rr}/{} = {}; OCS + rules + the other folds {rb}/{} = {}", f + 1, test_ex.len(), pct(rr, test_ex.len()), test_ex.len(), pct(rb, test_ex.len()));
             total_rules.0 += rr;
             total_rules.1 += test_ex.len();
             total_both.0 += rb;
@@ -538,16 +521,16 @@ pub fn transfer(args: &[String]) -> Result<(), Box<dyn Error>> {
         }
         let (r, n) = accuracy_pairs(&test.iter().map(|(c, e)| (c.clone(), Example { ctx: e.ctx.clone(), candidates: e.candidates.clone(), gold: e.gold })).collect::<Vec<_>>(), |e| tagger_with.choose(&e.ctx, &e.candidates).map(|(i, _)| i).unwrap_or(0));
         let (r0, _) = accuracy_pairs(&test.iter().map(|(c, e)| (c.clone(), Example { ctx: e.ctx.clone(), candidates: e.candidates.clone(), gold: e.gold })).collect::<Vec<_>>(), |e| tagger_ocs.choose(&e.ctx, &e.candidates).map(|(i, _)| i).unwrap_or(0));
-        println!("fold {}: test {} ({} examples, {} overlay training examples): OCS + overlay {r}/{n} = {:.2}%; OCS only {r0}/{n} = {:.2}%", f + 1, test_chapters.iter().map(|c| c.as_str()).collect::<Vec<_>>().join(", "), n, train_overlay.len(), pct(r, n), pct(r0, n));
+        println!("fold {}: test {} ({} examples, {} overlay training examples): OCS + overlay {r}/{n} = {}; OCS only {r0}/{n} = {}", f + 1, test_chapters.iter().map(|c| c.as_str()).collect::<Vec<_>>().join(", "), n, train_overlay.len(), pct(r, n), pct(r0, n));
         total.0 += r;
         total.1 += n;
         total_ocs_only.0 += r0;
         total_ocs_only.1 += n;
     }
     if rules_source {
-        println!("five-fold with the rules' examples ({}): OCS + rules {}/{} = {:.2}%; OCS + rules + the other folds {}/{} = {:.2}%", rule_examples_all.len(), total_rules.0, total_rules.1, pct(total_rules.0, total_rules.1), total_both.0, total_both.1, pct(total_both.0, total_both.1));
+        println!("five-fold with the rules' examples ({}): OCS + rules {}/{} = {}; OCS + rules + the other folds {}/{} = {}", rule_examples_all.len(), total_rules.0, total_rules.1, pct(total_rules.0, total_rules.1), total_both.0, total_both.1, pct(total_both.0, total_both.1));
     }
-    println!("five-fold over the overlay: OCS + the other folds {}/{} = {:.2}%; OCS only, retrained the same way {}/{} = {:.2}%; the bundled model {:.2}% — measured, not shipped ({:.1?})", total.0, total.1, pct(total.0, total.1), total_ocs_only.0, total_ocs_only.1, pct(total_ocs_only.0, total_ocs_only.1), pct(b_right, b_n), started.elapsed());
+    println!("five-fold over the overlay: OCS + the other folds {}/{} = {}; OCS only, retrained the same way {}/{} = {}; the bundled model {} — measured, not shipped ({:.1?})", total.0, total.1, pct(total.0, total.1), total_ocs_only.0, total_ocs_only.1, pct(total_ocs_only.0, total_ocs_only.1), pct(b_right, b_n), started.elapsed());
     Ok(())
 }
 

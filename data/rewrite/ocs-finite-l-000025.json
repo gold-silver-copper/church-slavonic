@@ -1,0 +1,107 @@
+{
+  "schema": 2,
+  "id": "lrc-finite-l-000025",
+  "purpose": "18literal finite table cells plus cited infinitive; supplied stems, not principal-part inference or blind evaluation",
+  "source": {
+    "url": "https://lrc.la.utexas.edu/eieol/ocsol/10",
+    "section": "4.1–4.2 глаголати",
+    "sha256": "e48074ee67e730fcf2df8722605b409b0e5ade5d9a5875538fd0634ed236c9cb"
+  },
+  "forms": [
+    {
+      "pos": "v",
+      "cell": "pres.1.sg",
+      "surface": "глагол҄ѭ"
+    },
+    {
+      "pos": "v",
+      "cell": "pres.1.du",
+      "surface": "глагол҄ѥвѣ"
+    },
+    {
+      "pos": "v",
+      "cell": "pres.1.pl",
+      "surface": "глагол҄ѥмъ"
+    },
+    {
+      "pos": "v",
+      "cell": "pres.2.sg",
+      "surface": "глагол҄ѥши"
+    },
+    {
+      "pos": "v",
+      "cell": "pres.2.du",
+      "surface": "глагол҄ѥта"
+    },
+    {
+      "pos": "v",
+      "cell": "pres.2.pl",
+      "surface": "глагол҄ѥтє"
+    },
+    {
+      "pos": "v",
+      "cell": "pres.3.sg",
+      "surface": "глагол҄ѥтъ"
+    },
+    {
+      "pos": "v",
+      "cell": "pres.3.du",
+      "surface": "глагол҄ѥтє"
+    },
+    {
+      "pos": "v",
+      "cell": "pres.3.pl",
+      "surface": "глагол҄ѭтъ"
+    },
+    {
+      "pos": "v",
+      "cell": "impf.1.sg",
+      "surface": "глаголаахъ"
+    },
+    {
+      "pos": "v",
+      "cell": "impf.1.du",
+      "surface": "глаголааховѣ"
+    },
+    {
+      "pos": "v",
+      "cell": "impf.1.pl",
+      "surface": "глаголаахомъ"
+    },
+    {
+      "pos": "v",
+      "cell": "impf.2.sg",
+      "surface": "глаголаашє"
+    },
+    {
+      "pos": "v",
+      "cell": "impf.2.du",
+      "surface": "глаголаашєта"
+    },
+    {
+      "pos": "v",
+      "cell": "impf.2.pl",
+      "surface": "глаголаашєтє"
+    },
+    {
+      "pos": "v",
+      "cell": "impf.3.sg",
+      "surface": "глаголаашє"
+    },
+    {
+      "pos": "v",
+      "cell": "impf.3.du",
+      "surface": "глаголаашєтє"
+    },
+    {
+      "pos": "v",
+      "cell": "impf.3.pl",
+      "surface": "глаголаахѫ"
+    },
+    {
+      "pos": "v",
+      "cell": "inf",
+      "surface": "глаголати"
+    }
+  ]
+}

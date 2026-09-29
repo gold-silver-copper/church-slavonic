@@ -1,20 +1,16 @@
-//! The sentence (4.1): what a word is *here*. `Sentence::parse` tokenizes
-//! a verse and lifts every token to its readings — a word with one
-//! lexeme (one cell, or the set its paradigm does not tell apart), a
-//! function word, a phonological word (a host with its enclitics), a
-//! titlo-written word, a capitalised word, punctuation, the apparatus, a
-//! verbatim token, a token that is several lexemes (the readings kept,
-//! none chosen). `Sentence::disambiguate` applies the constraint layer:
-//! seven eliminations that name themselves on the leaf they narrowed
-//! (`prep-gov`, `np-agree`, `subj-verb`, `voc-drop`, `one-subject`,
-//! `bare-loc`, `bare-voc`), each 100% precise on the hand gold, none a
-//! selection. `Sentence::print` is the round trip. A statistical choice
-//! among what the rules leave is the tagger crate's, not the library's.
+//! Legacy sentence-tree editing and source-preserving analysis access.
+//!
+//! The legacy constraint layer applies local heuristics; its exclusions do not
+//! constitute validated grammatical judgments. `analysis_document` returns the
+//! immutable source's morphological alternatives independently of tree edits.
+//! `print` regenerates the edited tree with normalized spacing; `reproduce`
+//! returns the original input.
 
 pub mod closed;
 pub mod lift;
 pub mod node;
 pub mod rules;
+pub mod trace;
 
 use crate::Lexicon;
 use crate::cell::CellSet;
@@ -29,6 +25,7 @@ pub struct Sentence<'a> {
     lexicon: &'a Lexicon,
     tree: Node,
     coverage: Coverage,
+    witness: crate::witness::Witness,
 }
 
 /// One word of a sentence as the consumer reads it.
@@ -57,28 +54,54 @@ impl<'a> Sentence<'a> {
     /// assert_eq!(s.print(Recension::Synodal).unwrap(), "И҆ ви́дѣ бг҃ъ свѣ́тъ, ꙗ҆́кѡ добро̀.");
     /// let stats = s.disambiguate();
     /// let words: Vec<_> = s.tokens();
-    /// assert_eq!(words[1].reading.as_ref().unwrap().0, "видѣти.v"); // ви́дѣ: the aorist, not ви́дъ's locative
-    /// assert_eq!(words[1].narrowed_by.as_deref(), Some("bare-loc"));
-    /// assert_eq!(words[2].reading.as_ref().unwrap().1.as_ref().unwrap().name(), "nom.sg"); // бг҃ъ under its titlo row
-    /// assert_eq!(words[3].narrowed_by.as_deref(), Some("one-subject")); // свѣ́тъ: nom|acc.sg → acc.sg, the subject being бг҃ъ
-    /// assert_eq!(words[3].narrowed_from.as_deref(), Some("nom|acc.sg"));
-    /// assert!(stats.by_rule.contains_key("one-subject"));
+    /// assert!(words[1].ambiguous); // no lexical choice from a missing local governor
+    /// assert!(words[1].reading.is_none());
+    /// assert_eq!(words[2].reading.as_ref().unwrap().1.as_ref().unwrap().name(), "nom.sg");
+    /// assert_eq!(words[3].reading.as_ref().unwrap().1.as_ref().unwrap().name(), "nom|acc.sg");
+    /// assert!(!stats.by_rule.contains_key("bare-loc"));
+    /// assert_eq!(s.reproduce(), "И҆ ви́дѣ бг҃ъ свѣ́тъ, ꙗ҆́кѡ добро̀.");
     /// ```
     pub fn parse(lexicon: &'a Lexicon, text: &str) -> Sentence<'a> {
         let lifter = lift::Lifter::new(lexicon);
         let (tree, coverage) = lifter.lift_verse(text);
-        Sentence { lexicon, tree, coverage }
+        Sentence { lexicon, tree, coverage, witness: crate::witness::Witness::new(text, None) }
     }
 
-    /// Apply the constraint layer; what each rule narrowed.
+    /// Apply the remaining legacy exclusion rules; what each rule narrowed.
+    /// `one-subject` is available only as an unvalidated proposal through
+    /// `contextual_trace`, and cannot narrow the live tree here.
     pub fn disambiguate(&mut self) -> Stats {
         rules::disambiguate(&mut self.tree, self.lexicon)
     }
 
-    /// The text back from the tree, byte for byte.
-    pub fn print(&self, recension: Recension) -> Result<String, TreeError> {
-        node::render(&self.tree, &recension)
+    /// Inspect legacy rule proposals from a fresh lift of the original witness.
+    /// Neither the source nor the current edited tree is mutated.
+    pub fn contextual_trace(&self) -> Result<trace::Trace, TreeError> {
+        if self.reproduce().len() > 4096 { return Err(TreeError("context trace source exceeds 4096 bytes".into())); }
+        let (raw, _) = lift::Lifter::new(self.lexicon).lift_verse(self.reproduce());
+        trace::evaluate(&raw, self.lexicon)
     }
+
+    /// Regenerate the current analysis with normalized spacing. A different
+    /// lexicon's grammar is not selected implicitly by the requested print.
+    pub fn print(&self, recension: Recension) -> Result<String, TreeError> {
+        if recension != self.lexicon.recension() {
+            return Err(TreeError("sentence and rendering profile differ".to_string()));
+        }
+        node::render_with(&self.tree, self.lexicon)
+    }
+
+    /// The original input bytes, unaffected by analysis or tree edits.
+    pub fn reproduce(&self) -> &str { self.witness.reproduce() }
+
+    pub fn witness(&self) -> &crate::witness::Witness { &self.witness }
+
+    /// Analyze the original witness under an explicit matching policy. Existing
+    /// tree edits and heuristic exclusions never change this candidate layer.
+    pub fn analysis_document(&self, policy: crate::matching::MatchPolicy) -> crate::document::AnalysisDocument<'a> {
+        crate::document::AnalysisDocument::analyze(self.lexicon, self.witness.clone(), policy)
+    }
+
 
     /// The lift's coverage: how many tokens were analyzed, underspecified,
     /// closed, ambiguous, verbatim, apparatus.
@@ -119,7 +142,7 @@ fn collect(node: &Node, lexicon: &Lexicon, out: &mut Vec<Token>) {
             }
         }
         other => {
-            let surface = node::render(other, &lexicon.recension).unwrap_or_default();
+            let surface = node::render_with(other, lexicon).unwrap_or_default();
             let leaf = rules::leaf(other);
             let (reading, narrowed_by, narrowed_from) = match leaf {
                 Some(Node::Lex { id, cells, notes, .. }) => (

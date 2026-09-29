@@ -107,11 +107,11 @@ fn walk(node: &Node, lexicon: &church_slavonic::Lexicon, emit: &mut Emit<'_>) {
             }
         }
         Node::Cap(inner) | Node::Abbr { child: inner, .. } => {
-            let surface = church_slavonic::sentence::node::render(node, &lexicon.recension).unwrap_or_default();
+            let surface = church_slavonic::sentence::node::render_with(node, lexicon).unwrap_or_default();
             leaf_line(inner, &surface, emit);
         }
         other => {
-            let surface = church_slavonic::sentence::node::render(other, &lexicon.recension).unwrap_or_default();
+            let surface = church_slavonic::sentence::node::render_with(other, lexicon).unwrap_or_default();
             leaf_line(other, &surface, emit);
         }
     }

@@ -1,0 +1,107 @@
+{
+  "schema": 2,
+  "id": "lrc-finite-l-000026",
+  "purpose": "18literal finite table cells plus cited infinitive; supplied stems, not principal-part inference or blind evaluation",
+  "source": {
+    "url": "https://lrc.la.utexas.edu/eieol/ocsol/10",
+    "section": "4.1–4.2 молити",
+    "sha256": "e48074ee67e730fcf2df8722605b409b0e5ade5d9a5875538fd0634ed236c9cb"
+  },
+  "forms": [
+    {
+      "pos": "v",
+      "cell": "pres.1.sg",
+      "surface": "мол҄ѭ"
+    },
+    {
+      "pos": "v",
+      "cell": "pres.1.du",
+      "surface": "моливѣ"
+    },
+    {
+      "pos": "v",
+      "cell": "pres.1.pl",
+      "surface": "молимъ"
+    },
+    {
+      "pos": "v",
+      "cell": "pres.2.sg",
+      "surface": "молиши"
+    },
+    {
+      "pos": "v",
+      "cell": "pres.2.du",
+      "surface": "молита"
+    },
+    {
+      "pos": "v",
+      "cell": "pres.2.pl",
+      "surface": "молитє"
+    },
+    {
+      "pos": "v",
+      "cell": "pres.3.sg",
+      "surface": "молитъ"
+    },
+    {
+      "pos": "v",
+      "cell": "pres.3.du",
+      "surface": "молитє"
+    },
+    {
+      "pos": "v",
+      "cell": "pres.3.pl",
+      "surface": "молѧтъ"
+    },
+    {
+      "pos": "v",
+      "cell": "impf.1.sg",
+      "surface": "мол҄ꙗахъ"
+    },
+    {
+      "pos": "v",
+      "cell": "impf.1.du",
+      "surface": "мол҄ꙗаховѣ"
+    },
+    {
+      "pos": "v",
+      "cell": "impf.1.pl",
+      "surface": "мол҄ꙗахомъ"
+    },
+    {
+      "pos": "v",
+      "cell": "impf.2.sg",
+      "surface": "мол҄ꙗашє"
+    },
+    {
+      "pos": "v",
+      "cell": "impf.2.du",
+      "surface": "мол҄ꙗашєта"
+    },
+    {
+      "pos": "v",
+      "cell": "impf.2.pl",
+      "surface": "мол҄ꙗашєтє"
+    },
+    {
+      "pos": "v",
+      "cell": "impf.3.sg",
+      "surface": "мол҄ꙗашє"
+    },
+    {
+      "pos": "v",
+      "cell": "impf.3.du",
+      "surface": "мол҄ꙗашєтє"
+    },
+    {
+      "pos": "v",
+      "cell": "impf.3.pl",
+      "surface": "мол҄ꙗахѫ"
+    },
+    {
+      "pos": "v",
+      "cell": "inf",
+      "surface": "молити"
+    }
+  ]
+}

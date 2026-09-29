@@ -1,0 +1,1031 @@
+{
+  "version": 4,
+  "input": {
+    "evidence": [
+      {
+        "id": "e-table-l-000022",
+        "source": "https://lrc.la.utexas.edu/eieol/ocsol/10",
+        "source_sha256": "e48074ee67e730fcf2df8722605b409b0e5ade5d9a5875538fd0634ed236c9cb",
+        "location": "§3.1, чловѣкъ paradigm and gender heading",
+        "claim": "Listed case/number forms and lexical gender in this teaching table; stem segmentation and cell-local replacement instructions are assistant modeling decisions. Not witness-token attestation or independent expert approval.",
+        "kind": "DescriptiveRule",
+        "review": "SourceChecked",
+        "method": "Fresh upstream acquisition; same teaching work previously consulted. Transcribed development tables, not blind evaluation."
+      },
+      {
+        "id": "e-table-l-000023",
+        "source": "https://lrc.la.utexas.edu/eieol/ocsol/10",
+        "source_sha256": "e48074ee67e730fcf2df8722605b409b0e5ade5d9a5875538fd0634ed236c9cb",
+        "location": "§3.1, мѣсто paradigm and gender heading",
+        "claim": "Listed case/number forms and lexical gender in this teaching table; stem segmentation and cell-local replacement instructions are assistant modeling decisions. Not witness-token attestation or independent expert approval.",
+        "kind": "DescriptiveRule",
+        "review": "SourceChecked",
+        "method": "Fresh upstream acquisition; same teaching work previously consulted. Transcribed development tables, not blind evaluation."
+      },
+      {
+        "id": "e-table-l-000024",
+        "source": "https://lrc.la.utexas.edu/eieol/ocsol/10",
+        "source_sha256": "e48074ee67e730fcf2df8722605b409b0e5ade5d9a5875538fd0634ed236c9cb",
+        "location": "§3.1, вѣко paradigm and gender heading",
+        "claim": "Listed case/number forms and lexical gender in this teaching table; stem segmentation and cell-local replacement instructions are assistant modeling decisions. Not witness-token attestation or independent expert approval.",
+        "kind": "DescriptiveRule",
+        "review": "SourceChecked",
+        "method": "Fresh upstream acquisition; same teaching work previously consulted. Transcribed development tables, not blind evaluation."
+      }
+    ],
+    "grammars": [
+      {
+        "id": "g-ocs-lrc-o-stems",
+        "description": "Three selected masculine/neuter hard o-stem teaching paradigms in LRC §3.1; no complete OCS or Synodal claim",
+        "evidence": [
+          "e-table-l-000022",
+          "e-table-l-000023",
+          "e-table-l-000024"
+        ]
+      }
+    ],
+    "orthographies": [
+      {
+        "id": "o-lrc-o-stems",
+        "description": "Literal unaccented Cyrillic teaching-table spellings, including alternatives",
+        "compatible_grammars": [
+          "g-ocs-lrc-o-stems"
+        ],
+        "rules": [],
+        "evidence": [
+          "e-table-l-000022",
+          "e-table-l-000023",
+          "e-table-l-000024"
+        ]
+      }
+    ],
+    "paradigms": [
+      {
+        "id": "p-o-stem-l-000022",
+        "grammar": "g-ocs-lrc-o-stems",
+        "pos": "n",
+        "rules": [
+          {
+            "id": "r-nom.sg-0",
+            "cell": [
+              "n",
+              "nom.sg"
+            ],
+            "stem": "base",
+            "suffix": "ъ",
+            "evidence": [
+              "e-table-l-000022"
+            ]
+          },
+          {
+            "id": "r-nom.du-0",
+            "cell": [
+              "n",
+              "nom.du"
+            ],
+            "stem": "base",
+            "suffix": "а",
+            "evidence": [
+              "e-table-l-000022"
+            ]
+          },
+          {
+            "id": "r-nom.pl-0",
+            "cell": [
+              "n",
+              "nom.pl"
+            ],
+            "stem": "base",
+            "suffix": "и",
+            "evidence": [
+              "e-table-l-000022"
+            ],
+            "stem_replacement": {
+              "from": "к",
+              "to": "ц",
+              "evidence": [
+                "e-table-l-000022"
+              ]
+            }
+          },
+          {
+            "id": "r-acc.sg-0",
+            "cell": [
+              "n",
+              "acc.sg"
+            ],
+            "stem": "base",
+            "suffix": "а",
+            "evidence": [
+              "e-table-l-000022"
+            ]
+          },
+          {
+            "id": "r-acc.du-0",
+            "cell": [
+              "n",
+              "acc.du"
+            ],
+            "stem": "base",
+            "suffix": "а",
+            "evidence": [
+              "e-table-l-000022"
+            ]
+          },
+          {
+            "id": "r-acc.pl-0",
+            "cell": [
+              "n",
+              "acc.pl"
+            ],
+            "stem": "base",
+            "suffix": "ꙑ",
+            "evidence": [
+              "e-table-l-000022"
+            ]
+          },
+          {
+            "id": "r-gen.sg-0",
+            "cell": [
+              "n",
+              "gen.sg"
+            ],
+            "stem": "base",
+            "suffix": "а",
+            "evidence": [
+              "e-table-l-000022"
+            ]
+          },
+          {
+            "id": "r-gen.du-0",
+            "cell": [
+              "n",
+              "gen.du"
+            ],
+            "stem": "base",
+            "suffix": "ѹ",
+            "evidence": [
+              "e-table-l-000022"
+            ]
+          },
+          {
+            "id": "r-gen.pl-0",
+            "cell": [
+              "n",
+              "gen.pl"
+            ],
+            "stem": "base",
+            "suffix": "ъ",
+            "evidence": [
+              "e-table-l-000022"
+            ]
+          },
+          {
+            "id": "r-loc.sg-0",
+            "cell": [
+              "n",
+              "loc.sg"
+            ],
+            "stem": "base",
+            "suffix": "ѣ",
+            "evidence": [
+              "e-table-l-000022"
+            ],
+            "stem_replacement": {
+              "from": "к",
+              "to": "ц",
+              "evidence": [
+                "e-table-l-000022"
+              ]
+            }
+          },
+          {
+            "id": "r-loc.du-0",
+            "cell": [
+              "n",
+              "loc.du"
+            ],
+            "stem": "base",
+            "suffix": "ѹ",
+            "evidence": [
+              "e-table-l-000022"
+            ]
+          },
+          {
+            "id": "r-loc.pl-0",
+            "cell": [
+              "n",
+              "loc.pl"
+            ],
+            "stem": "base",
+            "suffix": "ѣхъ",
+            "evidence": [
+              "e-table-l-000022"
+            ],
+            "stem_replacement": {
+              "from": "к",
+              "to": "ц",
+              "evidence": [
+                "e-table-l-000022"
+              ]
+            }
+          },
+          {
+            "id": "r-dat.sg-0",
+            "cell": [
+              "n",
+              "dat.sg"
+            ],
+            "stem": "base",
+            "suffix": "ѹ",
+            "evidence": [
+              "e-table-l-000022"
+            ]
+          },
+          {
+            "id": "r-dat.sg-1",
+            "cell": [
+              "n",
+              "dat.sg"
+            ],
+            "stem": "base",
+            "suffix": "ови",
+            "evidence": [
+              "e-table-l-000022"
+            ]
+          },
+          {
+            "id": "r-dat.du-0",
+            "cell": [
+              "n",
+              "dat.du"
+            ],
+            "stem": "base",
+            "suffix": "ома",
+            "evidence": [
+              "e-table-l-000022"
+            ]
+          },
+          {
+            "id": "r-dat.pl-0",
+            "cell": [
+              "n",
+              "dat.pl"
+            ],
+            "stem": "base",
+            "suffix": "омъ",
+            "evidence": [
+              "e-table-l-000022"
+            ]
+          },
+          {
+            "id": "r-ins.sg-0",
+            "cell": [
+              "n",
+              "ins.sg"
+            ],
+            "stem": "base",
+            "suffix": "омь",
+            "evidence": [
+              "e-table-l-000022"
+            ]
+          },
+          {
+            "id": "r-ins.du-0",
+            "cell": [
+              "n",
+              "ins.du"
+            ],
+            "stem": "base",
+            "suffix": "ома",
+            "evidence": [
+              "e-table-l-000022"
+            ]
+          },
+          {
+            "id": "r-ins.pl-0",
+            "cell": [
+              "n",
+              "ins.pl"
+            ],
+            "stem": "base",
+            "suffix": "ꙑ",
+            "evidence": [
+              "e-table-l-000022"
+            ]
+          },
+          {
+            "id": "r-voc.sg-0",
+            "cell": [
+              "n",
+              "voc.sg"
+            ],
+            "stem": "base",
+            "suffix": "є",
+            "evidence": [
+              "e-table-l-000022"
+            ],
+            "stem_replacement": {
+              "from": "к",
+              "to": "ч",
+              "evidence": [
+                "e-table-l-000022"
+              ]
+            }
+          },
+          {
+            "id": "r-voc.du-0",
+            "cell": [
+              "n",
+              "voc.du"
+            ],
+            "stem": "base",
+            "suffix": "а",
+            "evidence": [
+              "e-table-l-000022"
+            ]
+          },
+          {
+            "id": "r-voc.pl-0",
+            "cell": [
+              "n",
+              "voc.pl"
+            ],
+            "stem": "base",
+            "suffix": "и",
+            "evidence": [
+              "e-table-l-000022"
+            ],
+            "stem_replacement": {
+              "from": "к",
+              "to": "ц",
+              "evidence": [
+                "e-table-l-000022"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "p-o-stem-l-000023",
+        "grammar": "g-ocs-lrc-o-stems",
+        "pos": "n",
+        "rules": [
+          {
+            "id": "r-nom.sg-0",
+            "cell": [
+              "n",
+              "nom.sg"
+            ],
+            "stem": "base",
+            "suffix": "о",
+            "evidence": [
+              "e-table-l-000023"
+            ]
+          },
+          {
+            "id": "r-nom.du-0",
+            "cell": [
+              "n",
+              "nom.du"
+            ],
+            "stem": "base",
+            "suffix": "ѣ",
+            "evidence": [
+              "e-table-l-000023"
+            ]
+          },
+          {
+            "id": "r-nom.pl-0",
+            "cell": [
+              "n",
+              "nom.pl"
+            ],
+            "stem": "base",
+            "suffix": "а",
+            "evidence": [
+              "e-table-l-000023"
+            ]
+          },
+          {
+            "id": "r-acc.sg-0",
+            "cell": [
+              "n",
+              "acc.sg"
+            ],
+            "stem": "base",
+            "suffix": "о",
+            "evidence": [
+              "e-table-l-000023"
+            ]
+          },
+          {
+            "id": "r-acc.du-0",
+            "cell": [
+              "n",
+              "acc.du"
+            ],
+            "stem": "base",
+            "suffix": "ѣ",
+            "evidence": [
+              "e-table-l-000023"
+            ]
+          },
+          {
+            "id": "r-acc.pl-0",
+            "cell": [
+              "n",
+              "acc.pl"
+            ],
+            "stem": "base",
+            "suffix": "а",
+            "evidence": [
+              "e-table-l-000023"
+            ]
+          },
+          {
+            "id": "r-gen.sg-0",
+            "cell": [
+              "n",
+              "gen.sg"
+            ],
+            "stem": "base",
+            "suffix": "а",
+            "evidence": [
+              "e-table-l-000023"
+            ]
+          },
+          {
+            "id": "r-gen.du-0",
+            "cell": [
+              "n",
+              "gen.du"
+            ],
+            "stem": "base",
+            "suffix": "ѹ",
+            "evidence": [
+              "e-table-l-000023"
+            ]
+          },
+          {
+            "id": "r-gen.pl-0",
+            "cell": [
+              "n",
+              "gen.pl"
+            ],
+            "stem": "base",
+            "suffix": "ъ",
+            "evidence": [
+              "e-table-l-000023"
+            ]
+          },
+          {
+            "id": "r-loc.sg-0",
+            "cell": [
+              "n",
+              "loc.sg"
+            ],
+            "stem": "base",
+            "suffix": "ѣ",
+            "evidence": [
+              "e-table-l-000023"
+            ]
+          },
+          {
+            "id": "r-loc.du-0",
+            "cell": [
+              "n",
+              "loc.du"
+            ],
+            "stem": "base",
+            "suffix": "ѹ",
+            "evidence": [
+              "e-table-l-000023"
+            ]
+          },
+          {
+            "id": "r-loc.pl-0",
+            "cell": [
+              "n",
+              "loc.pl"
+            ],
+            "stem": "base",
+            "suffix": "ѣхъ",
+            "evidence": [
+              "e-table-l-000023"
+            ]
+          },
+          {
+            "id": "r-dat.sg-0",
+            "cell": [
+              "n",
+              "dat.sg"
+            ],
+            "stem": "base",
+            "suffix": "ѹ",
+            "evidence": [
+              "e-table-l-000023"
+            ]
+          },
+          {
+            "id": "r-dat.du-0",
+            "cell": [
+              "n",
+              "dat.du"
+            ],
+            "stem": "base",
+            "suffix": "ома",
+            "evidence": [
+              "e-table-l-000023"
+            ]
+          },
+          {
+            "id": "r-dat.pl-0",
+            "cell": [
+              "n",
+              "dat.pl"
+            ],
+            "stem": "base",
+            "suffix": "омъ",
+            "evidence": [
+              "e-table-l-000023"
+            ]
+          },
+          {
+            "id": "r-ins.sg-0",
+            "cell": [
+              "n",
+              "ins.sg"
+            ],
+            "stem": "base",
+            "suffix": "омь",
+            "evidence": [
+              "e-table-l-000023"
+            ]
+          },
+          {
+            "id": "r-ins.du-0",
+            "cell": [
+              "n",
+              "ins.du"
+            ],
+            "stem": "base",
+            "suffix": "ома",
+            "evidence": [
+              "e-table-l-000023"
+            ]
+          },
+          {
+            "id": "r-ins.pl-0",
+            "cell": [
+              "n",
+              "ins.pl"
+            ],
+            "stem": "base",
+            "suffix": "ꙑ",
+            "evidence": [
+              "e-table-l-000023"
+            ]
+          },
+          {
+            "id": "r-voc.sg-0",
+            "cell": [
+              "n",
+              "voc.sg"
+            ],
+            "stem": "base",
+            "suffix": "о",
+            "evidence": [
+              "e-table-l-000023"
+            ]
+          },
+          {
+            "id": "r-voc.du-0",
+            "cell": [
+              "n",
+              "voc.du"
+            ],
+            "stem": "base",
+            "suffix": "ѣ",
+            "evidence": [
+              "e-table-l-000023"
+            ]
+          },
+          {
+            "id": "r-voc.pl-0",
+            "cell": [
+              "n",
+              "voc.pl"
+            ],
+            "stem": "base",
+            "suffix": "а",
+            "evidence": [
+              "e-table-l-000023"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "p-o-stem-l-000024",
+        "grammar": "g-ocs-lrc-o-stems",
+        "pos": "n",
+        "rules": [
+          {
+            "id": "r-nom.sg-0",
+            "cell": [
+              "n",
+              "nom.sg"
+            ],
+            "stem": "base",
+            "suffix": "о",
+            "evidence": [
+              "e-table-l-000024"
+            ]
+          },
+          {
+            "id": "r-nom.du-0",
+            "cell": [
+              "n",
+              "nom.du"
+            ],
+            "stem": "base",
+            "suffix": "ѣ",
+            "evidence": [
+              "e-table-l-000024"
+            ],
+            "stem_replacement": {
+              "from": "к",
+              "to": "ц",
+              "evidence": [
+                "e-table-l-000024"
+              ]
+            }
+          },
+          {
+            "id": "r-nom.pl-0",
+            "cell": [
+              "n",
+              "nom.pl"
+            ],
+            "stem": "base",
+            "suffix": "а",
+            "evidence": [
+              "e-table-l-000024"
+            ]
+          },
+          {
+            "id": "r-acc.sg-0",
+            "cell": [
+              "n",
+              "acc.sg"
+            ],
+            "stem": "base",
+            "suffix": "о",
+            "evidence": [
+              "e-table-l-000024"
+            ]
+          },
+          {
+            "id": "r-acc.du-0",
+            "cell": [
+              "n",
+              "acc.du"
+            ],
+            "stem": "base",
+            "suffix": "ѣ",
+            "evidence": [
+              "e-table-l-000024"
+            ],
+            "stem_replacement": {
+              "from": "к",
+              "to": "ц",
+              "evidence": [
+                "e-table-l-000024"
+              ]
+            }
+          },
+          {
+            "id": "r-acc.pl-0",
+            "cell": [
+              "n",
+              "acc.pl"
+            ],
+            "stem": "base",
+            "suffix": "а",
+            "evidence": [
+              "e-table-l-000024"
+            ]
+          },
+          {
+            "id": "r-gen.sg-0",
+            "cell": [
+              "n",
+              "gen.sg"
+            ],
+            "stem": "base",
+            "suffix": "а",
+            "evidence": [
+              "e-table-l-000024"
+            ]
+          },
+          {
+            "id": "r-gen.du-0",
+            "cell": [
+              "n",
+              "gen.du"
+            ],
+            "stem": "base",
+            "suffix": "ѹ",
+            "evidence": [
+              "e-table-l-000024"
+            ]
+          },
+          {
+            "id": "r-gen.pl-0",
+            "cell": [
+              "n",
+              "gen.pl"
+            ],
+            "stem": "base",
+            "suffix": "ъ",
+            "evidence": [
+              "e-table-l-000024"
+            ]
+          },
+          {
+            "id": "r-loc.sg-0",
+            "cell": [
+              "n",
+              "loc.sg"
+            ],
+            "stem": "base",
+            "suffix": "ѣ",
+            "evidence": [
+              "e-table-l-000024"
+            ],
+            "stem_replacement": {
+              "from": "к",
+              "to": "ц",
+              "evidence": [
+                "e-table-l-000024"
+              ]
+            }
+          },
+          {
+            "id": "r-loc.du-0",
+            "cell": [
+              "n",
+              "loc.du"
+            ],
+            "stem": "base",
+            "suffix": "ѹ",
+            "evidence": [
+              "e-table-l-000024"
+            ]
+          },
+          {
+            "id": "r-loc.pl-0",
+            "cell": [
+              "n",
+              "loc.pl"
+            ],
+            "stem": "base",
+            "suffix": "ѣхъ",
+            "evidence": [
+              "e-table-l-000024"
+            ],
+            "stem_replacement": {
+              "from": "к",
+              "to": "ц",
+              "evidence": [
+                "e-table-l-000024"
+              ]
+            }
+          },
+          {
+            "id": "r-dat.sg-0",
+            "cell": [
+              "n",
+              "dat.sg"
+            ],
+            "stem": "base",
+            "suffix": "ѹ",
+            "evidence": [
+              "e-table-l-000024"
+            ]
+          },
+          {
+            "id": "r-dat.du-0",
+            "cell": [
+              "n",
+              "dat.du"
+            ],
+            "stem": "base",
+            "suffix": "ома",
+            "evidence": [
+              "e-table-l-000024"
+            ]
+          },
+          {
+            "id": "r-dat.pl-0",
+            "cell": [
+              "n",
+              "dat.pl"
+            ],
+            "stem": "base",
+            "suffix": "омъ",
+            "evidence": [
+              "e-table-l-000024"
+            ]
+          },
+          {
+            "id": "r-ins.sg-0",
+            "cell": [
+              "n",
+              "ins.sg"
+            ],
+            "stem": "base",
+            "suffix": "омь",
+            "evidence": [
+              "e-table-l-000024"
+            ]
+          },
+          {
+            "id": "r-ins.du-0",
+            "cell": [
+              "n",
+              "ins.du"
+            ],
+            "stem": "base",
+            "suffix": "ома",
+            "evidence": [
+              "e-table-l-000024"
+            ]
+          },
+          {
+            "id": "r-ins.pl-0",
+            "cell": [
+              "n",
+              "ins.pl"
+            ],
+            "stem": "base",
+            "suffix": "ꙑ",
+            "evidence": [
+              "e-table-l-000024"
+            ]
+          },
+          {
+            "id": "r-voc.sg-0",
+            "cell": [
+              "n",
+              "voc.sg"
+            ],
+            "stem": "base",
+            "suffix": "о",
+            "evidence": [
+              "e-table-l-000024"
+            ]
+          },
+          {
+            "id": "r-voc.du-0",
+            "cell": [
+              "n",
+              "voc.du"
+            ],
+            "stem": "base",
+            "suffix": "ѣ",
+            "evidence": [
+              "e-table-l-000024"
+            ],
+            "stem_replacement": {
+              "from": "к",
+              "to": "ц",
+              "evidence": [
+                "e-table-l-000024"
+              ]
+            }
+          },
+          {
+            "id": "r-voc.pl-0",
+            "cell": [
+              "n",
+              "voc.pl"
+            ],
+            "stem": "base",
+            "suffix": "а",
+            "evidence": [
+              "e-table-l-000024"
+            ]
+          }
+        ]
+      }
+    ],
+    "lexemes": [
+      {
+        "id": "l-000022",
+        "displayed_lemma": "чловѣкъ",
+        "categories": [
+          {
+            "category": "Noun",
+            "evidence": [
+              "e-table-l-000022"
+            ]
+          }
+        ],
+        "genders": [
+          {
+            "gender": "m",
+            "evidence": [
+              "e-table-l-000022"
+            ]
+          }
+        ],
+        "paradigm": "p-o-stem-l-000022",
+        "stems": [
+          {
+            "name": "base",
+            "text": "чловѣк",
+            "evidence": [
+              "e-table-l-000022"
+            ]
+          }
+        ],
+        "unavailable": [],
+        "relations": [],
+        "evidence": [
+          "e-table-l-000022"
+        ]
+      },
+      {
+        "id": "l-000023",
+        "displayed_lemma": "мѣсто",
+        "categories": [
+          {
+            "category": "Noun",
+            "evidence": [
+              "e-table-l-000023"
+            ]
+          }
+        ],
+        "genders": [
+          {
+            "gender": "n",
+            "evidence": [
+              "e-table-l-000023"
+            ]
+          }
+        ],
+        "paradigm": "p-o-stem-l-000023",
+        "stems": [
+          {
+            "name": "base",
+            "text": "мѣст",
+            "evidence": [
+              "e-table-l-000023"
+            ]
+          }
+        ],
+        "unavailable": [],
+        "relations": [],
+        "evidence": [
+          "e-table-l-000023"
+        ]
+      },
+      {
+        "id": "l-000024",
+        "displayed_lemma": "вѣко",
+        "categories": [
+          {
+            "category": "Noun",
+            "evidence": [
+              "e-table-l-000024"
+            ]
+          }
+        ],
+        "genders": [
+          {
+            "gender": "n",
+            "evidence": [
+              "e-table-l-000024"
+            ]
+          }
+        ],
+        "paradigm": "p-o-stem-l-000024",
+        "stems": [
+          {
+            "name": "base",
+            "text": "вѣк",
+            "evidence": [
+              "e-table-l-000024"
+            ]
+          }
+        ],
+        "unavailable": [],
+        "relations": [],
+        "evidence": [
+          "e-table-l-000024"
+        ]
+      }
+    ]
+  }
+}

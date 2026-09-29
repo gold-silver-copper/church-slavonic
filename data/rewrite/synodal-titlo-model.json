@@ -1,0 +1,155 @@
+{
+  "version": 4,
+  "input": {
+    "evidence": [
+      {
+        "id": "e-titlo-prescription",
+        "source": "https://www.ponomar.net/files/gama2/p003.htm",
+        "source_sha256": "3ed721f48ddb854c5ebcb98b00245fec7712cb289aec3bf2f0ab3e5d20cd573d",
+        "location": "§3 в) Титла, note and list",
+        "method": "Assistant inspected freshly downloaded revised online HTML. No expert review or printed facsimile authentication.",
+        "claim": "The note contrasts abbreviated бг҃ъ with uncontracted бо́гъ used for an idol. This fixture follows that named editorial convention, not a universal lexical equivalence.",
+        "kind": "EditorialPrescription",
+        "review": "SourceChecked"
+      },
+      {
+        "id": "e-titlo-lexemes",
+        "source": "https://www.ponomar.net/files/gama2/p003.htm",
+        "source_sha256": "3ed721f48ddb854c5ebcb98b00245fec7712cb289aec3bf2f0ab3e5d20cd573d",
+        "location": "§3 в) Титла, note and list",
+        "method": "Assistant inspected freshly downloaded revised online HTML. No expert review or printed facsimile authentication.",
+        "claim": "The source distinguishes the divine designation written under titlo from the uncontracted designation of an idol.",
+        "kind": "LexicalAssertion",
+        "review": "SourceChecked"
+      },
+      {
+        "id": "e-titlo-morphology",
+        "source": "https://www.ponomar.net/files/gama2/p003.htm",
+        "source_sha256": "3ed721f48ddb854c5ebcb98b00245fec7712cb289aec3bf2f0ab3e5d20cd573d",
+        "location": "§3 в) Титла, note and list",
+        "method": "Assistant inspected freshly downloaded revised online HTML. No expert review or printed facsimile authentication.",
+        "claim": "Selected isolated forms are represented as nominative singular noun cells. бо́гъ is an analytical intermediate for the contracted designation, not a licensed uncontracted printing of it in this profile.",
+        "kind": "Annotation",
+        "review": "Unverified"
+      }
+    ],
+    "grammars": [
+      {
+        "id": "g-alypy-titlo-examples",
+        "description": "Two isolated nominal designations in Alypy §3; no complete paradigm",
+        "evidence": [
+          "e-titlo-morphology"
+        ]
+      }
+    ],
+    "orthographies": [
+      {
+        "id": "o-alypy-titlo-examples",
+        "description": "Selected Alypy titlo prescription; no general expansion equivalence",
+        "compatible_grammars": [
+          "g-alypy-titlo-examples"
+        ],
+        "rules": [],
+        "unicode": "Nfc",
+        "evidence": [
+          "e-titlo-prescription"
+        ],
+        "abbreviations": [
+          {
+            "id": "abbr-divine-nom-sg",
+            "lexeme": "l-000006",
+            "cell": [
+              "n",
+              "nom.sg"
+            ],
+            "expanded": "бо́гъ",
+            "abbreviated": "бг҃ъ",
+            "retain_expanded": false,
+            "evidence": [
+              "e-titlo-prescription"
+            ]
+          }
+        ]
+      }
+    ],
+    "paradigms": [
+      {
+        "id": "p-titlo-nominative",
+        "grammar": "g-alypy-titlo-examples",
+        "pos": "n",
+        "rules": [
+          {
+            "id": "r-titlo-nom-sg",
+            "cell": [
+              "n",
+              "nom.sg"
+            ],
+            "stem": "analytical",
+            "suffix": "ъ",
+            "evidence": [
+              "e-titlo-morphology"
+            ]
+          }
+        ]
+      }
+    ],
+    "lexemes": [
+      {
+        "id": "l-000006",
+        "displayed_lemma": "бг҃ъ",
+        "categories": [
+          {
+            "category": "Noun",
+            "evidence": [
+              "e-titlo-lexemes"
+            ]
+          }
+        ],
+        "paradigm": "p-titlo-nominative",
+        "stems": [
+          {
+            "name": "analytical",
+            "text": "бо́г",
+            "evidence": [
+              "e-titlo-morphology"
+            ]
+          }
+        ],
+        "unavailable": [],
+        "relations": [],
+        "evidence": [
+          "e-titlo-lexemes",
+          "e-titlo-morphology"
+        ]
+      },
+      {
+        "id": "l-000007",
+        "displayed_lemma": "бо́гъ",
+        "categories": [
+          {
+            "category": "Noun",
+            "evidence": [
+              "e-titlo-lexemes"
+            ]
+          }
+        ],
+        "paradigm": "p-titlo-nominative",
+        "stems": [
+          {
+            "name": "analytical",
+            "text": "бо́г",
+            "evidence": [
+              "e-titlo-morphology"
+            ]
+          }
+        ],
+        "unavailable": [],
+        "relations": [],
+        "evidence": [
+          "e-titlo-lexemes",
+          "e-titlo-morphology"
+        ]
+      }
+    ]
+  }
+}

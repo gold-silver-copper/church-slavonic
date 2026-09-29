@@ -25,7 +25,7 @@ pub(crate) fn surface_of(node: &Node, lexicon: &Lexicon) -> Option<String> {
     match node {
         Node::Punct(p) => Some(p.clone()),
         Node::W { surface, .. } => Some(surface.clone()),
-        other => crate::treebank::node::render(other, &lexicon.recension).ok(),
+        other => crate::treebank::node::render_with(other, lexicon).ok(),
     }
 }
 
@@ -162,7 +162,7 @@ mod tests {
         assert!(text.contains("(n свѣтъ.n :case acc :num sg :from nom|acc.sg :by tagger :prob 0.98)"), "{text}");
         // the verb, where the model has no preference, is left alone
         assert!(text.contains(":cell aor|impv.2|3.sg)"), "{text}");
-        assert_eq!(render(&tree, &lexicon.recension).expect("renders"), verse);
+        assert_eq!(render(&tree, &lexicon.recension()).expect("renders"), verse);
         // every leaf the tagger touched says so
         let Node::Group { children, .. } = &tree else { panic!() };
         for c in children {

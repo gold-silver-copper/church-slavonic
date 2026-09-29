@@ -39,7 +39,7 @@ impl TitloIndex {
             for lexeme in lexicon.iter().filter(|l| crate::orthography::comparison_key(&l.lemma) == key) {
                 for cell in lexeme.cells() {
                     for (alt, form) in lexeme.forms(cell).into_iter().enumerate() {
-                        let full = form.print(lexicon.recension);
+                        let full = form.print(lexicon.recension());
                         if let Some(abbreviated) = crate::titlo::abbreviate(&full, row) {
                             let entry = map.entry(abbreviated).or_default();
                             let item = (row.abbr.to_string(), lexeme.id.clone(), cell, alt, row.full.to_string());
@@ -275,7 +275,7 @@ impl<'a> Lifter<'a> {
         nodes.push(unit);
         nodes.extend(next_trail.chars().map(|c| Node::Punct(c.to_string())));
         let probe = Node::Group { head: "s".to_string(), children: nodes.clone() };
-        match crate::sentence::node::render(&probe, &self.lexicon.recension) {
+        match crate::sentence::node::render_with(&probe, self.lexicon) {
             Ok(rebuilt) if rebuilt == format!("{token} {next}") => Some((nodes, if n > 1 { TokenFate::Underspecified } else { TokenFate::Analyzed }, enclitic_fate)),
             _ => None,
         }
@@ -313,6 +313,12 @@ impl<'a> Lifter<'a> {
         }
         let closed = crate::sentence::closed::is_closed(&looked_up) || !closed_readings.is_empty();
         let readings = exact.len() + titlo_groups.len();
+        if closed_readings.len() > 1 {
+            return (Node::W {
+                surface: core.to_string(),
+                notes: vec![("amb".to_string(), (readings + closed_readings.len()).to_string())],
+            }, TokenFate::Ambiguous);
+        }
         match (readings, closed) {
             (1, false) => {
                 let (node, cells) = if let Some(r) = exact.first() {
@@ -376,7 +382,7 @@ impl<'a> Lifter<'a> {
         // probe is the leaf's own round-trip: a leaf that does not render
         // its token never enters a tree.
         let probe = Node::Group { head: "s".to_string(), children: nodes.clone() };
-        match crate::sentence::node::render(&probe, &self.lexicon.recension) {
+        match crate::sentence::node::render_with(&probe, self.lexicon) {
             Ok(rebuilt) if rebuilt == token => (nodes, fate),
             _ => (vec![Node::W { surface: token.to_string(), notes: Vec::new() }], TokenFate::Verbatim),
         }

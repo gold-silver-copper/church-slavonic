@@ -1,0 +1,90 @@
+{
+  "scope": "Independent Python ElementTree token counts, exclusion language checks, source-byte reconstruction, and unique/exhaustive mapped-slot linkage; no linguistic adjudication.",
+  "command": "xtask corpus-observations syntacticus",
+  "exit_code": 0,
+  "documents": [
+    {
+      "path": "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/proiel/marianus.xml",
+      "sha256": "be58539cdf9282c12eb5a9d5b4a6de17bc9a4d33e84f74c2c8a4283b0252e65e",
+      "bytes": 14702589,
+      "xml_tokens": 64138,
+      "surface_bearing_tokens": 57556
+    },
+    {
+      "path": "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/chrabr.xml",
+      "sha256": "9873c86b6668d70c61726a532c852ddad0826199386a828c860124df67306770",
+      "bytes": 168352,
+      "xml_tokens": 930,
+      "surface_bearing_tokens": 885
+    },
+    {
+      "path": "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/euch.xml",
+      "sha256": "86f5c35bf462faa7f9684c1a217ca6c06cc4bec744bd555fd8913a37718459f8",
+      "bytes": 153630,
+      "xml_tokens": 740,
+      "surface_bearing_tokens": 717
+    },
+    {
+      "path": "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/kiev-mis.xml",
+      "sha256": "b316a3763a16d378e4d06f6f6b6942de6a41998f2bd86eab81f1feae60cc0712",
+      "bytes": 208283,
+      "xml_tokens": 1153,
+      "surface_bearing_tokens": 1102
+    },
+    {
+      "path": "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/psal-sin.xml",
+      "sha256": "fb987a2e4658ac67293828c10373c43509e9a527721a61de239c9184a3ec16b4",
+      "bytes": 6224006,
+      "xml_tokens": 31890,
+      "surface_bearing_tokens": 30488
+    },
+    {
+      "path": "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/supr.xml",
+      "sha256": "ef5f1b4602ad9d97e8a1d0ec91209bbc6433371b02c41dc6e36cb73bf324cd8e",
+      "bytes": 25433599,
+      "xml_tokens": 102070,
+      "surface_bearing_tokens": 99194
+    },
+    {
+      "path": "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/vit-const.xml",
+      "sha256": "4523e2c16aa8975c4f4b241fa6b94f605e5e729e98d3dd04f9582368e09047d3",
+      "bytes": 1792651,
+      "xml_tokens": 9073,
+      "surface_bearing_tokens": 8925
+    },
+    {
+      "path": "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/vit-meth.xml",
+      "sha256": "7f434fae3f62eea88cee662947f93f072fba205507c738f1708bb31d7e717164",
+      "bytes": 625477,
+      "xml_tokens": 3137,
+      "surface_bearing_tokens": 3087
+    },
+    {
+      "path": "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/zogr.xml",
+      "sha256": "dc34c5173d9efcd6f539eb3f1c993922db7f029f8ef2c491f3892bd0a8d6275f",
+      "bytes": 2642065,
+      "xml_tokens": 11859,
+      "surface_bearing_tokens": 11704
+    }
+  ],
+  "excluded_documents": 77,
+  "records": {
+    "xml_markup": 224999,
+    "xml_token": 224990
+  },
+  "mapping_issues": {
+    "no source surface": 11332,
+    "part of speech outside the lexicon": 63632,
+    "adjective: strength unspecified": 334,
+    "no number": 4088,
+    "verb: subjunctive": 145,
+    "verb: participle without a tense": 1004,
+    "verb: participle strength unspecified": 13,
+    "pronoun: reciprocal": 113,
+    "ambiguous case": 11,
+    "verb: tense outside the schema": 1
+  },
+  "surface_bearing_tokens": 213658,
+  "mapped_slots": 147633,
+  "export_sha256": "c910b46137cb099eb9a16916c7632b179f83dadaeddff4cde8126dbfc06140cb"
+}

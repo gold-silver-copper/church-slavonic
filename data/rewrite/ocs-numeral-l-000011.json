@@ -1,0 +1,57 @@
+{
+  "schema": 2,
+  "id": "lrc-numeral-l-000011",
+  "purpose": "Supplied-stem rule application against selected teaching-list spellings; shared forms expanded across explicitly agreeing genders. No independent token attestation, heldout prediction or full numeral construction claim. Pos pron names the reusable agreement cell shape; lexical classifications are Numeral and Adjective.",
+  "source": {
+    "url": "https://lrc.la.utexas.edu/eieol/ocsol/90",
+    "section": "44, items 2–4",
+    "sha256": "a6fb3201f1130b3ea74c398baa2c7798f69cd9c4460db64364c72faaa35f6382"
+  },
+  "forms": [
+    {
+      "pos": "pron",
+      "cell": "m.du.nom",
+      "surface": "дъва"
+    },
+    {
+      "pos": "pron",
+      "cell": "n.du.nom",
+      "surface": "дъвѣ"
+    },
+    {
+      "pos": "pron",
+      "cell": "f.du.nom",
+      "surface": "дъвѣ"
+    },
+    {
+      "pos": "pron",
+      "cell": "m.du.gen",
+      "surface": "дъвоѭ"
+    },
+    {
+      "pos": "pron",
+      "cell": "n.du.gen",
+      "surface": "дъвоѭ"
+    },
+    {
+      "pos": "pron",
+      "cell": "f.du.gen",
+      "surface": "дъвоѭ"
+    },
+    {
+      "pos": "pron",
+      "cell": "m.du.loc",
+      "surface": "дъвоѭ"
+    },
+    {
+      "pos": "pron",
+      "cell": "n.du.loc",
+      "surface": "дъвоѭ"
+    },
+    {
+      "pos": "pron",
+      "cell": "f.du.loc",
+      "surface": "дъвоѭ"
+    }
+  ]
+}

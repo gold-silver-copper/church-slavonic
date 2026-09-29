@@ -1,0 +1,12 @@
+uppercase_exact: query="РА\u{301}БЪ" generated="ра\u{301}бъ" exact=true
+custom_candidates: exact=2
+custom_lexicon: tokens=[Token { surface: "ра\u{301}бъ", reading: None, narrowed_by: None, narrowed_from: None, ambiguous: false }] render=Ok("ра\u{301}бъ")
+whitespace: input="  xyz\tqrs\n" render=Ok("xyz qrs")
+override_only: inflect_ok=true cells=0 all_forms=0
+alternative_overflow: expected_alt=256 actual_alt=255 same_form=false
+broad_evaluation: noun_лесъ_лсъ=true verb_нести_ести=true
+invalid_stress: parse_accepted=true inflect_panics=true
+gold_lemma_identity: fabricated_gold_lemmas_counted_as_present=2
+gold_context: examples=2 next_lemma=Some("gold-only-lemma-2") second_prev_choice=Some(Candidate { pos: Noun, cell: Noun(NounCell { case: Accusative, number: Singular }) })
+closed_ambiguity: exact_readings=2 lifted=(Fn("же"), ClosedClass)
+malformed_model: nan_and_trailing_byte_accepted=true

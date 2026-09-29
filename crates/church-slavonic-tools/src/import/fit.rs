@@ -409,7 +409,7 @@ pub fn fit(
         src,
         note,
         variant_weights: Vec::new(),
-        provenance: Provenance::Attested,
+        provenance: Provenance::LexiconEntry,
         recension,
     };
     let mut reproduced = 0;

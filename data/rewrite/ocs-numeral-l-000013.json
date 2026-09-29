@@ -1,0 +1,102 @@
+{
+  "schema": 2,
+  "id": "lrc-numeral-l-000013",
+  "purpose": "Supplied-stem rule application against selected teaching-list spellings; shared forms expanded across explicitly agreeing genders. No independent token attestation, heldout prediction or full numeral construction claim. Pos pron names the reusable agreement cell shape; lexical classifications are Numeral and Adjective.",
+  "source": {
+    "url": "https://lrc.la.utexas.edu/eieol/ocsol/90",
+    "section": "44, items 2–4",
+    "sha256": "a6fb3201f1130b3ea74c398baa2c7798f69cd9c4460db64364c72faaa35f6382"
+  },
+  "forms": [
+    {
+      "pos": "pron",
+      "cell": "m.pl.nom",
+      "surface": "чєтꙑрє"
+    },
+    {
+      "pos": "pron",
+      "cell": "n.pl.nom",
+      "surface": "чєтꙑри"
+    },
+    {
+      "pos": "pron",
+      "cell": "f.pl.nom",
+      "surface": "чєтꙑри"
+    },
+    {
+      "pos": "pron",
+      "cell": "m.pl.acc",
+      "surface": "чєтꙑри"
+    },
+    {
+      "pos": "pron",
+      "cell": "n.pl.acc",
+      "surface": "чєтꙑри"
+    },
+    {
+      "pos": "pron",
+      "cell": "f.pl.acc",
+      "surface": "чєтꙑри"
+    },
+    {
+      "pos": "pron",
+      "cell": "m.pl.gen",
+      "surface": "чєтꙑрь"
+    },
+    {
+      "pos": "pron",
+      "cell": "n.pl.gen",
+      "surface": "чєтꙑрь"
+    },
+    {
+      "pos": "pron",
+      "cell": "f.pl.gen",
+      "surface": "чєтꙑрь"
+    },
+    {
+      "pos": "pron",
+      "cell": "m.pl.loc",
+      "surface": "чєтꙑрьхъ"
+    },
+    {
+      "pos": "pron",
+      "cell": "n.pl.loc",
+      "surface": "чєтꙑрьхъ"
+    },
+    {
+      "pos": "pron",
+      "cell": "f.pl.loc",
+      "surface": "чєтꙑрьхъ"
+    },
+    {
+      "pos": "pron",
+      "cell": "m.pl.dat",
+      "surface": "чєтꙑрємъ"
+    },
+    {
+      "pos": "pron",
+      "cell": "n.pl.dat",
+      "surface": "чєтꙑрємъ"
+    },
+    {
+      "pos": "pron",
+      "cell": "f.pl.dat",
+      "surface": "чєтꙑрємъ"
+    },
+    {
+      "pos": "pron",
+      "cell": "m.pl.ins",
+      "surface": "чєтꙑрьми"
+    },
+    {
+      "pos": "pron",
+      "cell": "n.pl.ins",
+      "surface": "чєтꙑрьми"
+    },
+    {
+      "pos": "pron",
+      "cell": "f.pl.ins",
+      "surface": "чєтꙑрьми"
+    }
+  ]
+}

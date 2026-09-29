@@ -1,0 +1,476 @@
+{
+  "version": 4,
+  "input": {
+    "evidence": [
+      {
+        "id": "e-syn-grammar",
+        "source": "https://www.ponomar.net/files/gama2/p034.htm",
+        "source_sha256": "58bd3eb844fe431e2af7e41f0789825b82da20425654a3a195870d0a1a3b5ecd",
+        "location": "§34, first table, рабъ column",
+        "method": "Assistant transcription checked against external HTML; printed hyphens identify morpheme boundaries. No expert review claimed.",
+        "claim": "The primary first-declension cells and stem/ending stress placements shown in the рабъ column.",
+        "kind": "DescriptiveRule",
+        "review": "SourceChecked"
+      },
+      {
+        "id": "e-syn-spelling",
+        "source": "https://www.ponomar.net/files/gama2/p034.htm",
+        "source_sha256": "58bd3eb844fe431e2af7e41f0789825b82da20425654a3a195870d0a1a3b5ecd",
+        "location": "§34, first table, рабъ column",
+        "method": "Assistant transcription checked against external HTML; printed hyphens identify morpheme boundaries. No expert review claimed.",
+        "claim": "Use the source table’s letter choices and accent marks. NFC is an explicit output encoding choice, not a historical pronunciation claim.",
+        "kind": "EditorialPrescription",
+        "review": "SourceChecked"
+      },
+      {
+        "id": "e-syn-lexeme",
+        "source": "https://www.ponomar.net/files/gama2/p034.htm",
+        "source_sha256": "58bd3eb844fe431e2af7e41f0789825b82da20425654a3a195870d0a1a3b5ecd",
+        "location": "§34, first table, рабъ column",
+        "method": "Assistant transcription checked against external HTML; printed hyphens identify morpheme boundaries. No expert review claimed.",
+        "claim": "The displayed lemma is ра́бъ; the table explicitly segments the stem раб from the listed endings.",
+        "kind": "LexicalAssertion",
+        "review": "SourceChecked"
+      }
+    ],
+    "grammars": [
+      {
+        "id": "g-synodal-alypy-rab",
+        "description": "Primary animate first-declension paradigm of рабъ in Alypy §34; not a complete Synodal grammar. Specifically the revised Ponomar online transcription, not an authenticated 1991 facsimile.",
+        "evidence": [
+          "e-syn-grammar"
+        ]
+      }
+    ],
+    "orthographies": [
+      {
+        "id": "o-synodal-alypy-table",
+        "description": "Letter distinctions and acute/grave/kamora marks in the source table; NFC output.",
+        "compatible_grammars": [
+          "g-synodal-alypy-rab"
+        ],
+        "accent": {
+          "MarkPredicted": {
+            "internal": "Acute",
+            "final_vowel": "Grave"
+          }
+        },
+        "unicode": "Nfc",
+        "accent_overrides": [
+          {
+            "paradigm": "p-syn-rab",
+            "cell": [
+              "n",
+              "nom.du"
+            ],
+            "mark": "Kamora",
+            "evidence": [
+              "e-syn-spelling"
+            ]
+          },
+          {
+            "paradigm": "p-syn-rab",
+            "cell": [
+              "n",
+              "gen.du"
+            ],
+            "mark": "Kamora",
+            "evidence": [
+              "e-syn-spelling"
+            ]
+          },
+          {
+            "paradigm": "p-syn-rab",
+            "cell": [
+              "n",
+              "acc.du"
+            ],
+            "mark": "Kamora",
+            "evidence": [
+              "e-syn-spelling"
+            ]
+          },
+          {
+            "paradigm": "p-syn-rab",
+            "cell": [
+              "n",
+              "loc.du"
+            ],
+            "mark": "Kamora",
+            "evidence": [
+              "e-syn-spelling"
+            ]
+          },
+          {
+            "paradigm": "p-syn-rab",
+            "cell": [
+              "n",
+              "voc.du"
+            ],
+            "mark": "Kamora",
+            "evidence": [
+              "e-syn-spelling"
+            ]
+          }
+        ],
+        "rules": [],
+        "evidence": [
+          "e-syn-spelling"
+        ]
+      }
+    ],
+    "paradigms": [
+      {
+        "id": "p-syn-rab",
+        "grammar": "g-synodal-alypy-rab",
+        "pos": "n",
+        "rules": [
+          {
+            "id": "syn-nom-sg",
+            "cell": [
+              "n",
+              "nom.sg"
+            ],
+            "stem": "base",
+            "suffix": "ъ",
+            "stress": {
+              "StemVowel": 0
+            },
+            "evidence": [
+              "e-syn-grammar"
+            ]
+          },
+          {
+            "id": "syn-nom-du",
+            "cell": [
+              "n",
+              "nom.du"
+            ],
+            "stem": "base",
+            "suffix": "а",
+            "stress": {
+              "SuffixVowel": 0
+            },
+            "evidence": [
+              "e-syn-grammar"
+            ]
+          },
+          {
+            "id": "syn-nom-pl",
+            "cell": [
+              "n",
+              "nom.pl"
+            ],
+            "stem": "base",
+            "suffix": "и",
+            "stress": {
+              "SuffixVowel": 0
+            },
+            "evidence": [
+              "e-syn-grammar"
+            ]
+          },
+          {
+            "id": "syn-gen-sg",
+            "cell": [
+              "n",
+              "gen.sg"
+            ],
+            "stem": "base",
+            "suffix": "а",
+            "stress": {
+              "SuffixVowel": 0
+            },
+            "evidence": [
+              "e-syn-grammar"
+            ]
+          },
+          {
+            "id": "syn-gen-du",
+            "cell": [
+              "n",
+              "gen.du"
+            ],
+            "stem": "base",
+            "suffix": "ꙋ",
+            "stress": {
+              "SuffixVowel": 0
+            },
+            "evidence": [
+              "e-syn-grammar"
+            ]
+          },
+          {
+            "id": "syn-gen-pl",
+            "cell": [
+              "n",
+              "gen.pl"
+            ],
+            "stem": "base",
+            "suffix": "ѡвъ",
+            "stress": {
+              "SuffixVowel": 0
+            },
+            "evidence": [
+              "e-syn-grammar"
+            ]
+          },
+          {
+            "id": "syn-dat-sg",
+            "cell": [
+              "n",
+              "dat.sg"
+            ],
+            "stem": "base",
+            "suffix": "ꙋ",
+            "stress": {
+              "SuffixVowel": 0
+            },
+            "evidence": [
+              "e-syn-grammar"
+            ]
+          },
+          {
+            "id": "syn-dat-du",
+            "cell": [
+              "n",
+              "dat.du"
+            ],
+            "stem": "base",
+            "suffix": "ома",
+            "stress": {
+              "SuffixVowel": 0
+            },
+            "evidence": [
+              "e-syn-grammar"
+            ]
+          },
+          {
+            "id": "syn-dat-pl",
+            "cell": [
+              "n",
+              "dat.pl"
+            ],
+            "stem": "base",
+            "suffix": "ѡмъ",
+            "stress": {
+              "SuffixVowel": 0
+            },
+            "evidence": [
+              "e-syn-grammar"
+            ]
+          },
+          {
+            "id": "syn-acc-sg",
+            "cell": [
+              "n",
+              "acc.sg"
+            ],
+            "stem": "base",
+            "suffix": "а",
+            "stress": {
+              "SuffixVowel": 0
+            },
+            "evidence": [
+              "e-syn-grammar"
+            ]
+          },
+          {
+            "id": "syn-acc-du",
+            "cell": [
+              "n",
+              "acc.du"
+            ],
+            "stem": "base",
+            "suffix": "а",
+            "stress": {
+              "SuffixVowel": 0
+            },
+            "evidence": [
+              "e-syn-grammar"
+            ]
+          },
+          {
+            "id": "syn-acc-pl",
+            "cell": [
+              "n",
+              "acc.pl"
+            ],
+            "stem": "base",
+            "suffix": "ы",
+            "stress": {
+              "SuffixVowel": 0
+            },
+            "evidence": [
+              "e-syn-grammar"
+            ]
+          },
+          {
+            "id": "syn-ins-sg",
+            "cell": [
+              "n",
+              "ins.sg"
+            ],
+            "stem": "base",
+            "suffix": "омъ",
+            "stress": {
+              "SuffixVowel": 0
+            },
+            "evidence": [
+              "e-syn-grammar"
+            ]
+          },
+          {
+            "id": "syn-ins-du",
+            "cell": [
+              "n",
+              "ins.du"
+            ],
+            "stem": "base",
+            "suffix": "ома",
+            "stress": {
+              "SuffixVowel": 0
+            },
+            "evidence": [
+              "e-syn-grammar"
+            ]
+          },
+          {
+            "id": "syn-ins-pl",
+            "cell": [
+              "n",
+              "ins.pl"
+            ],
+            "stem": "base",
+            "suffix": "ы",
+            "stress": {
+              "SuffixVowel": 0
+            },
+            "evidence": [
+              "e-syn-grammar"
+            ]
+          },
+          {
+            "id": "syn-loc-sg",
+            "cell": [
+              "n",
+              "loc.sg"
+            ],
+            "stem": "base",
+            "suffix": "ѣ",
+            "stress": {
+              "SuffixVowel": 0
+            },
+            "evidence": [
+              "e-syn-grammar"
+            ]
+          },
+          {
+            "id": "syn-loc-du",
+            "cell": [
+              "n",
+              "loc.du"
+            ],
+            "stem": "base",
+            "suffix": "ꙋ",
+            "stress": {
+              "SuffixVowel": 0
+            },
+            "evidence": [
+              "e-syn-grammar"
+            ]
+          },
+          {
+            "id": "syn-loc-pl",
+            "cell": [
+              "n",
+              "loc.pl"
+            ],
+            "stem": "base",
+            "suffix": "ѣхъ",
+            "stress": {
+              "SuffixVowel": 0
+            },
+            "evidence": [
+              "e-syn-grammar"
+            ]
+          },
+          {
+            "id": "syn-voc-sg",
+            "cell": [
+              "n",
+              "voc.sg"
+            ],
+            "stem": "base",
+            "suffix": "е",
+            "stress": {
+              "StemVowel": 0
+            },
+            "evidence": [
+              "e-syn-grammar"
+            ]
+          },
+          {
+            "id": "syn-voc-du",
+            "cell": [
+              "n",
+              "voc.du"
+            ],
+            "stem": "base",
+            "suffix": "а",
+            "stress": {
+              "SuffixVowel": 0
+            },
+            "evidence": [
+              "e-syn-grammar"
+            ]
+          },
+          {
+            "id": "syn-voc-pl",
+            "cell": [
+              "n",
+              "voc.pl"
+            ],
+            "stem": "base",
+            "suffix": "и",
+            "stress": {
+              "SuffixVowel": 0
+            },
+            "evidence": [
+              "e-syn-grammar"
+            ]
+          }
+        ]
+      }
+    ],
+    "lexemes": [
+      {
+        "id": "l-000002",
+        "displayed_lemma": "ра́бъ",
+        "paradigm": "p-syn-rab",
+        "stems": [
+          {
+            "name": "base",
+            "text": "раб",
+            "evidence": [
+              "e-syn-lexeme"
+            ]
+          }
+        ],
+        "unavailable": [],
+        "relations": [],
+        "evidence": [
+          "e-syn-lexeme"
+        ],
+        "categories": [
+          {
+            "category": "Noun",
+            "evidence": [
+              "e-syn-lexeme"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -440,6 +440,8 @@ pub fn import(source: &str, pos: Pos) -> Result<Outcome, Box<dyn Error>> {
 
 /// Merge the modified lexemes into the lexicon file (by id).
 pub fn write(o: &Outcome, pos: Pos) -> Result<(), Box<dyn Error>> {
+    if o.lexemes.iter().any(|l| l.pos != pos) { return Err("mixed POS in crosscheck outcome".into()); }
+    church_slavonic::Lexicon::try_from_lexemes(church_slavonic::Recension::Synodal, o.lexemes.clone())?;
     let path = super::lexicon_dir().join("syn").join(super::lexicon_file(pos));
     let mut lexemes = lexicon::parse(&std::fs::read_to_string(&path)?, pos)?;
     let mut n = 0;
@@ -449,7 +451,7 @@ pub fn write(o: &Outcome, pos: Pos) -> Result<(), Box<dyn Error>> {
             n += 1;
         }
     }
-    std::fs::write(&path, lexicon::format(&lexemes))?;
+    super::publication::stage_lexicon(&path, &lexemes, pos, church_slavonic::Recension::Synodal)?.commit()?;
     println!("updated {n} lexemes in {}", path.display());
     Ok(())
 }

@@ -1,0 +1,763 @@
+{
+  "scope": "Independent Python tarfile byte comparison against both local source archives; not upstream authenticity or annotation validation.",
+  "archives": [
+    {
+      "source": "references/downloads/ud-ocs-proiel-r2.18/UD_Old_Church_Slavonic-PROIEL-64eddf87abfaa51e7f5acf0bef1bebcdaca1559f.tar.gz",
+      "source_sha256": "579b20edb50366e66168bb4d9f74bee0ce782f8e5b282bad8ebb2d8d870bd65c",
+      "cache": "target/sources/treebanks-verified-v1/ud-ocs-proiel-r2.18/579b20edb50366e66168bb4d9f74bee0ce782f8e5b282bad8ebb2d8d870bd65c",
+      "files": {
+        "UD_Old_Church_Slavonic-PROIEL-64eddf87abfaa51e7f5acf0bef1bebcdaca1559f/.gitignore": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "UD_Old_Church_Slavonic-PROIEL-64eddf87abfaa51e7f5acf0bef1bebcdaca1559f/CONTRIBUTING.md": {
+          "bytes": 363,
+          "sha256": "042512241e1d9db521e7ca59f727b9a37c4b5bad12067d29ee29a3cc5606580b"
+        },
+        "UD_Old_Church_Slavonic-PROIEL-64eddf87abfaa51e7f5acf0bef1bebcdaca1559f/LICENSE.txt": {
+          "bytes": 197,
+          "sha256": "e0938af0d4c1751bd4e134be986bf8393348d5be75b6b26a04b02b81ed0d76d3"
+        },
+        "UD_Old_Church_Slavonic-PROIEL-64eddf87abfaa51e7f5acf0bef1bebcdaca1559f/README.md": {
+          "bytes": 4058,
+          "sha256": "062ecfba7a353993b8fbc9954bd91a4c318d51177a0482b60586b7989808da6c"
+        },
+        "UD_Old_Church_Slavonic-PROIEL-64eddf87abfaa51e7f5acf0bef1bebcdaca1559f/cu_proiel-ud-dev.conllu": {
+          "bytes": 2071103,
+          "sha256": "1e84663c501e29ff27c89854052d2d9b678b8625597e15a81108af46de48f53c"
+        },
+        "UD_Old_Church_Slavonic-PROIEL-64eddf87abfaa51e7f5acf0bef1bebcdaca1559f/cu_proiel-ud-test.conllu": {
+          "bytes": 2174954,
+          "sha256": "1f2c2e078a498594b1d1efb4816390ebb543c46d8b97f0d4694c8399f8b45828"
+        },
+        "UD_Old_Church_Slavonic-PROIEL-64eddf87abfaa51e7f5acf0bef1bebcdaca1559f/cu_proiel-ud-train.conllu": {
+          "bytes": 17489327,
+          "sha256": "c9d9a65074bd95bf51617b27515b735d4de13dcc94392ced763d63aa1dc68510"
+        },
+        "UD_Old_Church_Slavonic-PROIEL-64eddf87abfaa51e7f5acf0bef1bebcdaca1559f/stats.xml": {
+          "bytes": 13359,
+          "sha256": "9dad552bebd30e8c2cd82ca0de1b0317cb37a589da1cb2408f3c85d7d72e3c1f"
+        }
+      }
+    },
+    {
+      "source": "references/downloads/syntacticus-20230428/syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15.tar.gz",
+      "source_sha256": "e32844093cc173edf9241868fdad7167dfb63fb7f105d146af02a645ff382fec",
+      "cache": "target/sources/treebanks-verified-v1/syntacticus-20230428/e32844093cc173edf9241868fdad7167dfb63fb7f105d146af02a645ff382fec",
+      "files": {
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/README.md": {
+          "bytes": 757,
+          "sha256": "dee5d084bd1768fa0292a9b80b216ae54d7c8612211af1bb9ad53882c4f8d775"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/iswoc/README.md": {
+          "bytes": 2799,
+          "sha256": "3c2ba010f4a15fa4f978c8655ffee1f27c549fdf98ca56e57f64838f0a9da12a"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/iswoc/alfonso-xi.conll": {
+          "bytes": 294258,
+          "sha256": "38593ec67e12aeb8c5ca44b2385bed45455604bd48e38586b72c119abbde52a6"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/iswoc/alfonso-xi.xml": {
+          "bytes": 1460372,
+          "sha256": "fab11e9bd5f1c6388eabaf42aed7c69e11ae0a4bab583c7483239fc3fb9a6d17"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/iswoc/apt.conll": {
+          "bytes": 246960,
+          "sha256": "89662ce797789b830a7f40b54898b9fbb228de0a0f1f2807125f4d70450d6840"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/iswoc/apt.xml": {
+          "bytes": 1138296,
+          "sha256": "80d55cfca8102ad5385be420fa2568a57289da1c6cd663500d6847e15d27d806"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/iswoc/cdeluc.conll": {
+          "bytes": 653569,
+          "sha256": "8c4b928f115399b4f810ef4a4dd311562f1721ee1392754b022fb26bef42817e"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/iswoc/cdeluc.xml": {
+          "bytes": 2932849,
+          "sha256": "e61c40fc26bd213d54455fc9f71d2a70d6cad53e74bb47c9969270f56bf62465"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/iswoc/ce.conll": {
+          "bytes": 177761,
+          "sha256": "716ae3b6bf163e09165579056eebfb2f2d436111abf8877ac44a9f02cd3f2a34"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/iswoc/ce.xml": {
+          "bytes": 855342,
+          "sha256": "723a16344d718261d318bcaddbdf775e84bf1838ab5b06e41626fd82cb4ebda6"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/iswoc/cge1.conll": {
+          "bytes": 454309,
+          "sha256": "faae267ff19b7e28df27d004a52f97b15260e8fbebac7f15022531d9f9badd08"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/iswoc/cge1.xml": {
+          "bytes": 2368546,
+          "sha256": "d6f115e09361f2f427099fed9c53edf4eafa0db9c4806ed1b8fe95aaebb8fd8e"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/iswoc/cge2.conll": {
+          "bytes": 418461,
+          "sha256": "94cff3c78318fff5a646a63445b2eb8e0d6f142da585db8e4abd78d9a3f7b3c0"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/iswoc/cge2.xml": {
+          "bytes": 2044963,
+          "sha256": "0f5bace5df62959424702552940ffaf99b0399dda9dc75d803af1e80e4f2d395"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/iswoc/chrona.conll": {
+          "bytes": 260454,
+          "sha256": "0ac364ce916967c9562711cdb15e02c6d681e88b9efd22e888f4091e8d242154"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/iswoc/chrona.xml": {
+          "bytes": 1070437,
+          "sha256": "3d1a065f5d76b4b62944ed6af3a0ea04c27fde50396a40757e753af20830a630"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/iswoc/coutdec-v-8.conll": {
+          "bytes": 546837,
+          "sha256": "d55b2e2e410f3b369b614a4343d0048a6674d96b8ed3e2b7bcc01821df49c5b7"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/iswoc/coutdec-v-8.xml": {
+          "bytes": 2520150,
+          "sha256": "361c5e42ead97235123f3ffa9f525c44efc988329164e6ae4d895e661ebb6a61"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/iswoc/ee1.conll": {
+          "bytes": 350544,
+          "sha256": "ddb04512d99ed5f5494536fdb19593301fb9a777fa4e02d38bfc279733df3a76"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/iswoc/ee1.xml": {
+          "bytes": 1826152,
+          "sha256": "72ce24e39d0b11751d48a2d18537e5a3d08adfc59f8e2992d2304fe41a670b56"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/iswoc/eustace.conll": {
+          "bytes": 98071,
+          "sha256": "7fccf2c83e48d7ac4e0cc5c8636252c9155aedde36c48684893dee5ed97172bb"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/iswoc/eustace.xml": {
+          "bytes": 469135,
+          "sha256": "d3cbf2e21b9a198dd416c2c586cb6d55462fd4baec967fffb4bcb1cfbf5d56bf"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/iswoc/ge4.conll": {
+          "bytes": 343260,
+          "sha256": "196ff2de951a63b11296b4d72bb0e77252bdd45e8967e0009570440e6cce7653"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/iswoc/ge4.xml": {
+          "bytes": 1740323,
+          "sha256": "7c6b387105aa579d830b8b0d1e49bc3600dc61d51b864ca35ad3e1c06ebf52b6"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/iswoc/or.conll": {
+          "bytes": 78233,
+          "sha256": "2da73280c09ef51cd805a142c342910714903247f0cb1706db37eac0efb5be1f"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/iswoc/or.xml": {
+          "bytes": 336880,
+          "sha256": "083bae8d8da1108eae4b1cce99e387a425c36f840611c1808d62a427171ff254"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/iswoc/varones.conll": {
+          "bytes": 225533,
+          "sha256": "1271bf3fff1812f47a7e91a267281db8ffea52f91e86f1571cebc9d0a0605406"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/iswoc/varones.xml": {
+          "bytes": 1076146,
+          "sha256": "e7f5d7c8a5d19a2ca49677f25b076f7bb65c9504e53b6213c74ed2aaee696160"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/iswoc/wscp.conll": {
+          "bytes": 569688,
+          "sha256": "6e9b6f1760cfc73ad00b11b2363d40c843049b3d49ce35b01c275de7ce26a184"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/iswoc/wscp.xml": {
+          "bytes": 2734554,
+          "sha256": "5f22a5feb52500457000f7cad423e1e11c1172f0ce6a7242ececeacfbaa7d4c4"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/iswoc/æls.conll": {
+          "bytes": 142823,
+          "sha256": "577ea91f7305e02cfc08e19615f2174758bd51f773dee63f3554d44cb0861cd1"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/iswoc/æls.xml": {
+          "bytes": 646423,
+          "sha256": "b4f7bcbe63f84d6315d8c0e231b96887a7365d46705f20a3b24aa5d5031ade43"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/menotec/README.md": {
+          "bytes": 1379,
+          "sha256": "0526c1a4596badc2d55b0dc3eee2827f08ab80ea8dfc12d4b3468e474a391cb6"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/menotec/am243.conll": {
+          "bytes": 1975,
+          "sha256": "3d1367ce011e52caaf9b210851c37b82bf7d1ba5849f316b178cd4ce315b24e9"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/menotec/am243.xml": {
+          "bytes": 18148,
+          "sha256": "dff3ff9e49ee85e7f2bb15923b233e7bc25a1be1b4d20cd9626d13c08a0d8ae9"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/menotec/hom.conll": {
+          "bytes": 2853210,
+          "sha256": "05a25a393cbbd271f574ebc3360313eac616724465368f6257a9fab8b68d0121"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/menotec/hom.xml": {
+          "bytes": 11278443,
+          "sha256": "e5211acc24acc882712f623c7d7f9553e67656f3f716c6013f27fc58b4a1b5d4"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/menotec/mll.conll": {
+          "bytes": 2616811,
+          "sha256": "bcdb45060130458a149e14b5065eb61b1294005a025f178c20419fac45d3f17f"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/menotec/mll.xml": {
+          "bytes": 10320049,
+          "sha256": "b32a137b991e8c2c3273c262e3a3704d031e35cacaa36553725fd51af19e5af8"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/menotec/olavssaga.conll": {
+          "bytes": 1922956,
+          "sha256": "78d94f9a66591198c27cfd905b2e214ad72e81e307ca3e1a8157b115ad08ed5f"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/menotec/olavssaga.xml": {
+          "bytes": 9041750,
+          "sha256": "926ffcf831a548b914f6e74dafab7505c0a2ac4142d175d8b1cbda588251f752"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/menotec/pamphilus.conll": {
+          "bytes": 193618,
+          "sha256": "a591badcce3ee709135888351f9f73be4118834fe5058dd4fc9e5549291afd10"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/menotec/pamphilus.xml": {
+          "bytes": 844008,
+          "sha256": "182985570df5e32be6494e3bdb739b08f580d14d9218bbe33d09f7439096d9d4"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/menotec/strleik.conll": {
+          "bytes": 1756288,
+          "sha256": "402cb12698677ccd6264ac4b9754579aacc8476e49867d6eeecb6e3109189643"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/menotec/strleik.xml": {
+          "bytes": 7848962,
+          "sha256": "36ab80cf6e83cf793b378ea137422fbc34883f7ae7ec174aabbe2303a773f5f2"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/proiel.xsd": {
+          "bytes": 9358,
+          "sha256": "95aaf64fbba1db0a4559761b621b9b6c3dcae93ab58c026f62e47f422f404508"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/proiel/README.md": {
+          "bytes": 3968,
+          "sha256": "2e5c6b7f8c378e928ad7d378ffbdf1d6d1fa422eb88201e30e85da6d3202e36c"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/proiel/armenian-nt.conll": {
+          "bytes": 904228,
+          "sha256": "96c8035d73c19cec275d93076296a23804fc068cca5774b803179e2853e49492"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/proiel/armenian-nt.xml": {
+          "bytes": 5012565,
+          "sha256": "f66dcfcb89d0bbad99f8bcad56eb2c07cb5cd9db333500191830efb0ac683f9e"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/proiel/caes-gal.conll": {
+          "bytes": 1364539,
+          "sha256": "a7321998631b76449918b9c2e32d0f71584830bf14a3541879f583f9a2a7623b"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/proiel/caes-gal.xml": {
+          "bytes": 5505596,
+          "sha256": "1c666ea866167fa9dd3e0302b69a839a8bce88b90ca68b5ad2cd0e63a0e189f3"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/proiel/chron.conll": {
+          "bytes": 1407145,
+          "sha256": "88b7f8f0db8d49d4196fa731a126b32afedd5f84991f75ab7fb88844804c64a8"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/proiel/chron.xml": {
+          "bytes": 4759153,
+          "sha256": "deb1c3390a8406f496c9822419df3fa3dd8eb1266467887cffc5e50521e1554b"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/proiel/cic-att.conll": {
+          "bytes": 2225044,
+          "sha256": "44e3473443bb40596ea5194c23454292c2a9409579a79b77e1a7f699143b9f18"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/proiel/cic-att.xml": {
+          "bytes": 8953653,
+          "sha256": "9a60fe6f47514caaf2cd3b954813ef4ca92163a0a2bbdc3661dff05fca5c2339"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/proiel/cic-off.conll": {
+          "bytes": 566985,
+          "sha256": "798353f16227a430c731e51013ff741eb6a5bc4f4585247202f26906da58d44c"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/proiel/cic-off.xml": {
+          "bytes": 2235707,
+          "sha256": "51b0844969d714627814a47b3f5ea3a1494194f8fdc9fda4acfb611ba1ad34b5"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/proiel/gothic-nt.conll": {
+          "bytes": 2786038,
+          "sha256": "7e484a983969c2220926805074ba0a04feb703fa9982e6080ee417e672bcfcca"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/proiel/gothic-nt.xml": {
+          "bytes": 15308910,
+          "sha256": "32ec900ddf6c56d3c55604ed503050ffdbf0ebf2894d37962259d32d5e4ce5fa"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/proiel/greek-nt.conll": {
+          "bytes": 7767991,
+          "sha256": "4d9a0578ae9b495f9051ab76b46caf1f8366b206022dc8938b5112fd3521f044"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/proiel/greek-nt.xml": {
+          "bytes": 29134492,
+          "sha256": "3e3839a7f1a32efc027eb0d0e525b0527354b1979dd01b85f2f8c5236e2e8cc6"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/proiel/hdt.conll": {
+          "bytes": 4979548,
+          "sha256": "d22b5130e29a5cca5bec7464f5a458a164d0bcf236041094bc4b5484f51b551d"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/proiel/hdt.xml": {
+          "bytes": 17018771,
+          "sha256": "2a62798653f0ea0a5e87671b3e364109ea5c2ab479269115f382155340d3c032"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/proiel/latin-nt.conll": {
+          "bytes": 5337568,
+          "sha256": "26fe11f60be2c64796f5da95716d2329888146fe90e377d100ed9f2726c6df5a"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/proiel/latin-nt.xml": {
+          "bytes": 23344223,
+          "sha256": "8622b5af6c6e0effc86e64a43a859b959437c305b40fcab32fc93576e5ebe07d"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/proiel/marianus.conll": {
+          "bytes": 3304493,
+          "sha256": "dfcff24de23174912f27a2ec42c441cc6ee8615d1d96e250cbfc70bc73fe3221"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/proiel/marianus.xml": {
+          "bytes": 14702589,
+          "sha256": "be58539cdf9282c12eb5a9d5b4a6de17bc9a4d33e84f74c2c8a4283b0252e65e"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/proiel/pal-agr.conll": {
+          "bytes": 595437,
+          "sha256": "ca13ac9aa64d488de4e5992c79b05c5e00f38cbe75954d62e383443dacb46d22"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/proiel/pal-agr.xml": {
+          "bytes": 2316906,
+          "sha256": "b210f04426231c93ea07165c9a13bf592860ab45a236e7bae231c3e96d37cfb7"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/proiel/per-aeth.conll": {
+          "bytes": 827295,
+          "sha256": "d2f15aa7b8cfcb6d9d0dc53f543d2d78748f4b6c722ef9b1f6c38cfcd23f1830"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/proiel/per-aeth.xml": {
+          "bytes": 3629094,
+          "sha256": "9d5cc1791385b98005f461f706c9dacddb4ea0d4d2750c4bb3511c9c193453ed"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/README.md": {
+          "bytes": 6994,
+          "sha256": "18d7a6de0b95207f280e45e00098ed57df4b7d8282afe2f37bb89b58b57fa0a3"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/afnik.conll": {
+          "bytes": 381126,
+          "sha256": "4444f43f7047f6c9fab6a3d67c330042de6aba91f41eb1e5dbfc39ef40321693"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/afnik.xml": {
+          "bytes": 1570915,
+          "sha256": "8d3d6ad8e155429d54ed5e96d289f959aa93af625d28e5de068fd23471b255e0"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/avv.conll": {
+          "bytes": 1279846,
+          "sha256": "157382db4692395e7299fcec5b8dfa24a6963ca19c7200540059b12fec51db64"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/avv.xml": {
+          "bytes": 4968788,
+          "sha256": "f4efcd5b71f9116ac1b6bb7c303cc3a6fe4f9b36428f9d81e3727314fdc62594"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/birchbark.conll": {
+          "bytes": 102217,
+          "sha256": "a2659315a9b976725d6e608f4b2d1b26ca35e861de735062b64c2e5d99b2c32f"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/birchbark.xml": {
+          "bytes": 386005,
+          "sha256": "8af35bf9f7d309135f64aff0083b41bf5f399a35b111c0edb82b87717bc90cc1"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/bur-alph.conll": {
+          "bytes": 73937,
+          "sha256": "afd94184ebbe035db5e3912d24f4f04a9e31cd194db5592ef62eddb5f9bfb97b"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/bur-alph.xml": {
+          "bytes": 269180,
+          "sha256": "a53f33e740fdf335de0792a83cf4ed13b704f5f2df2e515158ea89b73d534d73"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/chrabr.conll": {
+          "bytes": 51288,
+          "sha256": "46664472de896406273731a14303a35f8a2410d5656780e477d848f2113b504c"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/chrabr.xml": {
+          "bytes": 168352,
+          "sha256": "9873c86b6668d70c61726a532c852ddad0826199386a828c860124df67306770"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/const.conll": {
+          "bytes": 524322,
+          "sha256": "a906a7bb656ac6a76e52f6a97004511b19d32d73a495323a3a9d1c7fbc0a7b4c"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/const.xml": {
+          "bytes": 1822016,
+          "sha256": "41cf8439a9af83c81aaddc8322a0a84459b664f861dd05f5a8188245b01a372a"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/domo.conll": {
+          "bytes": 1255022,
+          "sha256": "21dcdefdd3b298deb9fc3e29f6ace871d12b3f23fc2178452a498893073a5c08"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/domo.xml": {
+          "bytes": 5493389,
+          "sha256": "5989a8beb1de4063d9cb5e813eb3a7ad3d980d5aa8e7266c1404950e8b1cc9d5"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/drac.conll": {
+          "bytes": 136604,
+          "sha256": "27300bea4747d203e924db0b0d4eb00fe2f4f48c0bdb9a7d7e87f9c0e31c3ea6"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/drac.xml": {
+          "bytes": 502662,
+          "sha256": "7336d023d4d7755a7a0d2d2b38548f96889c9d87f2c1dab54da8d4b1fc16cf3d"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/dux-grjaz.conll": {
+          "bytes": 23445,
+          "sha256": "53e6a8403bb96cb24d980a22cb12d5cae946f5b3ce3a2732142cb061655c9215"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/dux-grjaz.xml": {
+          "bytes": 79753,
+          "sha256": "525599ded28bc7645db6174d4e2077c388493b3efbdb0da1fb42d18aa0ae2a20"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/euch.conll": {
+          "bytes": 41841,
+          "sha256": "6d0f5e4d9cae5131368049b4f2db781bcaf34f29505e13ca368dde857a8a49f0"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/euch.xml": {
+          "bytes": 153630,
+          "sha256": "86f5c35bf462faa7f9684c1a217ca6c06cc4bec744bd555fd8913a37718459f8"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/gol-gol.conll": {
+          "bytes": 33987,
+          "sha256": "22ae15f99b34bc34cd2bb36fbb65c69fd3bf77f1c08b7aa00885701c69534fcd"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/gol-gol.xml": {
+          "bytes": 115717,
+          "sha256": "66ad65cb9caf71c60159906f6c56dab886def635bcb0bbc22b1f8dbb2432e3c6"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/golitsyn.conll": {
+          "bytes": 56716,
+          "sha256": "bde1211815a4638c0475eb2d288f83a35b3fe8bbb4498137262c91c30a002e0f"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/golitsyn.xml": {
+          "bytes": 181451,
+          "sha256": "b226162e9e303f9ab2369d2811ae069c483458e3be3700540d1d8f9f792d8a4f"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/kiev-hyp.conll": {
+          "bytes": 30432,
+          "sha256": "3363c704871f9cf550f668440dd8cdfce0750a9dc8da1cd2cdd099bca609b2f7"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/kiev-hyp.xml": {
+          "bytes": 102908,
+          "sha256": "0ab6e5e7aa5a4460ad37bb351b476dc74a0d71f502ef9902b1dd5814af39b012"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/kiev-mis.conll": {
+          "bytes": 66559,
+          "sha256": "b49fcb22b248fd52647d41ba8f9e9b4815d188666775068846cc571f9475f362"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/kiev-mis.xml": {
+          "bytes": 208283,
+          "sha256": "b316a3763a16d378e4d06f6f6b6942de6a41998f2bd86eab81f1feae60cc0712"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/klem.conll": {
+          "bytes": 13353,
+          "sha256": "ee1500de1ed76427c9dd9baabbec8bbb3dca58748d0eac7ae6dd11bc4b2c45e0"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/klem.xml": {
+          "bytes": 48522,
+          "sha256": "fc0d76f0df182b795655fc3c49ee4f5431b1454b64e21d6d97ab8365d9e47e15"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/kur.conll": {
+          "bytes": 13366,
+          "sha256": "c52f04c42e0b6a1f8fda76d73a263c837071f06c9e38ecd426882f31b4487bbf"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/kur.xml": {
+          "bytes": 48785,
+          "sha256": "f74709e8282ebe773dae8c2a6768f43f7115bb6afb2b4a9f45b037ea5f1d1905"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/lav.conll": {
+          "bytes": 3140194,
+          "sha256": "b7f6b3954d3c52cad23bc8fb536980ab82f5ba95f5261fae7101844dd9f696c7"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/lav.xml": {
+          "bytes": 12205099,
+          "sha256": "9e1e793ae53a95c0da1bf129ac3494ed532c5ce09ff435efab29a04a831b2d7c"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/luk-koloc.conll": {
+          "bytes": 51178,
+          "sha256": "e6073973ad59244535a5a4d661efb9c1a726b3ac46be35322616bd4124025b1a"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/luk-koloc.xml": {
+          "bytes": 165985,
+          "sha256": "7149eff8244ca2f652be54954219b9a1c5124646ceba1530fe76b8023bb234f4"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/mikh.conll": {
+          "bytes": 58990,
+          "sha256": "97727667cda99f23cd708495902a8c4027729721c91b5a174fb6b3160e9d3436"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/mikh.xml": {
+          "bytes": 220305,
+          "sha256": "f8b9bb62e402f24dcfdcd563f15f955053a0fd5a109d3d090501a2be04e55dcd"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/mst.conll": {
+          "bytes": 8818,
+          "sha256": "437fe9812bb05ad59f1fa490ffd7afe6f34876a5f7cc5ed9ef20ff006a931d4d"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/mst.xml": {
+          "bytes": 35724,
+          "sha256": "741a806ac6ab339279a513bb7003b360d8250ebf3adf28a2a2dd5e512dd598dc"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/mstislav-col.conll": {
+          "bytes": 15463,
+          "sha256": "7f9b3a98a0a9951b96796c5879c3bb5778860c91fc5368307d80631798227673"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/mstislav-col.xml": {
+          "bytes": 53774,
+          "sha256": "a8b8425eee6fdddd2fc8d4abe4309df1894a688170bcdd418887e8ef2c549973"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/nevsky-treaty.conll": {
+          "bytes": 15493,
+          "sha256": "c86a984fc6130a06c7969f4e699c973097d9891c6c4f4873ef315b4e19a76086"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/nevsky-treaty.xml": {
+          "bytes": 56266,
+          "sha256": "656a25aeaf9cb3bcaa7a001fad7288fddd1a2109a24f2e612e25f83ca95c91f6"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/nov-list.conll": {
+          "bytes": 29142,
+          "sha256": "49947cc21b82a0bda898d51eb74a6174c65414734d4f271aee95165644eabf1a"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/nov-list.xml": {
+          "bytes": 101270,
+          "sha256": "b752f678b3dcd053e44ef1657f26a334ed343b77620d2ae11ecff28d59cfa47e"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/nov-marg.conll": {
+          "bytes": 5847,
+          "sha256": "f21a8f515ac41d9c516014852eebc52009d2ebdc47a4059c7f7eda602d0090d3"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/nov-marg.xml": {
+          "bytes": 25369,
+          "sha256": "639bab9695a95302ba397b9a376867332ea120da8c594cb1c7825a35fe668279"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/nov-sin.conll": {
+          "bytes": 1546835,
+          "sha256": "0d1f4e7b9790175e87dfe1a0d48e08fdc5e375b82795fea36fb99a0cd3380e20"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/nov-sin.xml": {
+          "bytes": 5519317,
+          "sha256": "c889aadfb83e05543b7a1e04de349b8fbc778de0cdeb1a078dbf4be2ce2528c2"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/novgorod-jaroslav.conll": {
+          "bytes": 22666,
+          "sha256": "089735d35ef6863460dedfb6448a7f5504241c5e3b244c7e484777e8f95ce2bb"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/novgorod-jaroslav.xml": {
+          "bytes": 79541,
+          "sha256": "20fd3dc7c6e4a433ba2b194428c29fae3c93b9957c6d8eb2a5977baa435ed941"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/ostromir-col.conll": {
+          "bytes": 11565,
+          "sha256": "a275e244cd454a3fc963174bd2f3777421c3f842f2873c4113a2cc4ca67b2a08"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/ostromir-col.xml": {
+          "bytes": 43543,
+          "sha256": "34632b6693028b28cc58ba73a27c449b8b99a11c86c10ab817459b1a34aa4347"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/paz.conll": {
+          "bytes": 20888,
+          "sha256": "0656e110a07bddd63d79f7aa11d3bac39b2b839b49ac22e0c3b15a3d4be7b958"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/paz.xml": {
+          "bytes": 71962,
+          "sha256": "c40b9a9242885f6879ec926edacd82888acccc25ad3ae866b018abd2384976f9"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/peter.conll": {
+          "bytes": 46429,
+          "sha256": "9c1e56790f459ff21fbbb9a61c6bc079e41ef1b9cd4db69f3f76eadbd0c54ddc"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/peter.xml": {
+          "bytes": 155783,
+          "sha256": "43421b27d7c6ea4164065b5e9dd6d86354ababf761178ff61b30a1d2089ab96b"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/psal-sin.conll": {
+          "bytes": 1805046,
+          "sha256": "5c35132c250262ed860064552aeed9ce3d603d562acc599f01c9cd0a76e5abcf"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/psal-sin.xml": {
+          "bytes": 6224006,
+          "sha256": "fb987a2e4658ac67293828c10373c43509e9a527721a61de239c9184a3ec16b4"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/pskov-ivan.conll": {
+          "bytes": 19226,
+          "sha256": "65c4ef24c9ee3250887d4fdd12c67b450304fa63f7e921d25d14dbfe21b92323"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/pskov-ivan.xml": {
+          "bytes": 66524,
+          "sha256": "ed3a4c9cc421c5d7cf7636e2971a7436f4e6d767711ebfab88d66ffd477109b7"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/pskov.conll": {
+          "bytes": 133296,
+          "sha256": "13436332b25584588e5ab443dd15fac041ad1b18d052d75662007008552b9e5a"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/pskov.xml": {
+          "bytes": 415732,
+          "sha256": "017bb4fc12997f5b65e5c53348cd0ed8ee3e88b977bbf36b1de8a816611c19b0"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/pvl-hyp.conll": {
+          "bytes": 201226,
+          "sha256": "3a57ba8ce6a8411e8f2dab62c8b8d79b55edd1ad4e9d39dabd98c8c6a4e6e4ab"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/pvl-hyp.xml": {
+          "bytes": 779057,
+          "sha256": "5b70222ce30ab0a0c8807abcf70a0373e995dd14580572126b390ce7dea68039"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/rig-smol1281.conll": {
+          "bytes": 9445,
+          "sha256": "4cae1c7616b59ffcbcfa71ef10a0910177a00115f804c5e03cc9328e2254553c"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/rig-smol1281.xml": {
+          "bytes": 38292,
+          "sha256": "f144ff602a24e55b257189741b26cc50c20021a0fba9c385e757b28afab0084a"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/riga-goth.conll": {
+          "bytes": 90471,
+          "sha256": "f1ad374075c341b22268cea5e64c2416aff706e7d4a46959d5e1980c23522323"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/riga-goth.xml": {
+          "bytes": 290136,
+          "sha256": "757321f7a61295ea326435a901337c5dcb08d61378c3f49548406a8bd3b2db80"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/rusprav.conll": {
+          "bytes": 213469,
+          "sha256": "9cb94d22da3ffaa9ef43050cd3d01fbc7930720f4d77e495da2cd11ee7141e24"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/rusprav.xml": {
+          "bytes": 822383,
+          "sha256": "988fa4103a90a9748611dbcd2d71196a0398d56c4ac6a6391d8ed32654cbb773"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/schism.conll": {
+          "bytes": 102626,
+          "sha256": "6254f187bdf5c5e57ff85409f09b32bb30b815d9df4a9a59e26775e0db35f0ef"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/schism.xml": {
+          "bytes": 395196,
+          "sha256": "ddc65cf0aa1ed0a8c5ea0af526b4111c7b15196b4fd38cb9371352dad3a2f6b5"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/sergrad.conll": {
+          "bytes": 1164168,
+          "sha256": "ccb84ef9fbc841232c256266899c9f682f09a4fd34b0f8834a23bbaec4e0a534"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/sergrad.xml": {
+          "bytes": 4405703,
+          "sha256": "8537be584e78f19ba729dd3e1b128ef9290ecbb24e11cb5d2722a3fb028d1b92"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/shch.conll": {
+          "bytes": 42101,
+          "sha256": "9d15a797b86eff9866efcf88acb29b8d693335532d715c3382e1d60dc3eef67e"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/shch.xml": {
+          "bytes": 133962,
+          "sha256": "7b840daf46a62e972f46304d05e00ed086c9dd385bc61ebe121cdd319f8efee6"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/smol-pol-lit.conll": {
+          "bytes": 18988,
+          "sha256": "eec2f6d142033e59b7f1a83dcd8ac1aa021faf572ced4649116809d0148011b6"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/smol-pol-lit.xml": {
+          "bytes": 67991,
+          "sha256": "1e918f3ba0415acbd1ec9198b988c88dc605884612580f6c63aa3fda77cf4e12"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/spi.conll": {
+          "bytes": 168600,
+          "sha256": "248204f87ba93a7c5505ca5f345c4eee3a2e4af6a7b40bb61fecc46a47ebb3da"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/spi.xml": {
+          "bytes": 664045,
+          "sha256": "083dff276c3625a92f387a9c93c69d1f232d03c702b0e67f953b0d8362ad11a7"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/stefan.conll": {
+          "bytes": 688883,
+          "sha256": "f1a4e4512390da7c1990013cb24afe7a33faa03951fd5da07ad24a23ad2496bc"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/stefan.xml": {
+          "bytes": 2563410,
+          "sha256": "2338e57640fda991133cef3e7932a5fd059a3afed4e63d37d9828dcce72ed613"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/supr.conll": {
+          "bytes": 6070653,
+          "sha256": "934e3d541287947ea34082c06653ac596ae5580cc114ff9d7ed85c64ddca2ab6"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/supr.xml": {
+          "bytes": 25433599,
+          "sha256": "ef5f1b4602ad9d97e8a1d0ec91209bbc6433371b02c41dc6e36cb73bf324cd8e"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/suz-lav.conll": {
+          "bytes": 1337428,
+          "sha256": "b93098ecfc7d2280d6e083002da4f46c4c3a9add67da834c953635a6faf93d39"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/suz-lav.xml": {
+          "bytes": 4718426,
+          "sha256": "fc8dacd22231d09e34a2d91278cba0a2ba7cea2e43fae3b6e29470fff11b72d7"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/turch.conll": {
+          "bytes": 37746,
+          "sha256": "fdc4e0c1a469591708716aa046b0e2fdda242f9cebd334827c93840a6040a18f"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/turch.xml": {
+          "bytes": 121395,
+          "sha256": "f1f3b95a1ff3d65a93f9b5882b65fa86035648f61c90ba67dd1fdb7164bc0b98"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/usp-sbor.conll": {
+          "bytes": 1429948,
+          "sha256": "440fb263b693d77e570764eb5a6bfbcdab3a9086e2dc5ca2551b8da85b9e4926"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/usp-sbor.xml": {
+          "bytes": 5262561,
+          "sha256": "3bf26efb4bd6a8fb96b9f8ce4ffaf29b8274cb50b604a2b918fe358515f5685c"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/ust-vlad.conll": {
+          "bytes": 31564,
+          "sha256": "6b6bf760902e92541e3120d39636f1a13e561bdcf6f743a3095b875960257c22"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/ust-vlad.xml": {
+          "bytes": 104370,
+          "sha256": "0ded57a2c1d5bdd06961a5456cd6a6e75eb34cc091a68751de2f23765e313424"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/varlaam.conll": {
+          "bytes": 7574,
+          "sha256": "c82540621d4bbe4cedc2d9bb85bc461e982496c4c419bcbdbce2e98256134222"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/varlaam.xml": {
+          "bytes": 33481,
+          "sha256": "af4b94c67c7bebebbbc5a5bf9e06cf104e88e068a2f7c5eebcc3da4a54d43103"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/vest-kur.conll": {
+          "bytes": 66458,
+          "sha256": "5a1ab5aceeb7829bb62bec0dacf6601a5e9c9017df48ac0d67cd29fe926c50f3"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/vest-kur.xml": {
+          "bytes": 241813,
+          "sha256": "72348629df8a687953fded8a710b3573d513f8afc73e21a4065cb7db73deae4d"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/vit-const.conll": {
+          "bytes": 517502,
+          "sha256": "b0b1f34348a54515768415b4a1f01455368dfba7371ed4423d37d3deb101efb3"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/vit-const.xml": {
+          "bytes": 1792651,
+          "sha256": "4523e2c16aa8975c4f4b241fa6b94f605e5e729e98d3dd04f9582368e09047d3"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/vit-meth.conll": {
+          "bytes": 183637,
+          "sha256": "e73ef45a28fe2208b97fa46bcf7345de3592700dea085c5ef89d500c6ff2bf7f"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/vit-meth.xml": {
+          "bytes": 625477,
+          "sha256": "7f434fae3f62eea88cee662947f93f072fba205507c738f1708bb31d7e717164"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/zadon.conll": {
+          "bytes": 141181,
+          "sha256": "f6d01a5248d97b6804321168299110ebce1a7b1f3a237b3c2291c08417732a26"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/zadon.xml": {
+          "bytes": 483688,
+          "sha256": "54e39470a6077402ee0dd53cdb3de6807f636355e1b6678febcdfa9b81654b24"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/zogr.conll": {
+          "bytes": 674396,
+          "sha256": "bcdaaa0f23f927cf2865db69c1596afd03a44cf0a7cc1a06b3688eab04364fc3"
+        },
+        "syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15/torot/zogr.xml": {
+          "bytes": 2642065,
+          "sha256": "dc34c5173d9efcd6f539eb3f1c993922db7f029f8ef2c491f3892bd0a8d6275f"
+        }
+      }
+    }
+  ]
+}

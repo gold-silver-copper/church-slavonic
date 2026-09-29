@@ -4,6 +4,11 @@
 // a test asserts with unwrap; the workspace denies it in the code it ships
 #![cfg_attr(test, allow(clippy::unwrap_used))]
 
+pub mod analysis_document;
+pub mod context_trace;
+pub mod model_artifact;
+pub mod compiled_index;
+pub mod migration;
 pub mod census;
 pub mod eval;
 pub mod import;

@@ -11,7 +11,6 @@ use crate::form::Form;
 use crate::lexicon::{Lexeme, Lexicon};
 use crate::orthography::comparison_key;
 use std::sync::OnceLock;
-use unicode_normalization::UnicodeNormalization;
 
 /// One reading of a surface.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -21,7 +20,8 @@ pub struct Analysis<'a> {
     /// Which of the cell's forms matched: 0 the primary (`inflect`), else
     /// the index into `forms(cell)`.
     pub alt: usize,
-    /// The surface equals the form's print byte-for-byte (after NFC).
+    /// The surface equals the form's print byte-for-byte. Case and Unicode
+    /// normalization differences require an explicit matching policy.
     pub exact: bool,
     /// The form as the lexicon prints it.
     pub print: String,
@@ -33,9 +33,9 @@ pub struct Analysis<'a> {
 #[derive(Debug)]
 struct Entry {
     key: String,
-    lexeme: u32,
+    lexeme: usize,
     cell: Cell,
-    alt: u8,
+    alt: usize,
     print: String,
     weight: u32,
 }
@@ -44,6 +44,7 @@ struct Entry {
 #[derive(Debug, Default)]
 pub struct Index {
     entries: Vec<Entry>,
+    policies: [OnceLock<Vec<(String, usize)>>; 5],
 }
 
 impl Index {
@@ -67,7 +68,7 @@ impl Index {
                             for (cell, forms) in lexeme.all_forms() {
                                 for (alt, (_, print)) in forms.into_iter().enumerate() {
                                     let weight = lexeme.variant_weight(cell, &print);
-                                    out.push(Entry { key: comparison_key(&print), lexeme: i as u32, cell, alt: alt.min(255) as u8, print, weight });
+                                    out.push(Entry { key: comparison_key(&print), lexeme: i, cell, alt, print, weight });
                                 }
                             }
                         }
@@ -84,7 +85,7 @@ impl Index {
         if timing {
             eprintln!("index: sorted in {:.2?}", started.elapsed());
         }
-        Index { entries }
+        Index { entries, policies: Default::default() }
     }
 
     pub fn len(&self) -> usize {
@@ -118,17 +119,16 @@ impl Lexicon {
     /// ```
     pub fn analyze(&self, surface: &str) -> Vec<Analysis<'_>> {
         let key = comparison_key(surface);
-        let surface: String = surface.nfc().collect::<String>().to_lowercase();
         let entries = &self.index().entries;
         let start = entries.partition_point(|e| e.key < key);
         let mut out: Vec<Analysis<'_>> = entries[start..]
             .iter()
             .take_while(|e| e.key == key)
             .map(|e| Analysis {
-                lexeme: self.lexeme_at(e.lexeme as usize),
+                lexeme: self.lexeme_at(e.lexeme),
                 cell: e.cell,
-                alt: usize::from(e.alt),
-                exact: e.print.nfc().collect::<String>() == surface,
+                alt: e.alt,
+                exact: e.print == surface,
                 print: e.print.clone(),
                 weight: e.weight,
             })
@@ -140,6 +140,43 @@ impl Lexicon {
         out.sort_by(|a, b| b.exact.cmp(&a.exact).then((a.alt != 0).cmp(&(b.alt != 0))).then(b.weight.cmp(&a.weight)).then(a.alt.cmp(&b.alt)));
         out
     }
+
+    /// Retrieve candidates using the selected policy and preserve a trace of
+    /// every normalization on both sides. No policy merges lexical identities.
+    pub fn analyze_with(&self, surface: &str, policy: crate::matching::MatchPolicy) -> Vec<MatchedAnalysis<'_>> {
+        let index = self.index();
+        let entries = index.policies[policy.slot()].get_or_init(|| {
+            let mut entries: Vec<_> = index.entries.iter().enumerate()
+                .map(|(i, entry)| (crate::matching::key(&entry.print, policy), i)).collect();
+            entries.sort();
+            entries
+        });
+        let key = crate::matching::key(surface, policy);
+        let start = entries.partition_point(|(k, _)| k < &key);
+        let mut out: Vec<_> = entries[start..].iter().take_while(|(k, _)| k == &key)
+            .filter_map(|(_, i)| {
+                let e = &index.entries[*i];
+                crate::matching::compare(surface, &e.print, policy).map(|trace| MatchedAnalysis {
+                    analysis: Analysis {
+                        lexeme: self.lexeme_at(e.lexeme), cell: e.cell, alt: e.alt,
+                        exact: e.print == surface, print: e.print.clone(), weight: e.weight,
+                    },
+                    trace,
+                })
+            }).collect();
+        out.sort_by(|a, b| {
+            let (a, b) = (&a.analysis, &b.analysis);
+            b.exact.cmp(&a.exact).then((a.alt != 0).cmp(&(b.alt != 0)))
+                .then(b.weight.cmp(&a.weight)).then(a.alt.cmp(&b.alt))
+        });
+        out
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct MatchedAnalysis<'a> {
+    pub analysis: Analysis<'a>,
+    pub trace: crate::matching::MatchTrace,
 }
 
 /// The analyses of a surface grouped by (lexeme, print): one lexeme and
