@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt>
+        <title type="main">Old Church Slavic</title>
+        <title type="sub">Grammar and Dictionaries</title>
+        <author>
+          <persName n="1" ref="https://orcid.org/0000-0003-2303-7159" type="ORCID">
+            <forename>Anna</forename>
+            <surname>Polivanova</surname>
+            <placeName type="affiliation">Lomonosov Moscow State University, Russian Federation</placeName>
+          </persName>
+        </author>
+        <editor>
+          <persName n="2" ref="https://orcid.org/0000-0003-4944-0675" type="ORCID">
+            <forename>Artemij</forename>
+            <surname>Keidan</surname>
+            <placeName type="affiliation">Sapienza University of Rome, Italy</placeName>
+          </persName>
+        </editor>
+      </titleStmt>
+      <publicationStmt>
+        <publisher>Firenze University Press</publisher>
+        <pubPlace>Florence</pubPlace>
+        <date when="2023">2023</date>
+        <idno type="DOI">https://doi.org/10.36253/979-12-215-0104-9</idno>
+        <availability>
+          <p>Available for academic research purposes</p>
+          <p>Open Access</p>
+          <p>Copyright Author(s)</p>
+          <licence source="text" target="https://creativecommons.org/licenses/by/4.0/legalcode">
+            <p>Content licence CC BY 4.0</p>
+          </licence>
+          <licence source="metadata" target="https://creativecommons.org/publicdomain/zero/1.0/legalcode">
+            <p>Metadata licence CC0 1.0</p>
+          </licence>
+        </availability>
+      </publicationStmt>
+      <seriesStmt>
+        <title>Biblioteca di Studi Slavistici</title>
+        <idno type="ISSN" subtype="print">2612-7687</idno>
+        <idno type="ISSN" subtype="electronic">2612-7679</idno>
+      </seriesStmt>
+      <sourceDesc>
+        <bibl type="monograph">
+          <edition n="1">Digital edition PDF</edition>
+          <date>2023</date>
+          <idno type="ISBN" subtype="electronic">979-12-215-0104-9</idno>
+          <biblScope unit="page">838 pages</biblScope>
+          <extent>0.00 MB</extent>
+          <availability status="free">
+            <p>This is original content, published in Open Access. It is also available to read for free online at <ref target="https://media.fupress.com/files/pdf/24/8465/37707">https://media.fupress.com/files/pdf/24/8465/37707</ref></p>
+          </availability>
+        </bibl>
+        <bibl type="monograph">
+          <edition n="2"></edition>
+          <date>2023</date>
+        </bibl>
+        <bibl type="monograph">
+          <edition n="3">Digital edition XML</edition>
+          <date>2023</date>
+          <idno type="ISBN" subtype="electronic">979-12-215-0105-6</idno>
+          <availability status="free">
+            <p>It is available to read for free online</p>
+          </availability>
+        </bibl>
+        <bibl type="monograph">
+          <edition n="4">Print edition</edition>
+          <date>2023</date>
+          <idno type="ISBN" subtype="print">979-12-215-0103-2</idno>
+          <biblScope unit="page">838 pages</biblScope>
+          <availability status="restricted">
+            <p>It is available for online purchase at <ref target="https://books.fupress.com/isbn/9791221501049">https://books.fupress.com/isbn/9791221501049</ref></p>
+          </availability>
+        </bibl>
+      </sourceDesc>
+    </fileDesc>
+    <encodingDesc>
+      <appInfo>
+        <application version="2.2" ident="Booksflow">
+          <desc>Digital edition XML powered by Booksflow</desc>
+        </application>
+      </appInfo>
+    </encodingDesc>
+    <profileDesc>
+      <creation>
+        <tag>peer-reviewed</tag>
+        <rs type="FUP_policy" source="https://doi.org/10.36253/fup_best_practice">Firenze University Press Best Practice in Scholarly Publishing</rs>
+        <rs type="scientific_cloud" source="https://doi.org/10.36253/fup_best_practice.2">FUP Scientific Cloud for Books</rs>
+        <rs type="peer_review" resp="scientific_board" source="https://books.fupress.com/scientific-board/c/14">Biblioteca di Studi Slavistici</rs>
+      </creation>
+      <abstract xml:lang="en">
+        <p>This book contains a synchronic grammar and grammatical dictionaries of Old Church Slavic. The framework is based on a substantially revised version of the classical descriptive methodology. The intent is to improve on the classical monographs by Vaillant, Diels, Lunt in the direction of utmost completeness, explicitness, and deliberate consistency between the grammatical structure, the corpus of texts (limited to the seven oldest OCS manuscripts), and the dictionaries. The grammar is intended as a set of rules that provide a complete characterization of any OCS wordform. Peculiarities in the language of each source are described as systematic departures from canonical OCS, a conventional constructed variety primarily described by the grammar. The book is addressed to linguists working in Slavic studies, as well as to specialists in the general theory of grammar, especially phonologists and morphologists. 
+Data from the dictionaries are freely available as a searchable database online here.
+</p>
+      </abstract>
+      <abstract xml:lang="it">
+        <p>This book contains a synchronic grammar and grammatical dictionaries of Old Church Slavic. The framework is based on a substantially revised version of the classical descriptive methodology. The intent is to improve on the classical monographs by Vaillant, Diels, Lunt in the direction of utmost completeness, explicitness, and deliberate consistency between the grammatical structure, the corpus of texts (limited to the seven oldest OCS manuscripts), and the dictionaries. The grammar is intended as a set of rules that provide a complete characterization of any OCS wordform. Peculiarities in the language of each source are described as systematic departures from canonical OCS, a conventional constructed variety primarily described by the grammar. The book is addressed to linguists working in Slavic studies, as well as to specialists in the general theory of grammar, especially phonologists and morphologists. 
+Data from the dictionaries are freely available as a searchable database online here.
+</p>
+      </abstract>
+      <textClass>
+        <keywords>
+          <list>
+            <item>Old Church Slavic Grammar</item>
+            <item>Old Church Slavonic Grammar</item>
+            <item>Phonology</item>
+            <item>Morphophonology</item>
+            <item>Paradigmatics</item>
+          </list>
+        </keywords>
+      </textClass>
+    </profileDesc>
+  </teiHeader>
+  <text>
+    <body>
+      <p>It is available online at https://doi.org/10.36253/979-12-215-0104-9<ref target="https://doi.org/10.36253/979-12-215-0104-9" /></p>
+      <div>
+        <listBibl>
+          <head>References</head>
+          <bibl n="108798">L. A. Čistovič, A. V. Vencov, and M. P. Granstrem. Fiziologija reči. Vosprijatie reči čelovekom. Leningrad: Nauka, 1976.</bibl>
+          <bibl n="108796">P. Diels. Altkirchenslavische Grammatik. Mit einer Auswahl von Texten und einem Wörterbuch. Heidelberg: C. Winter, 1963 [3rd ed.].</bibl>
+          <bibl n="108786">A. Dostál (ed.). Clozianus. Staroslověnský hlaholský sborník tridentský a innsbrucký. Praha: Nakladatelství Ceskoslovenské Akademie Věd, 1959.</bibl>
+          <bibl n="108791">N. N. Durnovo. “Mysli i predpoloženija o proisxoždenii staroslavjanskogo jayzka i slavjanskix alfavitov”, Byzantinoslavica 1, 1929: 48–85.</bibl>
+          <bibl n="108814">N. N. Durnovo. Izbrannye raboty po istorii russkogo jazyka. Moskva: Jazyki slavjanskoj kul’tury, 2000.</bibl>
+          <bibl n="108801">V. A. Dybo. Slavjanskaja akcentologija. Opyt rekonstrukcii sistemy akcentnyx paradigm v praslavjanskom. Moskva: Nauka, 1981.</bibl>
+          <bibl n="108792">V. A. Dybo. Morfonologizirovannye paradigmatičeskie akcentnye sistemy. Tipologija i genezis. Vol. I. Moskva: Jazyki russkoj kul’tury, 2000.</bibl>
+          <bibl n="108834">B. Gasparov. Old Church Slavonic. München: Lincom Europa, 2001.</bibl>
+          <bibl n="108820">L. Geitler (ed.). Euchologium. Glagolski spomenik manastira Sinai brda. Zagreb: Hartman, 1882.</bibl>
+          <bibl n="108817">I. Gošev (ed.). Rilski glagoličeski listove. Sofija: Bălgarskata Akademija na Naukite, 1956.</bibl>
+          <bibl n="108822">A. Havlík. “K otázce jerové v staré češtině”, Listy filologické, 16 (1889): 45-51.</bibl>
+          <bibl n="108785">V. Jagić (ed.). Quattuor Evangeliorum versionis palaeoslovenicae codex Marianus glagoliticus, characteribus cyrillicis transcriptum. Berlin: Weidmann, 1883.</bibl>
+          <bibl n="108808">V. Jagić (ed.), Quattuor evangeliorum codex glagoliticus olim Zographensis nunc Petropolitanus, Berlin: Weidmann, 1879.</bibl>
+          <bibl n="108823">V. Jagić (ed.). Glagolitica. Würdigung neuentdeckter Fragmente. Wien: F. Tempsky, 1890.</bibl>
+          <bibl n="108835">R. O. Jakobson. “Russian conjugation”, Word 4, 1948: 155–167.</bibl>
+          <bibl n="108794">E. F. Karskij (ed.). Listki Undol’skogo. Otryvok kirillovskogo evangelija XI v. Sanktpeterburg: Izdanie Imperatorskoj Akademii Nauk, 1904.</bibl>
+          <bibl n="108783">O. A. Knjazevskaja, L. A. Korobenko, and E. P. Dogramadžieva (eds.). Savvina kniga. Drevneslavjanskaja rukopis’ XI, XI–XII i konca XIII veka. Vol. 1. Rukopis’; Tekst; Kommentarii; Issledovanie. Moskva: Indrik, 1999.</bibl>
+          <bibl n="108793">A. G. Kraveckij and A. A. Pletneva. Istorija cerkovnoslavjanskogo jazyka v Rossii (konec XIX–XX v.). Moskva: Jazyki russkoj kul’tury, 2001.</bibl>
+          <bibl n="108790">S. M. Kul’bakin (ed.). Xilandarskie listki. Otryvok kirillovskoj pis’mennosti XI v. Sanktpeterburg: Izdanie Imperatorskoj Akademii Nauk, 1900.</bibl>
+          <bibl n="108802">J. Kuryłowicz. “Contribution à la theorie de la syllabe”, Biuletyn Polskiego Towarzystwa Językoznawczego 8 (1948): 80–114.</bibl>
+          <bibl n="108803">J. Kuryłowicz. “Uwagi o polskich grupach spółgłoskowych”, Biuletyn Polskiego Towarzystwa Językoznawczego 11 (1952): 54–68.</bibl>
+          <bibl n="108799">J. Kurz (ed.), Codex Vaticanus 3. Slavicus glagoliticus. Vol. II. Praha: Nakladatelství Ceskoslovenské Akademie Věd, 1955.</bibl>
+          <bibl n="108804">A. Leskien. Handbuch der altbulgarischen (alkirchenslavischen) Sprache. Grammatik. Texte. Glossar. Weimar: Böhlau, 1871.</bibl>
+          <bibl n="108825">H. G. Lunt. Old Church Slavonic Grammar. The Hague, Paris: Mouton, 1974 [6th ed.].</bibl>
+          <bibl n="108821">H. G. Lunt. Old Church Slavonic Grammar. Berlin, New York: Mouton de Gruyter, 2001 [7th ed.].</bibl>
+          <bibl n="108797">A. Meillet. Le slave commun, seconde édition revue et augmentée avec le concours de A. Vaillant. Paris: Champion, 1934 [2nd ed.].</bibl>
+          <bibl n="108806">K. H. Meyer. Altkirchenslavisch‐griechisches Wörterbuch des Codex Suprasliensis. Glückstadt, Hamburg: Augustin, 1935.</bibl>
+          <bibl n="108795">K. Mirčev and X. Kodov (eds.). Eninski apostol. Starobalgarski pametnik ot XI vek. Sofija: Bălgarskata Akademija na Naukite, 1965.</bibl>
+          <bibl n="108809">R. Nahtigal (ed.). Euchologium Sinaiticum. I. Fotografski posnetek; II. Tekst s komentarjem. Ljubljana, 1941–1942.</bibl>
+          <bibl n="108830">V. V. Nimčuk (ed.), Kyjivs’ki hlaholični lystky. Kyjiv: Naukova dumka, 1983.</bibl>
+          <bibl n="108828">P. Penkova. Rečnik‐indeks na Sinajskija evxologij. Sofija: Marin Drinov, 2008.</bibl>
+          <bibl n="108811">V. A. Plungjan. Obščaya morfologija: vvedenie v problematiku. Učebnoe posobie. Moskva: Ėditorial URSS, 2000.</bibl>
+          <bibl n="108782">A. K. Polivanova. “Formal’naja paradigmatika i klassy slov v russkom jazyke”, in W. Gruszczyński (ed.), Nie bez znaczenia. Prace ofiarowane Profesorowi Zygmuntowi Saloniemu z okazji jubileuszu 15 000 dni pracy naukowej. Białystok: Wydawnictwo Uniwersytetu w Białymstoku, 2001, pp. 211–228.</bibl>
+          <bibl n="108787">A. K. Polivanova. “Principy postroenija segmentnoj grammatiki”, in Obščee i russkoe jazykoznanie. Izbrannye raboty. Moskva: RGGU, 2008, pp. 210–303.</bibl>
+          <bibl n="108815">M. L. Remneva. Staroslavjanskij jazyk. Učebnoe posobie. Moskva: Akademičeskij proekt, 2004 [2nd ed.].</bibl>
+          <bibl n="108812">L. Sadnik and R. Aitzetmüller. Handwörterbuch zu den altkirchenslavischen Texten. S-Gravenhage: Mouton, 1955.</bibl>
+          <bibl n="108810">V. N. Ščepkin. Rassuždenie o jazyke Savvinoj knigi. Sanktpeterburg: Izdanie Imperatorskoj Akademii Nauk, 1899.</bibl>
+          <bibl n="108818">V. N. Ščepkin (ed.). Savvina kniga. Sanktpeterburg: Izdanie Imperatorskoj Akademii Nauk, 1903.</bibl>
+          <bibl n="108813">S. Sever’janov (ed.). Suprasl’skaja rukopis’. Sanktpeterburg: Izdanie Imperatorskoj Akademii Nauk, 1904.</bibl>
+          <bibl n="108805">S. N. Sever’janov (ed.). Sinajskaja psaltyr’. Glagoličeskij pamjatnik XI v. Petrograd: Rossijskaja Akademija Nauk, 1922.</bibl>
+          <bibl n="108788">I. I. Sreznevskij. Materialy dlja Slovarja drevnerusskogo jazyka po pis’mennym pamjatnikam. Sanktpeterburg: Izdanie Imperatorskoj Akademii Nauk, 1893.</bibl>
+          <bibl n="108789">O. N. Trubačev et al (eds.). Ėtimologičeskij slovar’ slavjanskix jazykov. Praslavjanskij leksičeskij fond. Volumes 1–41. Moskva: Nauka, 1974–2018.</bibl>
+          <bibl n="108816">N. S. Trubetzkoy. Altkirchenslavische Grammatik. Schrift‐, Laut‐ und Formensystem. Wien: Rohrer, 1954.</bibl>
+          <bibl n="108826">N. S. Trubetzkoy. Grundzüge der Phonologie. Prague, Leipzig: Harrassowitz, 1939.</bibl>
+          <bibl n="108832">B. Uspenskij. Principles of structural typology. The Hague: Mouton, 1968.</bibl>
+          <bibl n="108831">A. Vaillant. Manuel du vieux slave. Paris: Institut d’études slaves, 1948.</bibl>
+          <bibl n="108819">N. Van Wijk. Geschichte der altkirchenslavischen Sprache. Berlin, Leipzig: W. de Gruyter, 1931.</bibl>
+          <bibl n="108827">M. Vasmer. Russisches Etymologisches W&amp;#246;rterbuch. Moskva: Progress, 1986 [2nd ed.].</bibl>
+          <bibl n="108800">R. Večerka, R. M. Cejtlin, and Ė. Blagova. Staroslavjanskij slovar’ (Po rukopisjam X– XI vv.). Moskva: Russkij jazyk, 1994.</bibl>
+          <bibl n="108833">G. A. Xaburgaev. Staroslavjanskij jazyk. Moskva: Prosveščenie, 1974.</bibl>
+          <bibl n="108807">J. Zaimov and M. Capaldo (eds.), Suprasălski ili Retkov sbornik. Sofija: Bălgarskata Akademija na Naukite, 1982–1983.</bibl>
+          <bibl n="108784">A. A. Zaliznjak. &amp;#171;Russkoe imennoe slovoizmenenie&amp;#187; s priloženiem izbrannyx rabot po sovremennomu russkomu jazyku i obščemu jazykoznaniju. Moskva: Jazyki slavjanskoj kul’tury, 2002 [reprint of the orig. ed. 1967].</bibl>
+          <bibl n="108829">A. A. Zaliznjak. Ot praslavyanskoj akcentuacii k russkoj. Moskva: Nauka, 1985.</bibl>
+          <bibl n="108824">A. A. Zaliznjak. Drevnenovgorodskij dialekt. Moskva: Jazyki slavjanskoj kul’tury, 2004.</bibl>
+        </listBibl>
+      </div>
+    </body>
+  </text>
+</TEI>
